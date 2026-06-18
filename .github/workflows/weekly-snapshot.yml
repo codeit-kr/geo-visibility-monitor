@@ -1,0 +1,45 @@
+name: weekly-visibility-snapshot
+
+on:
+  schedule:
+    - cron: '0 0 * * 1' # 매주 월 00:00 UTC (= 월 09:00 KST)
+  workflow_dispatch: {} # 수동 실행(첫 검증·재측정)
+
+permissions:
+  contents: write # 스냅샷 커밋
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          # cache: pnpm 은 pnpm-lock.yaml 커밋 후 활성화(없으면 캐시 단계 실패)
+      # 최초엔 lockfile 없으므로 frozen 끄기. lockfile 커밋 후 --frozen-lockfile 로 전환.
+      - run: pnpm install --no-frozen-lockfile
+      - name: 측정 시각 계산 (런타임 — repository.updated_at 은 직전 push 시각이라 부정확)
+        id: ts
+        run: echo "captured_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
+      - name: 측정 실행 → snapshots/<isoWeek>/ + index.json
+        run: pnpm snapshot
+        env:
+          CAPTURED_AT: ${{ steps.ts.outputs.captured_at }} # 런타임 UTC(src의 argless new Date 금지와 무관)
+          # 점진적 활성화 — repo Variable 로 관리. PoC: OpenAI + SerpApi(free) → 이후 gemini 추가
+          ACTIVE_ENGINES: ${{ vars.ACTIVE_ENGINES || 'chatgpt,google-aio,naver-briefing' }}
+          PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SERPAPI_API_KEY: ${{ secrets.SERPAPI_API_KEY }}
+          AMPLITUDE_API_KEY: ${{ secrets.AMPLITUDE_API_KEY }}
+          AMPLITUDE_SECRET_KEY: ${{ secrets.AMPLITUDE_SECRET_KEY }}
+      - name: 스냅샷 커밋
+        run: |
+          git config user.name "geo-bot"
+          git config user.email "geo-bot@users.noreply.github.com"
+          git add snapshots/
+          git commit -m "chore(snapshot): weekly ${{ github.run_number }}" || echo "변경 없음"
+          git push

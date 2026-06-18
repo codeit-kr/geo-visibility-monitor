@@ -1,0 +1,17 @@
+{
+  "name": "geo-visibility-monitor",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.15.0",
+  "description": "코드잇 AI 가시성 측정 엔진 — 주간 스냅샷 생성(JSON-in-git)",
+  "scripts": {
+    "snapshot": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}
