@@ -71,7 +71,7 @@ jobs:
 
             두 파일을 반드시 실제로 Write 하라(부모 디렉터리 자동 생성). 끝나면 기록한 경로를 요약하라.
           claude_args: |
-            --max-turns 60
+            --max-turns 150
             --allowedTools "Read,Write,Bash,WebFetch,Task,Glob,Grep"
 
       - name: 롤업 + 커밋 + 푸시(동시 push 경합 대비 rebase 재시도)
