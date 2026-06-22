@@ -13,9 +13,7 @@ export const writeSnapshot = async (app: App, isoWeek: string, bundle: SnapshotB
     save(join(dir, 'visibility.json'), bundle.visibility),
     save(join(dir, 'responses.json'), bundle.responses),
     save(join(dir, 'cost.json'), bundle.cost),
-    save(join(dir, 'referral.json'), bundle.referral),
     save(join(dir, 'geoScore.json'), bundle.geoScore),
-    save(join(dir, 'owned.json'), bundle.owned),
   ])
 }
 

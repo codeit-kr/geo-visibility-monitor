@@ -5,6 +5,7 @@ import type { EngineResult } from '../engines'
 import { mentionsBrand, matchedCompetitors } from '../analyze/matchEntities'
 import { classifyAnswer } from '../analyze/classify'
 import { mapLimit } from '../util/concurrency'
+import { DRY_RUN, SAMPLE_N, MAX_USD } from '../util/runOpts'
 import type { ServiceConfig } from '../config/types'
 import { computeCostUsd } from '../config/pricing'
 import {
@@ -26,42 +27,78 @@ interface CallOutcome {
 
 const CONCURRENCY = 4
 
+// 콜 성공/실패/스킵 집계 — index.ts 의 성공률 abort·런 요약에 사용.
+export interface RunStats {
+  attempted: number // 실제 어댑터 호출 수(비용캡 스킵 제외)
+  succeeded: number // 파싱까지 성공한 수
+  skipped: number // MAX_USD 초과로 스킵된 수
+}
+
 export const runCitationMonitor = async (
   ctx: SnapshotContext,
   service: ServiceConfig,
   buildOpts: BuildOptions = {},
-): Promise<{ snapshots: VisibilitySnapshot[]; responses: ResponseRecord[]; cost: CostSnapshot }> => {
+): Promise<{
+  snapshots: VisibilitySnapshot[]
+  responses: ResponseRecord[]
+  cost: CostSnapshot
+  stats: RunStats
+}> => {
   const calls = buildCalls(service, buildOpts)
   const callOpts = { locale: service.locale, userCountry: service.userCountry }
 
   // 점진적 활성화: ACTIVE_ENGINES 에 든 엔진만 실행(미설정이면 전부).
   const active = getActiveEngines()
   const isActive = (key: string): boolean => active === null || active.has(key)
+  const activeChatbots = Object.entries(CHATBOT_ADAPTERS).filter(([e]) => isActive(e))
+  const activeSerp = Object.entries(SERP_ADAPTERS).filter(([e]) => isActive(e))
 
-  // 챗봇: 활성 엔진 × 모든 CallSpec
-  const chatbotTasks = Object.entries(CHATBOT_ADAPTERS)
-    .filter(([engine]) => isActive(engine))
-    .flatMap(([engine, adapter]) =>
-      calls.map((call) => async () => {
-        const result = await adapter(call.query, callOpts)
-        return toSnapshot(ctx, service, engine as Engine, call, result)
-      }),
-    )
+  // SAMPLE_N: 엔진별 콜 수 제한(샘플 실행). SERP 는 visibility seed 쿼리만(rep=1).
+  const chatbotCalls = SAMPLE_N ? calls.slice(0, SAMPLE_N) : calls
+  const serpQueries = SAMPLE_N ? selectSerpQueries(calls).slice(0, SAMPLE_N) : selectSerpQueries(calls)
 
-  // SERP: 활성 엔진 × visibility 의도별 seed 쿼리만(rep=1).
-  // SerpApi free plan(250/월) 안에 들어가도록 간소화 — seed 15개 × 2표면 ≈ 129/월.
-  const serpQueries = selectSerpQueries(calls)
-  const serpTasks = Object.entries(SERP_ADAPTERS)
-    .filter(([engine]) => isActive(engine))
-    .flatMap(([engine, adapter]) =>
-      serpQueries.map((call) => async () => {
-        const result = await adapter(call.query)
-        return toSnapshot(ctx, service, engine as Engine, { ...call, rep: 1 }, result)
-      }),
-    )
+  // DRY_RUN: 실호출 없이 계획만 출력하고 빈 결과 반환(비용 0 검증).
+  if (DRY_RUN) {
+    const plan = [
+      ...activeChatbots.map(([e]) => `${e}=${chatbotCalls.length}`),
+      ...activeSerp.map(([e]) => `${e}=${serpQueries.length}`),
+    ]
+    console.info(`[citationMonitor:DRY_RUN] ${ctx.app} 계획(콜수) — ${plan.join(' / ') || '(활성 엔진 없음)'}`)
+    return { snapshots: [], responses: [], cost: emptyCost(ctx), stats: { attempted: 0, succeeded: 0, skipped: 0 } }
+  }
+
+  // 비용 상한·통계는 콜 간 공유(동시 실행이라 캡은 소프트 — 몇 콜 초과 가능).
+  const stats: RunStats = { attempted: 0, succeeded: 0, skipped: 0 }
+  let spentUsd = 0
+  const makeTask =
+    (engine: Engine, call: CallSpec, run: () => Promise<EngineResult>) =>
+    async (): Promise<CallOutcome | null> => {
+      if (MAX_USD !== null && spentUsd >= MAX_USD) {
+        stats.skipped += 1
+        return null
+      }
+      stats.attempted += 1
+      try {
+        const result = await run()
+        const outcome = await toSnapshot(ctx, service, engine, call, result)
+        spentUsd += (outcome.response.costUsd ?? 0) + (outcome.classifier ? computeCostUsd(outcome.classifier) : 0)
+        stats.succeeded += 1
+        return outcome
+      } catch (error) {
+        console.error('[citationMonitor] 콜 실패:', error instanceof Error ? error.message : error)
+        return null
+      }
+    }
+
+  const chatbotTasks = activeChatbots.flatMap(([engine, adapter]) =>
+    chatbotCalls.map((call) => makeTask(engine as Engine, call, () => adapter(call.query, callOpts))),
+  )
+  const serpTasks = activeSerp.flatMap(([engine, adapter]) =>
+    serpQueries.map((call) => makeTask(engine as Engine, { ...call, rep: 1 }, () => adapter(call.query))),
+  )
 
   const tasks = [...chatbotTasks, ...serpTasks]
-  const results = await mapLimit(tasks, CONCURRENCY, (task) => runSafe(task))
+  const results = await mapLimit(tasks, CONCURRENCY, (task) => task())
   const ok = results.filter((r): r is CallOutcome => r !== null)
 
   // 비용 집계: 엔진별 + classifier 버킷 + 총합.
@@ -92,8 +129,17 @@ export const runCitationMonitor = async (
     total: Object.values(byEngine).reduce(sumUsageCost, emptyUsageCost()),
   }
 
-  return { snapshots: ok.map((o) => o.snapshot), responses: ok.map((o) => o.response), cost }
+  return { snapshots: ok.map((o) => o.snapshot), responses: ok.map((o) => o.response), cost, stats }
 }
+
+const emptyCost = (ctx: SnapshotContext): CostSnapshot => ({
+  schemaVersion: SCHEMA_VERSION,
+  capturedAt: ctx.capturedAt,
+  isoWeek: ctx.isoWeek,
+  app: ctx.app,
+  byEngine: {},
+  total: emptyUsageCost(),
+})
 
 const emptyUsageCost = (): UsageCost => ({
   calls: 0,
@@ -127,16 +173,6 @@ const sumUsageCost = (a: UsageCost, b: UsageCost): UsageCost => ({
   serpCredits: a.serpCredits + b.serpCredits,
   costUsd: a.costUsd + b.costUsd,
 })
-
-// 콜 단위 실패는 전체를 죽이지 않고 null 로 떨군다(엔진 부분 장애 허용).
-const runSafe = async (task: () => Promise<CallOutcome>): Promise<CallOutcome | null> => {
-  try {
-    return await task()
-  } catch (error) {
-    console.error('[citationMonitor] 콜 실패:', error instanceof Error ? error.message : error)
-    return null
-  }
-}
 
 // SERP 는 visibility 의도별 seed(p0)만 — free plan 절약 + SERP 는 LLM 보다 덜 random.
 const selectSerpQueries = (calls: CallSpec[]): CallSpec[] => {

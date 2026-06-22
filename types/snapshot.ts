@@ -78,17 +78,7 @@ export interface CostSnapshot {
   total: UsageCost
 }
 
-export interface ReferralSnapshot {
-  schemaVersion: number
-  capturedAt: string
-  isoWeek: string
-  app: App
-  engine: Engine
-  sessions: number
-  conversions: number
-  conversionRate: number
-}
-
+// 그룹 C — 선행지표 GEO 점수(geoScoreRunner). 러너 구현방식 미결이나 계약은 유지.
 export interface GeoScoreSnapshot {
   schemaVersion: number
   capturedAt: string
@@ -103,21 +93,47 @@ export interface GeoScoreSnapshot {
   platform: number
 }
 
-export interface OwnedSurfaceSnapshot {
-  schemaVersion: number
-  capturedAt: string
-  isoWeek: string
-  app: App
-  surface: 'google-aio' | 'bing'
-  impressions: number
-  clicks: number
-}
-
+// 그룹 B(Amplitude referral)·D(Search Console owned)는 드롭 → 타입/필드 제거.
 export interface SnapshotBundle {
   visibility: VisibilitySnapshot[]
   responses: ResponseRecord[] // 풀 응답 원문(visibility 행과 조인 키로 1:1)
   cost: CostSnapshot // API 사용량 기반 비용 집계
-  referral: ReferralSnapshot[]
   geoScore: GeoScoreSnapshot[]
-  owned: OwnedSurfaceSnapshot[]
+}
+
+// ── 롤업 인덱스 계약(대시보드 apps/geo-admin 이 GitHub API 로 읽는 단일 진입점) ──────────
+// buildRollupIndex 가 이 타입들로 snapshots/<app>/index.json·snapshots/services.json 을 생성한다.
+// 이 파일이 단일 출처(SSOT) — 대시보드는 이 타입을 복사하고 "sync with geo-visibility-monitor" 주석을 단다.
+
+export interface WeekSummary {
+  isoWeek: string
+  mentionRate: number | null // visibility 풀 언급률
+  sov: number | null // 무브랜드 평균 per-call SoV(브랜드)
+  competitorSov: Record<string, number> // 경쟁사 canonical → 경쟁 풀 내 점유(브랜드+경쟁사 언급 합 기준)
+  sentiment: { positive: number; neutral: number; negative: number } // 감성 분해(언급 건)
+  accuracyFlags: Record<string, number> // 'wrong-price' → 횟수
+  byEngine: Partial<Record<Engine, number | null>> // 엔진별 언급률(visibility)
+  byEngineCostUsd: Partial<Record<Engine, number>> // 엔진별 비용(cost.json byEngine)
+  sampleSize: number // visibility 표본 수
+  costUsd: number | null // 주 측정 총비용(cost.json total)
+  geoScore?: number | null // 예약(그룹 C) — geoScoreRunner 방식 확정 후 채움
+}
+
+export interface RollupIndex {
+  schemaVersion: number
+  app: App
+  displayName: string
+  weeks: WeekSummary[]
+}
+
+export interface ServiceManifestEntry {
+  app: App
+  displayName: string
+  weeks: number // 보유 주차 수(0 = 아직 측정 없음)
+  latestWeek: string | null
+}
+
+export interface ServicesManifest {
+  schemaVersion: number
+  services: ServiceManifestEntry[]
 }
