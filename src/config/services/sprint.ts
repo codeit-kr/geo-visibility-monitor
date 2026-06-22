@@ -267,19 +267,20 @@ export const sprint: ServiceConfig = {
     'https://sprint.codeit.kr/llms.txt',
   ],
 
-  // 점수 대상 엔티티-그라운딩 체크리스트(KR). 코드잇(모회사) 공유 그라운딩 포함.
-  // 갱신 시 brandSourcesVersion 올릴 것.
+  // 점수 대상 엔티티-그라운딩 체크리스트(KR). 갱신 시 brandSourcesVersion 올릴 것.
+  // "(모회사)" = 코드잇(parent) 엔티티 — sprint 전용 아님. 사이트가 parentOrganization 으로 코드잇에
+  //   연결돼 있고 그 엔티티가 존재하면 부분 가점(프롬프트 규칙). 나무위키 403 우회 + 엔티티중복 회피.
   brandSources: [
-    'https://namu.wiki/w/코드잇',
-    'https://ko.wikipedia.org/wiki/코드잇',
-    'Wikidata: 코드잇 / Codeit 엔티티',
+    'https://namu.wiki/w/코드잇 (모회사)',
+    'https://ko.wikipedia.org/wiki/코드잇 (모회사)',
+    'Wikidata: 코드잇 / Codeit 엔티티 (모회사)',
     'https://blog.naver.com/codeitofficial',
     'https://www.youtube.com/@codeit',
     'Instagram: @codeit.kr, @codeit_sprint',
     'https://www.linkedin.com/company/codeit-official',
     '잡플래닛: 코드잇 기업 페이지',
   ],
-  brandSourcesVersion: 1,
+  brandSourcesVersion: 2,
 
   brand: {
     canonical: '코드잇 스프린트',

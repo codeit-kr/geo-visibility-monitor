@@ -64,6 +64,9 @@ jobs:
 
             [브랜드/플랫폼 채점]
             - composite 에 반영하는 외부 신호는 그 항목의 `brandSources` 고정 체크리스트뿐이다. 각 소스의 존재/연결 여부로 채점.
+            - `brandSources` 항목에 "(모회사)" 표기가 있으면 코드잇(parent) 엔티티다(sprint 전용 아님). 사이트 Organization 스키마가
+              `parentOrganization` 으로 코드잇(www.codeit.kr)에 연결돼 있고 그 모회사 엔티티가 존재하면 **부분 가점**한다(자식이 부모 엔티티 상속).
+              나무위키가 직접 fetch 시 403 이어도, 코드잇 sameAs 링크·parentOrganization 연결로 확인되면 인정(직접 fetch 불필요). 완전 가점은 sprint 전용 엔티티가 있을 때만.
             - 그 외 새로 발견한 소스·커뮤니티(OKKY·블라인드·커리어리·네이버 카페 등)는 리포트의 "디스커버리" 섹션에만 기록하고 composite 점수엔 넣지 않는다.
 
             [산출물 — 반드시 실제 Write, 부모 디렉터리 자동 생성]
