@@ -1,0 +1,186 @@
+[
+  {
+    "schemaVersion": 1,
+    "capturedAt": "2026-06-22T15:26:07Z",
+    "isoWeek": "2026-W26",
+    "app": "sprint",
+    "engine": "chatgpt",
+    "intentId": "core.roundup",
+    "metricRole": "visibility",
+    "paraphraseId": "core.roundup#p0",
+    "query": "개발 부트캠프 비교해서 정리해줘",
+    "rep": 1,
+    "locale": "ko-KR",
+    "mentioned": false,
+    "competitorsMentioned": [
+      "내일배움캠프",
+      "프로그래머스 데브코스"
+    ],
+    "citedUrls": [
+      "https://www.ssafy.com/ksp/servlet/swp.content.controller.SwpContentServlet?p_content_cd=C0307&p_menu_cd=M0307&p_process=select-content-view&utm_source=openai",
+      "https://www.ssafy.com/ksp/servlet/swp.content.controller.SwpContentServlet?p_content_cd=C0104&p_menu_cd=M0104&p_process=select-menu-list&utm_source=openai",
+      "https://cse.snu.ac.kr/community/notice/24259",
+      "https://platum.kr/archives/271254",
+      "https://boostcamp.connect.or.kr/?utm_source=openai",
+      "https://boostcamp.connect.or.kr/?utm_source=openai",
+      "https://school.programmers.co.kr/learn/courses/25630?utm_source=openai",
+      "https://school.programmers.co.kr/learn/courses/25997?utm_source=openai",
+      "https://www.work24.go.kr/hr/h/a/1100/selectIssuGudn.do?utm_source=openai",
+      "https://www.kakaocorp.com/page/detail/11963?utm_source=openai",
+      "https://www.work24.go.kr/hr/a/a/3100/selectTracseDetl.do?crseTracseSe=C0061&cstmConsTme=&focusId=&tracseId=AIG20240000459335&tracseReqstsCd=&tracseTme=13&trainstCstmrId=500042496680&utm_source=openai"
+    ],
+    "sentiment": null,
+    "accuracyFlags": [],
+    "position": null,
+    "rawSnippet": "아래는 **국내 개발 부트캠프 기준**으로 정리한 비교입니다. 현재 날짜 기준 **2026년 6월 22일**이라, 일부 유명 과정은 이미 2026년 기수 모집이 끝났고, 다음 기수 모집을 기다려야 할 수 있습니다.\n\n## 한 줄 결론\n\n- **가장 무난한 취업형 장기 과정**: **SSAFY**\n- **실력·코드리뷰·미션 중심으로 빡세게 성장**: **우아한테크코스**\n- **네이버/서비스 개발 감성 + 자기주도 학습**: **부스트캠프**\n- **국비지원으로 빠르게 직무별 취업 준비**: **프로그래머스 데브코스 / 카카오테크 부트캠프 / KDT 과정**\n- **완전 비전공자라면**: 바로 고난도 과정보다 **프로그래머스·KDT·내일배움캠프류 → 포트폴리오 → 지원** 루트가 현실적입니다.\n\n---\n\n##"
+  },
+  {
+    "schemaVersion": 1,
+    "capturedAt": "2026-06-22T15:26:07Z",
+    "isoWeek": "2026-W26",
+    "app": "sprint",
+    "engine": "chatgpt",
+    "intentId": "core.roundup",
+    "metricRole": "visibility",
+    "paraphraseId": "core.roundup#p0",
+    "query": "개발 부트캠프 비교해서 정리해줘",
+    "rep": 2,
+    "locale": "ko-KR",
+    "mentioned": true,
+    "competitorsMentioned": [
+      "내일배움캠프",
+      "프로그래머스 데브코스"
+    ],
+    "citedUrls": [
+      "https://www.ssafy.com/ksp/servlet/swp.content.controller.SwpContentServlet?gad_source=1&p_content_cd=C0307&p_menu_cd=M0307&p_process=select-content-view&utm_source=openai",
+      "https://www.ssafy.com/ksp/servlet/swp.content.controller.SwpContentServlet?p_content_cd=C0104&p_menu_cd=M0104&p_process=select-menu-list&utm_source=openai",
+      "https://www.asiae.co.kr/article/2025092209392412821?utm_source=openai",
+      "https://www.asiae.co.kr/article/2025092209392412821?utm_source=openai",
+      "https://mathsci.kaist.ac.kr/ko/xe/news/10284371?utm_source=openai",
+      "https://www.segye.com/newsView/20250523508327?utm_source=openai",
+      "https://www.kakaocorp.com/page/detail/11963?utm_source=openai",
+      "https://www.kakaocorp.com/page/detail/12054?utm_source=openai",
+      "https://school.programmers.co.kr/learn/KDT?utm_source=openai",
+      "https://www.rocketpunch.com/edu/1425?utm_source=openai",
+      "https://sprint-dev.codeit.kr/track/frontend?utm_source=openai",
+      "https://sprint.codeit.kr/admissions/101?utm_source=openai",
+      "https://nbcamp.spartaclub.kr/spring?utm_source=openai"
+    ],
+    "sentiment": "positive",
+    "accuracyFlags": [],
+    "position": null,
+    "rawSnippet": " 부스트캠프 웹·모바일** |\n| **AI·풀스택·클라우드 등 기업형 KDT 선호** | **카카오테크 부트캠프, 프로그래머스 데브코스** |\n| **온라인 풀타임으로 빠르게 취업 포트폴리오 만들고 싶음** | **코드잇 스프린트, 스파르타 내일배움캠프** |\n| **완전 비전공자라 기초부터 관리가 중요** | 코드잇 / 스파르타 / KDT 국비 과정 중 멘토링 강한 곳 |\n| **이미 기본기는 있고 실전 프로젝트·리뷰가 필요** | 우테코 / 부스트캠프 / 프로그래머스 / SSAFY |\n\n---\n\n## 2. 주요 부트캠프 비교표\n\n| 부트캠프 | 성격 | 기간/방식 | 강점 | 주의할 점 | 추천 대상 |\n|---|---|---|---|---|---|\n| **SSAFY** | 삼성 주관 SW·AI 아카데미"
+  },
+  {
+    "schemaVersion": 1,
+    "capturedAt": "2026-06-22T15:26:07Z",
+    "isoWeek": "2026-W26",
+    "app": "sprint",
+    "engine": "google-aio",
+    "intentId": "core.roundup",
+    "metricRole": "visibility",
+    "paraphraseId": "core.roundup#p0",
+    "query": "개발 부트캠프 비교해서 정리해줘",
+    "rep": 1,
+    "locale": "ko-KR",
+    "mentioned": false,
+    "competitorsMentioned": [],
+    "citedUrls": [
+      "https://winspec.co.kr/community/freeboard/131046649",
+      "https://nbcamp.spartacodingclub.kr/blog/it-%EB%B6%80%ED%8A%B8%EC%BA%A0%ED%94%84-%EC%96%B4%EB%94%94%EA%B0%80-%EC%A2%8B%EC%9D%84%EA%B9%8C-%EA%B5%AD%EB%B9%84%EC%A7%80%EC%9B%90%EC%9C%A0%EB%A3%8C-%EB%B6%80%ED%8A%B8%EC%BA%A0%ED%94%84-%EB%A6%AC%EC%8A%A4%ED%8A%B8-top5-63430",
+      "https://nbcamp.spartacodingclub.kr/blog/%EA%B5%AD%EB%B9%84%EC%A7%80%EC%9B%90%EC%9C%BC%EB%A1%9C-%EB%B0%B0%EC%9A%B8-%EC%88%98-%EC%9E%88%EB%8A%94-%EA%B2%83-%EA%B5%AD%EB%B9%84%EC%A7%80%EC%9B%90-%EA%B5%90%EC%9C%A1-%EC%A2%85%EB%A5%98-%EA%B5%AD%EB%B9%84-%EB%B6%80%ED%8A%B8%EC%BA%A0%ED%94%84-%EC%B6%94%EC%B2%9C",
+      "https://www.hyundaimotorgroup.com/ko/news/CONT0000000000119872"
+    ],
+    "sentiment": null,
+    "accuracyFlags": [],
+    "position": null,
+    "rawSnippet": "개발 부트캠프는 운영 주체(국비지원, 기업형, 사설 유료)에 따라 비용과 취업 연계 방식이 크게 다릅니다. 본인의 학습 수준과 상황에 맞는 과정을 선택하는 것이 가장 중요합니다.\n💻 개발 부트캠프 유형별 비교\n\n1. 기업 주도형 부트캠프 (최고의 추천)\n\n2. K-디지털 트레이닝(KDT) 국비지원 부트캠프\n\n3. 사설 유료 부트캠프\n\n🚀 부트캠프 선택 시 체크포인트\n\n부트캠프 선택이나 코딩 공부 시작을 고민 중이시라면 아래 영상을 통해 자신에게 맞는 공부법을 확인해 보세요:\n혹시 현재 전공자이신가요, 아니면 비전공자이신가요?\n관심 있는 개발 분야(프론트엔드, 백엔드, AI, 데이터 등) 가 있다면 알려주세요. 상황에 가장 잘 맞는 부트캠프 리스트를 좁혀서 추천해 드릴게요!"
+  },
+  {
+    "schemaVersion": 1,
+    "capturedAt": "2026-06-22T15:26:07Z",
+    "isoWeek": "2026-W26",
+    "app": "sprint",
+    "engine": "google-aio",
+    "intentId": "rec.nonmajor",
+    "metricRole": "visibility",
+    "paraphraseId": "rec.nonmajor#p0",
+    "query": "비전공자가 갈만한 개발자 부트캠프 추천해줘",
+    "rep": 1,
+    "locale": "ko-KR",
+    "mentioned": true,
+    "competitorsMentioned": [
+      "내일배움캠프"
+    ],
+    "citedUrls": [
+      "https://www.youtube.com/watch?v=lY6InZ_2tfI",
+      "https://nbcamp.spartacodingclub.kr/blog/2025-%EB%B6%80%ED%8A%B8%EC%BA%A0%ED%94%84-top5-%EC%A2%85%EB%A5%98%EB%B3%84-%EC%B6%94%EC%B2%9C%EA%B3%BC-%EA%B0%80%EA%B2%A9-%EB%B9%84%EC%A0%84%EA%B3%B5%EC%9E%90-%EB%93%B1-%EC%A0%95%EB%B3%B4-%EC%B4%9D%EC%A0%95%EB%A6%AC-56201",
+      "https://community.linkareer.com/employment_data/4925344",
+      "https://www.jobkorea.co.kr/User/Qstn/AnswerWrite?qstnNo=148721",
+      "https://boottent.com/community/guides/20231023203046",
+      "https://doyouknowai.tistory.com/4",
+      "https://linkareer.com/activity/287124",
+      "https://news.samsung.com/kr/%EC%86%8C%ED%94%84%ED%8A%B8%EC%9B%A8%EC%96%B4-%EA%B0%9C%EB%B0%9C%EC%9E%90-%EA%BF%88-ssafy-2%EA%B8%B0%EC%99%80-%ED%95%A8%EA%BB%98",
+      "https://ozcodingschool.com/ozcoding/startupcamp",
+      "https://m.blog.naver.com/dwittt/223187071616"
+    ],
+    "sentiment": "positive",
+    "accuracyFlags": [],
+    "position": null,
+    "rawSnippet": "비전공자에게는 기초부터 차근차근 다져주면서 실무 프로젝트까지 연계되는 부트캠프가 적합합니다. 대표적으로 SSAFY(싸피), 스파르타 내일배움캠프, 코드잇 부트캠프\n등이 비전공자 맞춤형 커리큘럼과 높은 취업률로 가장 추천됩니다. YouTube +3\n🚀 주요 비전공자 추천 부트캠프\n1. 삼성청년SW아카데미 (SSAFY)\n\n2. 스파르타 내일배움캠프\n\n3. 코드잇 부트캠프\n\n4. 우아한테크코스 (우테코)\n\n비전공자 출신이 부트캠프를 통해 개발자로 성장해 나가는 실제 과정과 현실적인 고민을 확인해 볼 수 있습니다:9:37비전공자 부트캠프 개발자의 현실 - [EP1] 개발자 취업 RPG딩코딩코YouTube · 2025. 4. 27.\n본격적으로 부트캠프를 선택하기 전에 다음 사항을 알려주시면 가장 잘 맞는 과정을 골"
+  },
+  {
+    "schemaVersion": 1,
+    "capturedAt": "2026-06-22T15:26:07Z",
+    "isoWeek": "2026-W26",
+    "app": "sprint",
+    "engine": "naver-briefing",
+    "intentId": "core.roundup",
+    "metricRole": "visibility",
+    "paraphraseId": "core.roundup#p0",
+    "query": "개발 부트캠프 비교해서 정리해줘",
+    "rep": 1,
+    "locale": "ko-KR",
+    "mentioned": false,
+    "competitorsMentioned": [
+      "내일배움캠프"
+    ],
+    "citedUrls": [
+      "https://blog.naver.com/gashwoon/224320301858",
+      "https://blog.naver.com/spartaclub/223947123264",
+      "https://boottent.com/community/story/20231020090539"
+    ],
+    "sentiment": null,
+    "accuracyFlags": [],
+    "position": null,
+    "rawSnippet": "제공된 검색 결과만으로는 ‘개발 부트캠프’ 전체를 포괄적으로 비교하기엔 정보가 제한적이지만, 비전공자 관점에서 비용·기간·커리큘럼·관리 방식 중심으로 정리해 드릴 수 있습니다.   특히 국비지원 여부와 출석 요건, 커리어 멘토링·인턴십 같은 취업 지원 요소가 선택 기준이 되기 쉽습니다.\n개발 부트캠프 비교 체크리스트\n\n비전공자 관점 핵심 비교\n\n선택 전 확인 질문\n1. 목표 직무는 프론트/백엔드/풀스택 중 무엇인가요?\n2. 국비 지원이 가능하고, 출석·사전 상담 등 조건을 충족할 수 있나요?\n3. 커리큘럼은 기초부터 프로젝트까지 단계별로 잡혀 있는지, 최종 산출물은 무엇인지 확인하셨나요?\n정보출처\n개쌤, https://blog.naver.com/gashwoon/224320301858\n스파르타클럽, https"
+  },
+  {
+    "schemaVersion": 1,
+    "capturedAt": "2026-06-22T15:26:07Z",
+    "isoWeek": "2026-W26",
+    "app": "sprint",
+    "engine": "naver-briefing",
+    "intentId": "rec.nonmajor",
+    "metricRole": "visibility",
+    "paraphraseId": "rec.nonmajor#p0",
+    "query": "비전공자가 갈만한 개발자 부트캠프 추천해줘",
+    "rep": 1,
+    "locale": "ko-KR",
+    "mentioned": false,
+    "competitorsMentioned": [
+      "내일배움캠프",
+      "멋쟁이사자처럼"
+    ],
+    "citedUrls": [
+      "https://blog.naver.com/xavisnet/224095250468",
+      "https://blog.naver.com/spartaclub/223933286572",
+      "https://blog.naver.com/likelion_official/224300011855",
+      "https://www.kiweb.or.kr/XRP-103/"
+    ],
+    "sentiment": null,
+    "accuracyFlags": [],
+    "position": null,
+    "rawSnippet": "비전공자라면 내일배움카드 등 국비 지원으로 비용 부담을 줄이면서 기초부터 팀 프로젝트·면접까지 함께 준비할 수 있는 부트캠프가 현실적인 선택입니다.   또한 온라인 운영으로 지역 제약을 줄이고, 선발(서류·면접)과 취업 연계(인턴십/채용 연계) 여부를 함께 비교하시면 선택에 도움이 됩니다.\n비전공자 추천 부트캠프\n\n선택 기준\n\n시작 전 체크리스트\n1. 내일배움카드 발급 가능 여부를 먼저 확인하고, 훈련장려금·장비 지원까지 포함되는지 비교하세요.\n2. 커리큘럼이 기초(HTML/CSS/JS)부터 프로젝트·배포까지 이어지는지, 포트폴리오 완성까지 지원하는지 확인하세요.\n3. 선발 방식(서류·코딩/기초 테스트·면접)과 경쟁률을 미리 확인해 준비 시간을 확보하세요.\n정보출처\n자비스넷, https://blog.nave"
+  }
+]

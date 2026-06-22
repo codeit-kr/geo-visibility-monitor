@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "app": "sprint",
+  "displayName": "코드잇 스프린트",
+  "weeks": [
+    {
+      "isoWeek": "2026-W26",
+      "mentionRate": 0.3333333333333333,
+      "sov": 0.16666666666666666,
+      "competitorSov": {
+        "내일배움캠프": 0.5,
+        "프로그래머스 데브코스": 0.2,
+        "멋쟁이사자처럼": 0.1
+      },
+      "sentiment": {
+        "positive": 2,
+        "neutral": 0,
+        "negative": 0
+      },
+      "accuracyFlags": {},
+      "byEngine": {
+        "chatgpt": 0.5,
+        "google-aio": 0.5,
+        "naver-briefing": 0
+      },
+      "byEngineCostUsd": {
+        "chatgpt": 1.3315199999999998,
+        "google-aio": 0,
+        "naver-briefing": 0
+      },
+      "sampleSize": 6,
+      "costUsd": 1.3338003999999999,
+      "geoScore": null
+    }
+  ]
+}
