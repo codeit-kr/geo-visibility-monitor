@@ -74,14 +74,20 @@ jobs:
             --max-turns 60
             --allowedTools "Read,Write,Bash,WebFetch,Task,Glob,Grep"
 
-      - name: 롤업 갱신(geoScore → index.json)
-        run: pnpm rollup
-
-      - name: 스냅샷 커밋
+      - name: 롤업 + 커밋 + 푸시(동시 push 경합 대비 rebase 재시도)
         run: |
           rm -f audit-targets.json
           git config user.name "geo-bot"
           git config user.email "geo-bot@users.noreply.github.com"
           git add snapshots/
-          git commit -m "chore(geo-audit): weekly ${{ github.run_number }}" || echo "변경 없음"
-          git push
+          if git diff --cached --quiet; then echo "변경 없음"; exit 0; fi
+          git commit -m "chore(geo-audit): weekly ${{ github.run_number }}"
+          for i in $(seq 1 5); do
+            git pull --rebase --autostash origin main || { echo "rebase 실패, 재시도 $i/5"; sleep 5; continue; }
+            pnpm rollup                 # 머지된 트리 기준으로 index.json 재생성
+            git add snapshots/
+            git commit --amend --no-edit
+            git push && { echo "push 성공"; exit 0; }
+            echo "push 경합, 재시도 $i/5"; sleep 5
+          done
+          echo "push 실패(재시도 소진)"; exit 1
