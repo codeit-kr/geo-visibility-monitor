@@ -12,67 +12,7 @@
 // 버전 고정: 질의셋 변경 시 promptsVersion 올림(추이 비교 깨짐 방지).
 import type { ServiceConfig, IntentPreset } from '../types'
 
-export const sprint: ServiceConfig = {
-  app: 'sprint',
-  displayName: '코드잇 스프린트',
-  promptsVersion: 1,
-  locale: 'ko-KR',
-  userCountry: 'KR',
-
-  brand: {
-    canonical: '코드잇 스프린트',
-    aliases: ['코드잇 스프린트', '코드잇', 'Codeit', 'codeit', '코드잇 부트캠프'],
-    domains: ['codeit.kr', 'sprint.codeit.kr'],
-  },
-
-  // SoV·경쟁 매칭용 경쟁사 (출처: 마케팅팀 확정 리스트)
-  // aliases: AI 응답 본문에서 경쟁사 언급을 잡기 위한 표기 변형. 많을수록 매칭률↑.
-  // strictContext: 일반 단어와 겹쳐 단순 substring 매칭 시 오탐 위험 → 단어경계/브랜드 맥락으로만 매칭.
-  competitors: [
-    { canonical: '패스트캠퍼스', aliases: ['패스트캠퍼스', '패캠', 'FastCampus', 'Fast Campus'] },
-    // bare 'Kernel'/'커널'은 일반어(OS 커널)와 겹쳐 제외 + 맥락 필수
-    { canonical: '커널 아카데미', aliases: ['커널 아카데미', '커널아카데미', 'Kernel Academy'], strictContext: true },
-    {
-      // 팀스파르타의 국비 부트캠프
-      canonical: '내일배움캠프',
-      aliases: ['내일배움캠프', '내배캠', '스파르타코딩클럽', '스파르타', '팀스파르타'],
-      // '내일배움카드'(KDT 정부카드)와 혼동 금지 — '내일배움캠프' 정확 매칭
-      strictContext: true,
-    },
-    { canonical: '항해99', aliases: ['항해99', '항해 99', '항해'], strictContext: true },
-    { canonical: '멋쟁이사자처럼', aliases: ['멋쟁이사자처럼', '멋사', 'LikeLion', 'likelion', 'Like Lion'] },
-    { canonical: '엘리스', aliases: ['엘리스', 'elice', 'Elice'], strictContext: true },
-    { canonical: '제로베이스', aliases: ['제로베이스', '제로 베이스', 'zerobase', 'zero-base', 'ZeroBase'] },
-    { canonical: '구름', aliases: ['구름', '구름에듀', '구름EDU', 'goorm', '구름 부트캠프'], strictContext: true },
-    { canonical: '코드캠프', aliases: ['코드캠프', 'Code Camp', 'codecamp'] },
-    {
-      // 그렙(주) 운영. 프로그래머스=플랫폼, 데브코스=부트캠프
-      canonical: '프로그래머스 데브코스',
-      aliases: ['프로그래머스 데브코스', '데브코스', '프로그래머스', '그렙', 'programmers', 'grepp'],
-      strictContext: true,
-    },
-  ],
-
-  // 비용 주의: cmp.vsCompetitor 가 경쟁사 전체를 전개하면
-  //   competitors(10) × paraphrases(4) × reps(1) × 챗봇(4) = 160 콜/주.
-  // 전체 SoV(무브랜드)에는 영향 없고 reputation 트랙만 늘어남.
-  // 필요 시 priorityCompetitors 로 vs 비교는 상위만, 나머지는 SoV 매칭에만 사용.
-  priorityCompetitors: ['패스트캠퍼스', '내일배움캠프', '항해99', '제로베이스'],
-
-  // 직무 축({role} 전개용). 셋 다 실제 Track enum에 매핑됨 → 모두 codeitServes:true.
-  //   개발자 = Frontend/Backend/Fullstack/Mobile/Devops 등, 데이터 = Data/Ai, 디자이너 = ProductDesign.
-  jobRoles: [
-    { token: '개발자', codeitServes: true },
-    { token: '데이터 분석가', codeitServes: true },
-    { token: '디자이너', codeitServes: true }, // ProductDesign 트랙 있음
-  ],
-
-  // 분배: visibility 10(무브랜드, role 전개로 실질 더 많음) / reputation 2 / accuracy 2
-  intents: sprintIntents(),
-}
-
-function sprintIntents(): IntentPreset[] {
-  return [
+const sprintIntents: IntentPreset[] = [
     // ── [핵심] ────────────────────────────────────────────────
     {
       id: 'core.roundup',
@@ -303,5 +243,63 @@ function sprintIntents(): IntentPreset[] {
       // util-seo 스키마 값과 동기화 (변경 시 갱신)
       groundTruth: { feIntensive: 300000, others: 600000, currency: 'KRW' },
     },
-  ]
+]
+
+export const sprint: ServiceConfig = {
+  app: 'sprint',
+  displayName: '코드잇 스프린트',
+  promptsVersion: 1,
+  locale: 'ko-KR',
+  userCountry: 'KR',
+
+  brand: {
+    canonical: '코드잇 스프린트',
+    aliases: ['코드잇 스프린트', '코드잇', 'Codeit', 'codeit', '코드잇 부트캠프'],
+    domains: ['codeit.kr', 'sprint.codeit.kr'],
+  },
+
+  // SoV·경쟁 매칭용 경쟁사 (출처: 마케팅팀 확정 리스트)
+  // aliases: AI 응답 본문에서 경쟁사 언급을 잡기 위한 표기 변형. 많을수록 매칭률↑.
+  // strictContext: 일반 단어와 겹쳐 단순 substring 매칭 시 오탐 위험 → 단어경계/브랜드 맥락으로만 매칭.
+  competitors: [
+    { canonical: '패스트캠퍼스', aliases: ['패스트캠퍼스', '패캠', 'FastCampus', 'Fast Campus'] },
+    // bare 'Kernel'/'커널'은 일반어(OS 커널)와 겹쳐 제외 + 맥락 필수
+    { canonical: '커널 아카데미', aliases: ['커널 아카데미', '커널아카데미', 'Kernel Academy'], strictContext: true },
+    {
+      // 팀스파르타의 국비 부트캠프
+      canonical: '내일배움캠프',
+      aliases: ['내일배움캠프', '내배캠', '스파르타코딩클럽', '스파르타', '팀스파르타'],
+      // '내일배움카드'(KDT 정부카드)와 혼동 금지 — '내일배움캠프' 정확 매칭
+      strictContext: true,
+    },
+    { canonical: '항해99', aliases: ['항해99', '항해 99', '항해'], strictContext: true },
+    { canonical: '멋쟁이사자처럼', aliases: ['멋쟁이사자처럼', '멋사', 'LikeLion', 'likelion', 'Like Lion'] },
+    { canonical: '엘리스', aliases: ['엘리스', 'elice', 'Elice'], strictContext: true },
+    { canonical: '제로베이스', aliases: ['제로베이스', '제로 베이스', 'zerobase', 'zero-base', 'ZeroBase'] },
+    { canonical: '구름', aliases: ['구름', '구름에듀', '구름EDU', 'goorm', '구름 부트캠프'], strictContext: true },
+    { canonical: '코드캠프', aliases: ['코드캠프', 'Code Camp', 'codecamp'] },
+    {
+      // 그렙(주) 운영. 프로그래머스=플랫폼, 데브코스=부트캠프
+      canonical: '프로그래머스 데브코스',
+      aliases: ['프로그래머스 데브코스', '데브코스', '프로그래머스', '그렙', 'programmers', 'grepp'],
+      strictContext: true,
+    },
+  ],
+
+  // 비용 주의: cmp.vsCompetitor 가 경쟁사 전체를 전개하면
+  //   competitors(10) × paraphrases(4) × reps(1) × 챗봇(4) = 160 콜/주.
+  // 전체 SoV(무브랜드)에는 영향 없고 reputation 트랙만 늘어남.
+  // 필요 시 priorityCompetitors 로 vs 비교는 상위만, 나머지는 SoV 매칭에만 사용.
+  priorityCompetitors: ['패스트캠퍼스', '내일배움캠프', '항해99', '제로베이스'],
+
+  // 직무 축({role} 전개용). 셋 다 실제 Track enum에 매핑됨 → 모두 codeitServes:true.
+  //   개발자 = Frontend/Backend/Fullstack/Mobile/Devops 등, 데이터 = Data/Ai, 디자이너 = ProductDesign.
+  jobRoles: [
+    { token: '개발자', codeitServes: true },
+    { token: '데이터 분석가', codeitServes: true },
+    { token: '디자이너', codeitServes: true }, // ProductDesign 트랙 있음
+  ],
+
+  // 분배: visibility 10(무브랜드, role 전개로 실질 더 많음) / reputation 2 / accuracy 2
+  intents: sprintIntents,
 }

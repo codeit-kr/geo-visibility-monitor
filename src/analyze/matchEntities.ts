@@ -38,6 +38,7 @@ const competitorHit = (text: string, c: Competitor, hasContext: boolean): boolea
 
 // 영문 별칭은 단어경계 검사, 한글 별칭은 포함 검사(strictContext 가 1차 오탐을 거른다).
 const containsToken = (text: string, token: string): boolean => {
+  // eslint-disable-next-line no-control-regex -- ASCII 범위 판별(영문 별칭 단어경계 분기)에 제어문자 포함 의도
   const isAscii = /^[\x00-\x7F]+$/.test(token)
   if (isAscii) {
     return new RegExp(`\\b${escapeRegExp(token)}\\b`, 'i').test(text)

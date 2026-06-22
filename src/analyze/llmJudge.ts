@@ -38,7 +38,6 @@ export const judge = async (input: JudgeInput): Promise<JudgeResult> => {
   })
   if (!res.ok) throw new Error(`Classifier ${res.status}: ${await res.text()}`)
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const json: any = await res.json()
   const content = json.choices?.[0]?.message?.content
   if (!content) throw new Error('Classifier: 빈 응답')

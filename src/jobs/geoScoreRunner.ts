@@ -1,5 +1,5 @@
 // 그룹 C — 선행지표. 기존 geo-audit 스킬을 헤드리스로 돌려 GEO 점수 스냅샷화.
-import { SCHEMA_VERSION, type GeoScoreSnapshot } from '../../types/snapshot'
+import { type GeoScoreSnapshot } from '../../types/snapshot'
 import type { SnapshotContext } from '../context'
 import type { ServiceConfig } from '../config/types'
 
