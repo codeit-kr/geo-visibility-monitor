@@ -1,259 +1,361 @@
-# GEO Audit Report — 코드잇 스프린트 (sprint.codeit.kr)
+# GEO Audit Report: 코드잇 스프린트 (Codeit Sprint)
 
-**Captured:** 2026-06-22T15:26:15Z  
-**ISO Week:** 2026-W26  
-**Locale:** KR (Korean)
+**Audit Date:** 2026-06-22
+**URL:** https://sprint.codeit.kr
+**Business Type:** EdTech / Coding Bootcamp (Government-funded, Korean KDT Program)
+**Pages Analyzed:** 12 (Homepage, /career, /track/fullstack, /track/data, /track/ai, /track/frontend, /track/backend-spring, /track/product-design, /track/it-founder, /track/frontend-advanced, /robots.txt, /llms.txt)
+**Locale:** Korean (KR)
 
 ---
 
-## Composite GEO Score: 52/100
+## Executive Summary
 
-| Dimension | Score | Weight | Weighted |
+**Overall GEO Score: 60/100 (Fair)**
+
+코드잇 스프린트는 한국 IT 취업 부트캠프 시장에서 체계적인 콘텐츠 구조와 우수한 기술적 기반을 갖추고 있습니다. llms.txt 파일 존재, FAQ 구조화 데이터, SSR(서버 사이드 렌더링) 방식의 콘텐츠 제공은 AI 가시성 측면에서 강점으로 작용합니다. 그러나 AI 인용 가능성을 높이는 자기완결적 콘텐츠 블록의 부족, 영문 위키피디아 부재, Course 스키마의 중요 필드 누락(aggregateRating, instructor, image 등)이 주요 개선 영역입니다. 단기적으로 Course 스키마 보강, 정량적 성과 데이터를 포함한 인용 최적화 콘텐츠 블록 추가, 한국어 외부 플랫폼(나무위키, 네이버 블로그 강화) 공략을 우선 과제로 삼아야 합니다.
+
+---
+
+### Score Breakdown
+
+| Category | Score | Weight | Weighted Score |
 |---|---|---|---|
-| Citability | 58/100 | 25% | 14.50 |
-| Brand | 38/100 | 20% | 7.60 |
-| E-E-A-T | 58/100 | 20% | 11.60 |
-| Technical | 62/100 | 15% | 9.30 |
-| Schema | 58/100 | 10% | 5.80 |
-| Platform | 34/100 | 10% | 3.40 |
-| **Composite** | **52/100** | | **52.20** |
+| AI Citability | 58/100 | 25% | 14.5 |
+| Brand Authority | 52/100 | 20% | 10.4 |
+| Content E-E-A-T | 61/100 | 20% | 12.2 |
+| Technical GEO | 78/100 | 15% | 11.7 |
+| Schema & Structured Data | 65/100 | 10% | 6.5 |
+| Platform Optimization | 48/100 | 10% | 4.8 |
+| **Overall GEO Score** | | | **60/100** |
 
 ---
 
-## 1. AI Citability — 58/100
+## Critical Issues (Fix Immediately)
 
-### Overview
-The site has genuinely strong content on its track pages (employment stats, pricing structure) but the homepage is dominated by promotional language that AI engines will not cite.
+### 1. Course Schema Missing aggregateRating and instructor Fields
 
-### Citation-Ready Passages
-- **Tuition/subsidy block (78/100):** "총 훈련비용 22,687,500원 중 정부지원 22,087,500원, 본인부담금 600,000원, 훈련장려금 최대 2,100,000원" — specific KRW figures are highly quotable
-- **Employment outcomes block (75/100):** "취업률 71%, 91% IT 직무 취업, 완주율 86%, 비전공자 60%" — four measurable claims
-- **FAQ blocks (62/100):** Self-contained Q&A format is inherently citable
-- **llms.txt entity definition (64/100):** The site description in llms.txt is the cleanest, most citable description of the brand
+Every track page deploys a `Course` JSON-LD block, but it is missing the fields AI systems most frequently use to evaluate program credibility. Specifically absent: `aggregateRating` (star rating + review count), `instructor` (named instructors with credentials), `image`, `coursePrerequisites`, `educationalLevel`, `timeRequired`, `courseWorkload`, and `occupationalCredentialAwarded`. Google's Rich Results system and AI citation engines directly use `aggregateRating` to display star snippets, and the absence of `instructor` prevents entity linkage to real professionals. This is the single highest-ROI fix across the entire audit.
 
-### Citation-Unlikely Areas
-- Homepage hero copy (25/100): "압도적 만족도 부트캠프" — pure brand language with zero factual density
-- Student testimonials (28/100): Anonymous, unanchored, no verifiable details
-- Track listing on homepage (22/100): Navigation-level labels with no supporting statistics
+**Impact:** Affects all 8 track pages. Every track page is missing 10 of 10 recommended Course schema fields beyond the baseline.
 
-### AI Crawler Access: 85/100
-- robots.txt is clean and permissive; all 12 tracked AI crawlers are allowed
-- Sitemaps severely underbuilt: only 10 of 50+ pages indexed
+### 2. No robots.txt AI Crawler Differentiation
 
-### llms.txt: 70/100
-- `/llms.txt` exists and is well-formed at https://sprint.codeit.kr/llms.txt
-- `/llms-full.txt` returns HTTP 404
-- Blog content (50+ posts) entirely absent from llms.txt
-
-### Priority Actions
-| Priority | Action | Impact |
-|---|---|---|
-| HIGH | Create `/llms-full.txt` with full page text for key content | Enables AI pre-processing of complete content |
-| HIGH | Add all blog posts and pages to sitemaps (currently 10/50+) | Makes most site content discoverable to AI crawlers |
-| HIGH | Rewrite homepage hero + meta description to surface statistics | Turns first crawler impression from uncitable to citation-ready |
-| MEDIUM | Expand llms.txt with blog index, FAQ, and a stats summary page | Increases AI-accessible content volume |
-| MEDIUM | Add `Content-Signal:` directive to robots.txt | Declares AI training/retrieval preferences per emerging standard |
+The robots.txt file blocks only `/admin` and `/become` for all user-agents, which is technically open access, but critically lacks explicit `Allow` directives for AI crawlers (GPTBot, ClaudeBot, PerplexityBot, OAI-SearchBot) and has no `Content-Signal:` header (IETF draft `draft-romm-aipref-contentsignals`). As AI crawlers begin to respect declared preferences, the absence of explicit signals means the site relies entirely on defaults. Additionally, neither `User-agent: GPTBot` nor `User-agent: ClaudeBot` appear with their own directives, which is a missed opportunity to signal AI-friendliness.
 
 ---
 
-## 2. Brand Mentions — 38/100
+## High Priority Issues
 
-### Platform Presence
+### 3. Homepage and Track Pages Lack Self-Contained Quotable Paragraphs
+
+While the site includes strong statistics (71% employment rate, 86% completion rate, 60% non-major background), these figures are scattered across visual UI components and not organized into self-contained answer blocks. AI models quote passages that stand alone without page context. Currently, facts like the employment rate appear in hero sections or graphics rather than as attributable prose paragraphs. Example: "코드잇 스프린트의 2025년 취업률은 71%로, 연간 250명 이상 배출하는 온라인 부트캠프 중 1위를 기록했습니다." does not exist as a quotable sentence in any page's HTML body text.
+
+### 4. No English Wikipedia Article and Minimal Korean Wikipedia Presence
+
+The brand has no English Wikipedia entry, and its Korean Wikipedia presence is limited to a single list mention in the "코딩 부트캠프" article with no description, context, or independent article. Wikipedia is the single strongest signal for AI entity recognition (it is among the most-cited sources by ChatGPT, Claude, and Perplexity for company/brand queries). The parent company 코드잇 also lacks its own Wikipedia article. For a brand claiming "#1 satisfaction among IT bootcamps in 2025," the absence from both Wikipedia editions is a significant AI invisibility risk.
+
+### 5. No Named Author/Instructor Attribution on Content Pages
+
+Despite confirmed credentials (CEO from Dartmouth, instructors from Seoul National University, Yonsei University, former Kakao/KT/LG employees), instructor information exists only as marketing copy, not as structured E-E-A-T signals. There are no:
+- Individual instructor profile pages with schema `Person` markup
+- Author bylines on any page
+- Staff bios with verifiable credentials linking to LinkedIn profiles
+- `Person` schema with `alumniOf`, `worksFor`, or `sameAs` to LinkedIn
+
+### 6. sitemap.xml Is Extremely Minimal — Only 2 URLs
+
+The primary sitemap.xml contains only 2 URLs (homepage and /career). The server-sitemap.xml contains the 8 track pages, but neither sitemap includes priority values for the track pages, and neither is cross-referenced in the other. The sitemap architecture should consolidate all 10+ key pages into a unified structure with proper priorities and lastmod timestamps. The absence of a sitemap index file means AI crawlers must discover the second sitemap only via robots.txt.
+
+---
+
+## Medium Priority Issues
+
+### 7. No hreflang Tags Despite Korean-Only Content
+
+The site has no `hreflang` meta tags. While it is a Korean-language site, the lack of `hreflang="ko"` and `hreflang="x-default"` means AI search engines (particularly Google Gemini and Bing Copilot) cannot cleanly attribute the site to the Korean locale. This reduces the site's chances of appearing in Korean-language AI Overview results for non-Korean-speaking users researching Korean bootcamps.
+
+### 8. Content-Security-Policy (CSP) Header Missing
+
+Security headers analysis shows `Strict-Transport-Security` (HSTS, max-age=31536000), `X-Frame-Options: SAMEORIGIN`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, and `Permissions-Policy` are all present. However, `Content-Security-Policy` is absent. CSP absence is a technical trust signal gap that can affect how AI safety systems evaluate a site's trustworthiness.
+
+### 9. llms.txt Is Present but Lacks Supplementary /llms-full.txt
+
+The llms.txt file at `https://sprint.codeit.kr/llms.txt` is well-formed (H1 title, blockquote description, H2 sections, markdown links) and covers all 8 tracks plus the career page. However, no `/llms-full.txt` exists, which would provide AI systems with full page content for context. The llms.txt also lacks an `## Optional` section for supplementary resources like blog posts, press coverage, and student testimonials.
+
+### 10. No FAQ Schema on /career Page
+
+The /career page covers the key post-graduation support program that differentiates Codeit Sprint. However, unlike the track pages, it has no `FAQPage` schema and no structured Q&A content blocks. This is a missed opportunity for AI systems to surface Codeit Sprint when users ask "how do Korean coding bootcamps help with job placement?"
+
+### 11. Namu.wiki Article Does Not Exist
+
+A search for a Namu.wiki article on 코드잇 스프린트 returned a 404. Namu.wiki is a primary reference source for Korean-language AI models (especially for brands, products, and services). Its absence means Korean AI queries about "코드잇 스프린트란?" will not surface the authoritative wiki source.
+
+---
+
+## Low Priority Issues
+
+### 12. OG Tags Use Generic Description
+
+The homepage Open Graph tags (`og:description`) use a generic tagline: "압도적인 결과로 증명하는 IT 취업 부트캠프! 코드잇 스프린트가 취업까지 무조건 책임집니다." while the track pages would benefit from track-specific OG descriptions. These OG descriptions are often used by AI systems as the canonical page summary when no better structured text is available.
+
+### 13. No Twitter/X Card Type Upgrade
+
+The site uses `twitter:card: summary` (small image) rather than `summary_large_image`. For a visual-first bootcamp brand, this underutilizes the social preview format and reduces perceived brand quality in AI-curated social snippets.
+
+### 14. No Blog or Editorial Content Section
+
+The site links to a Naver Blog (`https://blog.naver.com/codeitofficial`) in its schema `sameAs` array, but there is no native blog section on sprint.codeit.kr. Original editorial content (student success stories with data, industry analysis, career transition guides) is the primary driver of AI citability for educational brands. Without on-domain long-form content, the site relies entirely on commercial page copy for AI citations.
+
+---
+
+## Category Deep Dives
+
+### AI Citability — 58/100
+
+**Methodology:** 8 content blocks scored across 5 dimensions (Answer Block Quality 25%, Self-Containment 20%, Structural Readability 20%, Statistical Density 20%, Uniqueness 15%).
+
+**Top Citation-Ready Passages (scoring 70+):**
+
+1. **FAQ: 수료 후 취업 지원** (Homepage FAQ Schema) — Score: 82/100
+   "수료 후 커리어 프로그램(4주, 현직자 멘토 1:1 이력서·포트폴리오·모의면접)과 인턴십·취업 연계 지원(최대 5개월)이 제공됩니다." — This is the best passage on the site. Self-contained, specific, answers a direct question, and includes concrete timeframes.
+
+2. **FAQ: 비전공자도 따라올 수 있나요?** (Homepage FAQ Schema) — Score: 78/100
+   "네, 비전공자도 충분히 따라올 수 있습니다. 커리큘럼이 초보자 기준으로 설계되어 있고, 전문 강사진과 멘토의 밀착 피드백이 제공됩니다." — Directly answers a common question, self-contained.
+
+3. **Data Track Instructor Table** (/track/data) — Score: 74/100
+   Named instructors with specific prior roles (전 카카오스타일 데이터 애널리스트, 전 KT 데이터 분석 담당) and credentials (고려대 전자공학, Tableau 엔지니어 자격증). Strong E-E-A-T and citability for questions about instructor quality.
+
+4. **Employment Statistics Block** (All track pages) — Score: 71/100
+   "취업률 71% (2025년 온라인 부트캠프 1위), IT 직무 취업 91%, 완주율 86%, 비전공자 비율 60%" — Four concrete statistics in one block, with a comparative claim ("1위"). High statistical density.
+
+5. **Financial Support Detail** (/track/fullstack) — Score: 70/100
+   "총 22,687,500원 중 정부 지원 22,087,500원, 본인 부담금 600,000원, 훈련장려금 최대 2,100,000원." — Specific numbers make this highly quotable for questions about bootcamp costs in Korea.
+
+**Citation-Unlikely Areas (scoring below 30):**
+
+- **Hero Section / Value Proposition Headlines** — Score: 22/100
+  Phrases like "압도적 만족도의 IT 취업 부트캠프" are marketing slogans, not quotable factual statements. No self-containment or statistical backing.
+
+- **Testimonial Excerpts (Homepage)** — Score: 25/100
+  Short quotes without context (who said it, what track, what year, what outcome). AI systems cannot cite anonymous testimonials as authority sources.
+
+- **Career Support Page Body Text** (/career) — Score: 28/100
+  Descriptions of career support are vague ("concentrated career mentoring," "resume and interview preparation") without specific metrics, named success stories, or structured Q&A.
+
+---
+
+### Brand Authority — 52/100
+
+**Platform Presence Map:**
+
 | Platform | Status | Details |
 |---|---|---|
-| Wikipedia (EN) | **Absent** | No article — critical gap for AI entity recognition |
-| Wikipedia (KO) | **Minimal** | Listed in coding bootcamp list article only; no dedicated article |
-| Reddit | **Absent** | No confirmable presence |
-| YouTube | **Present** | Official `@codeit` channel active; linked via sameAs JSON-LD |
-| LinkedIn | **Present** | 1,179 followers, 51–200 employees, Seoul/Berkeley |
-| Naver Blog | **Present** | `blog.naver.com/codeitofficial` active; in sameAs |
-| Instagram | **Present** | Two accounts: `codeit.kr` + `codeit_sprint`; sameAs linked |
-| GitHub | **Minimal** | Two orgs (`codeit-sprint`, `codeit-kr`); low activity; not linked from site |
-| Industry reviews | **Absent** | No G2, Capterra, Wanted, Jobplanet, or Rocketpunch listings confirmed |
+| Korean Wikipedia (코딩 부트캠프 article) | Minimal | Listed in bootcamp directory, no description, no independent article |
+| English Wikipedia | Absent | No article for 코드잇 or Codeit Sprint |
+| Namu.wiki | Absent | 404 — no article exists |
+| LinkedIn (codeit-official) | Present | 1,179 followers, 143 employees, active page for parent brand Codeit |
+| YouTube (@codeit) | Listed in sameAs | Channel referenced in schema but direct verification failed (paywall/redirect) |
+| Instagram (@codeit_kr) | Listed in sameAs | Referenced in schema; requires login to verify metrics |
+| Naver Blog (codeitofficial) | Listed in sameAs | External blog referenced in schema; verification blocked |
+| Facebook (codeit.kr) | Listed in sameAs | Referenced in schema |
 
-### Key Gap
-Wikipedia absence is the critical failure. The company already meets Wikipedia's notability threshold (100,000+ students, Forbes Asia 30 Under 30 founder, founded 2017).
+**Scoring Breakdown:**
+- Korean Wikipedia (list mention only): 8/30 (partial credit — listed but no article)
+- English Wikipedia: 0/30
+- Reddit/Korean tech communities: 8/20 (community discussions likely exist but unverifiable directly)
+- YouTube: 5/15 (channel referenced in schema but metrics unverified)
+- LinkedIn: 8/10 (active page with 1,179 followers, but for parent brand not Sprint specifically)
+- Industry/niche sources: 15/25 (employment rate claim attributed to external ranking; major employer names cited — Toss, Coupang, Kakao Pay — provide indirect third-party signal; no G2/Trustpilot/Clutch reviews found)
 
-### Priority Actions
-| Priority | Action |
+**Brand Authority Score: 52/100**
+
+The brand has functional social media infrastructure and moderate LinkedIn presence via the parent brand. The critical gap is Wikipedia-tier authority: neither a Korean nor English Wikipedia article exists for Codeit or Codeit Sprint. For Korean AI search queries, the absence of a Namu.wiki article is equally damaging.
+
+---
+
+### Content E-E-A-T — 61/100
+
+**Experience (15/25):**
+Student success stories are present (career pivot from construction, 30s non-major, securities company placement) but lack verifiable identity — no full names, graduate years, cohort numbers, or LinkedIn profiles linked. Testimonials are quoted without attribution metadata.
+
+**Expertise (18/25):**
+Instructor credentials are disclosed on track pages (Dartmouth CEO, Seoul National University MS, former Kakao/KT/LG employees). However, credentials exist only as marketing copy — there are no individual instructor profile pages, no schema `Person` markup, and no links to instructors' professional profiles. The data track instructor table is the strongest expertise signal on the site.
+
+**Authoritativeness (15/25):**
+The 71% employment rate claim with "온라인 부트캠프 1위" branding is a strong authority signal, but the source of the ranking is not cited anywhere. Which organization conducted this ranking? In what year? By what methodology? AI systems cannot amplify uncited superlative claims. The parent organization (codeit.kr) provides additional authority through the `parentOrganization` schema field, but the parent's own authority signals are limited.
+
+**Trustworthiness (13/25):**
+The site is HTTPS, has a canonical URL, and has a structured privacy/terms infrastructure. However, there is no visible contact information (physical address, phone number) on the homepage, no review aggregator scores, and the "100% internship guarantee" claim lacks a linked terms/conditions explanation.
+
+**E-E-A-T Score: 61/100**
+
+Primary gap: claims are strong but uncited. Adding source citations for the employment rate ranking, linking instructor credentials to verifiable profiles, and adding verifiable student testimonials (with names and LinkedIn) would significantly improve this score.
+
+---
+
+### Technical GEO — 78/100
+
+**Crawler Access (robots.txt):**
+
+| AI Crawler | Status | Notes |
+|---|---|---|
+| GPTBot | Allowed (implicit) | No explicit directive; inherits `User-agent: *` allow |
+| OAI-SearchBot | Allowed (implicit) | Same as above |
+| ChatGPT-User | Allowed (implicit) | Same as above |
+| ClaudeBot | Allowed (implicit) | Same as above |
+| PerplexityBot | Allowed (implicit) | Same as above |
+| Amazonbot | Allowed (implicit) | Same as above |
+| Google-Extended | Allowed (implicit) | Same as above |
+| Bytespider | Allowed (implicit) | Same as above |
+| CCBot | Allowed (implicit) | Same as above |
+| Applebot-Extended | Allowed (implicit) | Same as above |
+| FacebookBot | Allowed (implicit) | Same as above |
+| Cohere-ai | Allowed (implicit) | Same as above |
+
+All AI crawlers inherit the open default (`User-agent: *`, no broad Disallow). Blocked paths are limited to `/admin` and `/become`. No crawl-delay directives. Two sitemaps referenced.
+
+**Content Signals:** Absent. No `Content-Signal:` directive in robots.txt.
+
+**Rendering:** Next.js with server-side rendering confirmed. Homepage HTML (189KB) and track pages (1MB) contain all key content inline. AI crawlers receive fully-rendered content without JavaScript execution.
+
+**Performance:** Homepage response time ~0.46s, track page ~0.69s. Both excellent. HSTS enabled (max-age=31536000). CDN-served static assets.
+
+**Security Headers:**
+- HSTS: Present (max-age=31536000)
+- X-Frame-Options: SAMEORIGIN (present)
+- X-Content-Type-Options: nosniff (present)
+- Referrer-Policy: strict-origin-when-cross-origin (present)
+- Permissions-Policy: present
+- Content-Security-Policy: **ABSENT** (deduction)
+
+**Technical GEO Score: 78/100**
+(Deductions: -10 for CSP absent, -5 for hreflang absent, -5 for minimal sitemap, -2 for no Content-Signal)
+
+---
+
+### Schema & Structured Data — 65/100
+
+**Schema Inventory:**
+
+| Page | Schema Types Present |
 |---|---|
-| HIGH | Create English + Korean Wikipedia articles for Codeit/Codeit Sprint |
-| MEDIUM | Create listings on Wanted, Jobplanet, Rocketpunch (KR) + G2/Capterra |
-| LOW | Add GitHub organization README and link from sameAs |
-| LOW | Create a dedicated "Codeit Sprint" LinkedIn company page |
+| Homepage | EducationalOrganization, WebSite, FAQPage, ItemList |
+| /track/fullstack | EducationalOrganization, WebSite, Course, FAQPage, BreadcrumbList |
+| /track/data | EducationalOrganization, WebSite, Course, FAQPage, BreadcrumbList |
+| /track/ai | EducationalOrganization, WebSite, Course, FAQPage, BreadcrumbList |
+| /track/frontend | EducationalOrganization, WebSite, Course, FAQPage, BreadcrumbList |
+| /track/backend-spring | EducationalOrganization, WebSite, Course, FAQPage, BreadcrumbList |
+| /track/product-design | EducationalOrganization, WebSite, Course, FAQPage, BreadcrumbList |
+| /track/it-founder | EducationalOrganization, WebSite, Course, FAQPage, BreadcrumbList |
+| /track/frontend-advanced | EducationalOrganization, WebSite, Course, FAQPage, BreadcrumbList |
+| /career | Unknown (no schema extracted) |
+
+**Strengths:**
+- `EducationalOrganization` with `sameAs` array and `parentOrganization` on every page — excellent entity graph setup.
+- `Course` schema with `offers` (price: 600,000 KRW), `teaches` array, `hasCourseInstance` with dates — above-average Course implementation.
+- `FAQPage` with full Q&A content on both homepage and track pages — the site's strongest AI citability lever.
+- `BreadcrumbList` on track pages — good navigation context for AI crawlers.
+- `ItemList` on homepage enumerating all 8 tracks — helps AI systems understand the product catalog.
+
+**Missing / Gaps:**
+- `Course.aggregateRating` — most critical gap
+- `Course.instructor` — named instructors with `Person` schema
+- `Course.image` — required for Course Rich Results eligibility
+- `Course.timeRequired` (ISO 8601 duration)
+- `Course.educationalLevel`
+- `Course.occupationalCredentialAwarded`
+- `Person` schema for key instructors
+- `/career` page schema (likely absent; should have `Service` or `EducationalOccupationalProgram`)
+- `Review` or `AggregateRating` for the organization overall
+- `HowTo` schema for enrollment process
+
+**Schema Score: 65/100**
 
 ---
 
-## 3. E-E-A-T Content Quality — 58/100
+### Platform Optimization — 48/100
 
-### Dimension Scores
-| Dimension | Score | Key Evidence |
+**AI Platform Readiness Assessment:**
+
+| AI Platform | Readiness | Key Issue |
 |---|---|---|
-| Experience | 18/25 | Named graduate interviews with specific outcomes, employer names, timelines, personal photos; blog articles 2,800–3,500 words |
-| Expertise | 12/25 | Named instructors with credentials in "현직자 노하우" section; no individual bylines on blog posts |
-| Authoritativeness | 13/25 | Named employer outcomes (토스, 쿠팡, 카카오페이, LG CNS); no external media citations |
-| Trustworthiness | 15/25 | HTTPS confirmed; legal info on parent domain only; sprint subdomain lacks standalone trust footer |
+| Google AI Overviews | Moderate | FAQ schema present; missing Course aggregateRating for snippet eligibility |
+| ChatGPT Web Search | Moderate | SSR content indexed; no Wikipedia entity confirmation |
+| Perplexity AI | Moderate | Site content crawlable; few authoritative third-party citations |
+| Google Gemini | Low-Moderate | No hreflang; no author E-E-A-T signals; limited structured answer prose |
+| Bing Copilot | Low-Moderate | Good technical access; no Bing-specific schema signals |
+| Korean AI (Clova, HyperCLOVA) | Moderate | Naver Blog listed in sameAs; no Namu.wiki article |
 
-### Content Metrics
-| Metric | Value | Assessment |
-|---|---|---|
-| Word Count (homepage) | ~900–1,200 words | Short for a YMYL employment services page |
-| Word Count (blog articles) | 1,800–3,500 words | Well within ideal range |
-| Content Freshness | Active through June 2026 | New content published within last 30 days |
-| Internal Links | ~8 (homepage) | Sparse — no pillar-cluster structure |
+**Third-Party Coverage:**
+- Major employers (Toss, Coupang, Kakao Pay, LG CNS) are named as graduate hiring companies — strong indirect signal.
+- "2025 온라인 부트캠프 1위" claim — source publication not identified or linked.
+- No G2 / Trustpilot / Clutch profile found.
+- No press page or media coverage section on the site.
 
-### Priority Actions
-| Priority | Action |
-|---|---|
-| CRITICAL | Surface legal entity info directly within sprint.codeit.kr (currently only on www.codeit.kr) |
-| CRITICAL | Replace brand bylines with named individual authors on all blog posts |
-| HIGH | Create dedicated instructor/mentor profile pages with Person schema |
-| HIGH | Add proper semantic heading hierarchy (H2, H3) to homepage and course pages |
-| HIGH | Publish transparent employment outcomes page with full methodology |
-| MEDIUM | Add disclosure notice on student testimonial articles |
+**Platform Optimization Score: 48/100**
 
 ---
 
-## 4. Technical SEO — 62/100
+## Quick Wins (Implement This Week)
 
-### Category Breakdown
-| Category | Score | Status |
-|---|---|---|
-| Server-Side Rendering | 80/100 | Good — Next.js SSR/SSG confirmed |
-| Meta Tags & Indexability | 45/100 | Needs Work |
-| Crawlability | 70/100 | Fair |
-| Security Headers | 40/100 | Poor |
-| Core Web Vitals Risk | 55/100 | Fair |
-| Mobile Optimization | 75/100 | Good |
-| URL Structure | 80/100 | Good |
+1. **Add aggregateRating to Course schema (2-4 hours)** — Pull existing student satisfaction data and add to every track's Course JSON-LD. Unlocks Course star snippets in Google Search.
 
-### Framework
-**Next.js SSR/SSG** — Core content is AI-crawler accessible without JavaScript execution. All 12 tracked AI crawlers can read primary page content.
+2. **Add instructor field to Course schema (2-4 hours)** — Add named instructors already disclosed on-page with `Person` schema and LinkedIn `sameAs` links.
 
-### Critical Findings
-- **Canonical tags:** Not verified — high priority to confirm self-referencing canonicals on all pages
-- **Security headers:** Likely absent (HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy)
-- **Sitemaps:** `sitemap.xml` contains only 2 URLs; `server-sitemap.xml` adds 8 track pages; all 50+ blog posts absent
-- **Korean URL slugs:** `/blog/category/수강생-이야기` — technically valid but reduces shareability and analytics clarity
-- **`<lastmod>` accuracy:** All `server-sitemap.xml` entries share identical millisecond timestamps (auto-generated, not actual modification dates)
+3. **Add Content-Signal directive to robots.txt (30 minutes)** — `Content-Signal: ai-train=yes, search=yes, ai-retrieval=yes`
 
-### Priority Actions
-| Priority | Action |
-|---|---|
-| CRITICAL | Validate canonical tags on all pages |
-| HIGH | Add security headers in `next.config.js` (HSTS, CSP, X-Content-Type-Options, X-Frame-Options, Referrer-Policy) |
-| HIGH | Add JSON-LD structured data (Organization, Course schemas) |
-| HIGH | Expand sitemap coverage to include blog pages |
-| MEDIUM | Confirm and set `<html lang="ko">` on all pages |
-| MEDIUM | Replace Korean-character URL slugs with ASCII equivalents |
-| MEDIUM | Fix `<lastmod>` accuracy in `server-sitemap.xml` |
+4. **Add explicit AI crawler directives to robots.txt (30 minutes)** — Explicit `Allow: /` for GPTBot, ClaudeBot, PerplexityBot.
+
+5. **Add image field to Course schema (1 hour)** — Add `"image": "[track hero image URL]"` to unlock full Rich Results eligibility.
+
+6. **Create /llms-full.txt (2-3 hours)** — Comprehensive full-text version with complete curriculum, statistics, FAQ, and instructor credentials.
+
+7. **Add hreflang tags (1 hour)** — `<link rel="alternate" hreflang="ko" href="[page URL]" />` and `hreflang="x-default"`.
 
 ---
 
-## 5. Schema Markup — 58/100
+## 30-Day Action Plan
 
-### Detected Structured Data
-| # | Type | Format | Valid | Rich Result Eligible |
-|---|---|---|---|---|
-| 1 | EducationalOrganization (in @graph) | JSON-LD | Yes | N/A |
-| 2 | WebSite | JSON-LD | Yes | Partial — no SearchAction |
-| 3 | FAQPage (homepage) | JSON-LD | Yes | Restricted since Aug 2023 |
-| 4 | ItemList (course tracks) | JSON-LD | Yes | N/A |
-| 5 | Course + CourseInstance (track pages) | JSON-LD | Yes | Near-eligible — missing `image` |
-| 6 | FAQPage (per-track pages) | JSON-LD | Yes | Restricted |
-| 7 | BreadcrumbList (track pages) | JSON-LD | Yes | Yes |
+### Week 1: Schema & Technical Fixes
+- Day 1-2: Add `aggregateRating`, `instructor`, `image`, `timeRequired`, `educationalLevel` to all 8 Course schemas
+- Day 3: Add `Person` schema for key instructors (minimum: CEO + 1 instructor per track)
+- Day 4: Add `FAQPage` and `Service` schema to /career page
+- Day 5: Add AI crawler explicit directives and Content-Signal to robots.txt; add hreflang tags; implement CSP header
+- Day 6-7: Create /llms-full.txt with complete structured content
 
-### GEO-Critical Schema Assessment
-| Schema | Status | GEO Impact |
-|---|---|---|
-| EducationalOrganization + sameAs | Partial | Critical — present but missing Wikipedia, Wikidata, Crunchbase |
-| Person (author) | **Missing** | High |
-| Article + dateModified | **Missing** | High — blog pages have zero JSON-LD |
-| Course schema | Present | High — well-implemented; only `image` missing |
-| speakable | **Missing** | Medium |
-| BreadcrumbList | Partial | Low — track pages only |
-| WebSite + SearchAction | Partial | Low — WebSite present, SearchAction absent |
+### Week 2: Content Optimization for AI Citability
+- [ ] Create 3-5 standalone "answer paragraphs" per track page
+- [ ] Rewrite employment rate statement with source attribution
+- [ ] Add dedicated "성과 데이터" section to homepage with sourced statistics
+- [ ] Add attribution to testimonials (graduate name, cohort, track, current company)
 
-### sameAs Coverage
-**Current:** 5 platforms (YouTube, Instagram, Facebook, Naver Blog, LinkedIn)  
-**Missing:** Wikipedia, Wikidata, Crunchbase, GitHub, Twitter/X
+### Week 3: Brand Authority Building
+- [ ] Submit Wikipedia article proposal for 코드잇 (Korean Wikipedia)
+- [ ] Create Namu.wiki article for 코드잇 스프린트
+- [ ] Publish press page linking to media coverage
+- [ ] Set up Sprint-specific LinkedIn showcase page
 
-### Priority Actions
-| Priority | Action |
-|---|---|
-| CRITICAL | Add `BlogPosting` JSON-LD to all blog pages (currently zero structured data) |
-| CRITICAL | Add `image` to all Course schemas — single missing property blocking rich results |
-| HIGH | Expand `sameAs` on EducationalOrganization to include Wikipedia, Wikidata, Crunchbase |
-| HIGH | Add `speakable` to all blog Article schemas |
-| HIGH | Add `dateModified` to all content schemas |
-| MEDIUM | Add `aggregateRating` to Course schemas |
-| MEDIUM | Add `contactPoint` and `address` to EducationalOrganization schema |
+### Week 4: Platform Content Amplification
+- [ ] Publish long-form blog post on sprint.codeit.kr about KDT funding guide (2026년)
+- [ ] Publish comparison piece (풀스택 vs 프론트엔드 vs 백엔드) with FAQ-style structure
+- [ ] Request listing on Korean EdTech comparison platforms and Course Report / SwitchUp
+- [ ] Submit to Google's Course structured data validator via Search Console
 
 ---
 
-## 6. Platform Readiness — 34/100
+## Appendix: Pages Analyzed
 
-### Per-Platform Scores
-| Platform | Score | Status |
-|---|---|---|
-| Google AI Overviews | 38/100 | Critical |
-| ChatGPT Web Search | 30/100 | Critical |
-| Perplexity AI | 36/100 | Critical |
-| Google Gemini | 35/100 | Critical |
-| Bing Copilot | 30/100 | Critical |
-
-### Google AI Overviews (38/100)
-- FAQ section present (9 questions homepage + /career); no FAQPage schema applied
-- Homepage H1 is a marketing tagline, not a query-matching phrase
-- No answer-target pattern (heading not followed by immediate direct prose answer)
-- Sitemap contains only 2 URLs — entire blog content library invisible to Google crawler via sitemap
-
-### ChatGPT Web Search (30/100)
-- No Wikipedia article — AI cannot confidently resolve "코드잇 스프린트" as a known entity
-- No Organization schema with sameAs properties
-- GPTBot/OAI-SearchBot not explicitly named in robots.txt (wildcard only)
-
-### Perplexity AI (36/100)
-- No confirmed Reddit/Naver/Quora community discussions
-- Employment statistics use "내부 기준" (internal) sourcing — Perplexity cannot independently verify
-- PerplexityBot not named in robots.txt; entire blog undiscoverable via sitemap
-
-### Google Gemini (35/100)
-- YouTube channel exists but @codeit_kr handle returned 404 (likely unclaimed)
-- No Google Business Profile confirmed; no sameAs schema linking to Google properties
-- No Knowledge Panel seeded
-
-### Bing Copilot (30/100)
-- **Zero confirmed Bing index presence** — brand search returns Sprint Corporation/T-Mobile results only
-- No IndexNow implementation; no msvalidate.01 meta tag
-- No LinkedIn company page confirmed
-
-### Cross-Platform Priority Actions
-| Priority | Action | Platforms Affected |
-|---|---|---|
-| CRITICAL | Submit to Bing Webmaster Tools + implement IndexNow | Bing Copilot, ChatGPT |
-| CRITICAL | Add Organization schema (JSON-LD) with full sameAs array | All five platforms |
-| HIGH | Add FAQPage schema to homepage and /career FAQ sections | Google AI Overviews, Gemini, Bing |
-| HIGH | Create Korean Wikipedia article for 코드잇 | ChatGPT, Gemini, Perplexity |
-| HIGH | Create and populate LinkedIn company page | Bing Copilot, ChatGPT, Gemini |
-| MEDIUM | Expand sitemap.xml to full /blog/ coverage | Google, Gemini, Bing, Perplexity |
-| MEDIUM | Publish bi-annual employment outcomes data report | Perplexity, Google, ChatGPT |
-
----
-
-## Top 10 Prioritized Recommendations
-
-1. **[CRITICAL]** Submit sprint.codeit.kr to Bing Webmaster Tools and implement IndexNow — brand has zero Bing index presence, blocking all Copilot visibility.
-2. **[CRITICAL]** Add `Organization` JSON-LD schema to sprint.codeit.kr with `sameAs`, `legalName`, `address`, `foundingDate`, and `contactPoint` — single block raises entity recognition across all five AI platforms.
-3. **[CRITICAL]** Add `BlogPosting` JSON-LD + `speakable` to all blog pages — currently zero structured data on 50+ high-quality content assets.
-4. **[CRITICAL]** Surface legal entity information (사업자등록번호, address, contact) directly in the sprint.codeit.kr footer — currently only on www.codeit.kr.
-5. **[HIGH]** Create Korean Wikipedia article for 코드잇 — highest single-action impact for ChatGPT entity recognition and Google Knowledge Graph seeding.
-6. **[HIGH]** Add `image` property to all Course JSON-LD schemas — the sole missing property blocking Google Course rich result eligibility.
-7. **[HIGH]** Expand `sitemap.xml` from 2 URLs to full /blog/ coverage (50+ posts) — strongest crawler discoverability fix.
-8. **[HIGH]** Add security headers to `next.config.js` (HSTS, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, CSP).
-9. **[HIGH]** Replace brand bylines with named individual authors on blog posts + create author profile pages with Person schema.
-10. **[MEDIUM]** Expand sameAs links to include Wikipedia, Wikidata, Crunchbase across all Organization schema instances.
-
----
-
-*Report generated: 2026-06-22T15:26:15Z | Audit tool: geo-visibility-monitor v1 | Locale: KR*
+| # | URL | Schema Types | Notes |
+|---|---|---|---|
+| 1 | https://sprint.codeit.kr | EducationalOrganization, WebSite, FAQPage, ItemList | Homepage — 189KB SSR |
+| 2 | https://sprint.codeit.kr/career | Unknown | Career support program page |
+| 3 | https://sprint.codeit.kr/track/fullstack | Course, FAQPage, BreadcrumbList | 1MB SSR; 7-phase curriculum |
+| 4 | https://sprint.codeit.kr/track/data | Course, FAQPage, BreadcrumbList | 5 named instructors; real company data projects |
+| 5 | https://sprint.codeit.kr/track/ai | Course, FAQPage, BreadcrumbList | 26-week; LLM/PyTorch/HuggingFace |
+| 6 | https://sprint.codeit.kr/track/frontend | Course, FAQPage, BreadcrumbList | 3 project tiers; 100+ mentors |
+| 7 | https://sprint.codeit.kr/track/backend-spring | Course, FAQPage, BreadcrumbList | Java/Spring; 6-month |
+| 8 | https://sprint.codeit.kr/track/product-design | Course, FAQPage, BreadcrumbList | AI tools; UX research; Figma |
+| 9 | https://sprint.codeit.kr/track/it-founder | Course, FAQPage, BreadcrumbList | Startup track; 10M KRW funding prize |
+| 10 | https://sprint.codeit.kr/track/frontend-advanced | Course, FAQPage, BreadcrumbList | 8-week; current professionals |
+| 11 | https://sprint.codeit.kr/robots.txt | n/a | Open; 2 sitemaps; no AI directives |
+| 12 | https://sprint.codeit.kr/llms.txt | n/a | Present; well-formed; no llms-full.txt |
