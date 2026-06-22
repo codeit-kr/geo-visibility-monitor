@@ -19,7 +19,8 @@ export interface JudgeResult {
 }
 
 export const judge = async (input: JudgeInput): Promise<JudgeResult> => {
-  const model = process.env.CLASSIFIER_MODEL ?? 'gpt-4.1-mini'
+  // || (not ??) — CI 가 빈 문자열(미설정 Variable)을 넘기면 ?? 는 통과시켜 model='' → 400.
+  const model = process.env.CLASSIFIER_MODEL || 'gpt-4.1-mini'
   const res = await fetch(ENDPOINT, {
     method: 'POST',
     headers: {
