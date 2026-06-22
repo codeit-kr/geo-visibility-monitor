@@ -43,7 +43,13 @@ export interface IntentPreset {
 export interface ServiceConfig {
   app: App // 'sprint' | 'cayde' | ... — 스냅샷/저장경로 차원
   displayName: string // 어드민 표시명
-  siteUrl: string // GEO 감사(geo-audit) 대상 URL
+  siteUrl: string // GEO 감사(geo-audit) 대상 사이트 루트
+  // geo-audit 재현성: 매 실행 동일 페이지만 감사(sitemap 랜덤샘플 금지).
+  auditUrls: string[]
+  // 점수 대상 엔티티-그라운딩 체크리스트(KR 현지화). 갱신 시 brandSourcesVersion 올림 → 점수 이동 추적.
+  // (이 목록 외 발견 소스는 리포트 디스커버리로만, composite 점수 제외)
+  brandSources: string[]
+  brandSourcesVersion: number
   brand: Brand
   competitors: Competitor[]
   priorityCompetitors: string[] // vs 비교 전개를 상위만으로 제한(비용)

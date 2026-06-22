@@ -102,7 +102,7 @@ export interface EngineResult { answer: string; citedUrls: string[] }
 ## 7. Metric groups (현행: A + C)
 
 - **A — Visibility (this repo's core):** Mention Rate, Citation Frequency, SoV, Sentiment, Position, Accuracy. From `citation-monitor`. Headline uses **unbranded (`metricRole:'visibility'`) only** — branded queries trivially mention Codeit and would inflate it.
-- **C — Leading:** Composite GEO Score. **에이전트형 `geo-audit` 스킬을 `weekly-geo-audit` GitHub Action 이 헤드리스 실행**(node cron 아님) → 서비스별 `snapshots/<app>/<isoWeek>/geoScore.json` 기록 → `pnpm rollup` 으로 롤업에 합침. 인증=Claude 구독 OAuth 토큰(`CLAUDE_CODE_OAUTH_TOKEN`). 점수식: citability0.25+brand0.20+eeat0.20+technical0.15+schema0.10+platform0.10.
+- **C — Leading:** Composite GEO Score. **에이전트형 `geo-audit` 스킬을 `weekly-geo-audit` GitHub Action 이 헤드리스 실행**(node cron 아님) → 서비스별 `snapshots/<app>/<isoWeek>/geoScore.json` 기록 → `pnpm rollup` 으로 롤업에 합침. 인증=Claude 구독 OAuth 토큰(`CLAUDE_CODE_OAUTH_TOKEN`, opus 고정). 점수식: citability0.25+brand0.20+eeat0.20+technical0.15+schema0.10+platform0.10. **재현성**: 고정 `auditUrls`(우리 페이지만) + `brandSources` 고정 체크리스트(`brandSourcesVersion` 갱신추적, 외 발견은 디스커버리로 점수 제외) + KR 현지화. delta-context 미사용(앵커링 오염 방지).
 - **~~B — Value (Amplitude referral)~~ / ~~D — Owned-surface (Search Console)~~ — 드롭됨.** B 는 계측이 이미 Amplitude 에 있어 ad hoc 조회로 충분 + AI 리퍼럴 볼륨 작음/노이즈 큼. D 는 GSC 가 AI 표면 노출을 별도 granularity 로 안 줌(추출 불가). 둘 다 잡·타입·산출물 제거.
 
 ## 8. Query set & per-service config — already authored

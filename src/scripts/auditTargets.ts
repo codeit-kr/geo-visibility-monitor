@@ -12,5 +12,8 @@ const targets = getActiveServices().map((s) => ({
   url: s.siteUrl,
   isoWeek,
   capturedAt,
+  auditUrls: s.auditUrls,
+  brandSources: s.brandSources,
+  brandSourcesVersion: s.brandSourcesVersion,
 }))
 console.log(JSON.stringify(targets, null, 2))
