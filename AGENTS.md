@@ -4,7 +4,7 @@
 
 ## 1. Mission
 
-This repo is the **measurement engine** for the AI Visibility of Codeit services (primarily 코드잇 스프린트 / `sprint.codeit.kr`, later cayde/ascent/10x). Each week it queries AI engines + SERP surfaces, classifies whether/how Codeit is cited, pulls AI-referral analytics, and writes time-series **snapshots**. A separate dashboard (in `frontend-mono`, see §3) reads those snapshots. **This repo never renders UI** — it produces data.
+This repo is the **measurement engine** for the AI Visibility of Codeit services (primarily 코드잇 스프린트 / `sprint.codeit.kr`, later cayde/ascent/10x). Each week it queries AI engines + SERP surfaces, classifies whether/how Codeit is cited, and writes time-series **snapshots**. A separate dashboard (in `frontend-mono`, see §3) reads those snapshots. **This repo never renders UI** — it produces data.
 
 It exists because `frontend-mono` is a pure frontend monorepo with **no scheduler, no database, and no LLM clients**, and we don't want LLM/DB/scheduler deps + API keys in the product build. So the engine is split out here.
 
@@ -12,9 +12,8 @@ It exists because `frontend-mono` is a pure frontend monorepo with **no schedule
 
 These are facts about the outside world. Do not re-derive or contradict them.
 
-- **AI-referral is ALREADY instrumented** in `frontend-mono` via `libs/shared/util-acquisition` (`getAcquisitionProperty`) + `AmplitudeAcquisitionEventManager`, live across sprint/10x/main/teams/connect. It classifies referrers into `fromAI` + source (chatgpt/claude/gemini/perplexity/copilot/you/phind/kagi/searchgpt). **This repo does NOT instrument anything** — Group B (§7) only *extracts/aggregates* those existing events from Amplitude's server API.
-- **Analytics = Amplitude, not GA4.** Use Amplitude Dashboard/Query API (key + secret). There is no GA4.
-- **Engine web-search/grounding APIs are confirmed available** (verified 2026-06): OpenAI Responses API `web_search` tool, Anthropic `web_search_20250305` tool, Gemini `google_search` grounding, Perplexity sonar (`citations`/`search_results` native). See §6.
+- **AI-referral 분석은 드롭됨(Group B).** `frontend-mono` 의 `libs/shared/util-acquisition` 이 이미 `fromAI` 리퍼럴을 Amplitude 에 계측 중이라, 필요 시 Amplitude ad hoc 조회로 충분. 이 레포는 측정(A) + GEO 점수(C)만 산출한다.
+- **Engine web-search/grounding APIs are confirmed available** (verified 2026-06): OpenAI Responses API `web_search` tool, Anthropic `web_search_20260209` tool(Sonnet 4.6 동적 필터링; 구버전 `web_search_20250305`), Gemini `google_search` grounding, Perplexity sonar (`citations`/`search_results` native). See §6.
 - **Naver & Google AI Overviews have no official API** → reachable via **SerpApi** (Naver AI Briefing endpoint + Google AI Overview endpoint). Naver "Cue:" was discontinued 2026-04; the live surface is **AI Briefing**.
 - **Codeit OpenAI usage exists but is unrelated** — `frontend-mono` only uses OpenAI for an AI-interview *realtime/voice* feature. There is no reusable text/web-search key. Provision a dedicated key with web_search.
 - **Codeit Sprint tracks** (authoritative): Frontend (+ 단기심화), Backend (+Spring/Nodejs), Fullstack, Data(데이터분석가), AI, ProductDesign(디자이너), ItFounder(IT창업가). **No Mobile track** (exists in the GraphQL enum but is not offered).
@@ -33,7 +32,6 @@ These are facts about the outside world. Do not re-derive or contradict them.
 | Storage | **JSON-in-git is source of truth** — `snapshots/2026-Wnn/*.json` (append-only) + weekly rollup `snapshots/index.json`. Git history = the time series. |
 | Query layer | Start = parse JSON in app. If queries get complex = **DuckDB over the JSON** (no server). Postgres only if multi-user/sub-second/scale truly demands it. |
 | Repo split | Engine = here. Dashboard = `frontend-mono/apps/geo-admin`. |
-| Group B | Extraction-only (Amplitude). No frontend changes. |
 | Locale | Every engine call uses **KR `user_location` + Korean** (else you measure US answers). |
 
 ## 5. Data contract — `types/snapshot.ts`
@@ -69,22 +67,16 @@ export interface VisibilitySnapshot {       // = one call (intent×paraphrase×r
   rawSnippet: string
 }
 
-export interface ReferralSnapshot {
-  schemaVersion: number; capturedAt: string; isoWeek: string; app: App
-  engine: Engine; sessions: number; conversions: number; conversionRate: number
-}
-export interface GeoScoreSnapshot {
+export interface GeoScoreSnapshot {   // Group C — 러너 구현 미결, 계약만 유지
   schemaVersion: number; capturedAt: string; isoWeek: string; app: App
   composite: number; citability: number; brand: number; eeat: number
   technical: number; schema: number; platform: number
 }
-export interface OwnedSurfaceSnapshot {   // Group D (Search Console / Bing)
-  schemaVersion: number; capturedAt: string; isoWeek: string; app: App
-  surface: 'google-aio' | 'bing'; impressions: number; clicks: number
-}
+// 이 외 현행 계약(실제 파일 참조): ResponseRecord(원문), CostSnapshot/UsageCost(비용),
+//   RollupIndex/WeekSummary/ServicesManifest(롤업). Group B(Referral)·D(OwnedSurface)는 드롭.
 ```
 
-Aggregate metrics (Mention Rate, SoV) are **computed from the call pool**, not stored per-call: headline = pool over all `visibility` calls; per-intent = pool over that intent's calls.
+Aggregate metrics (Mention Rate, SoV) are **computed from the call pool**, not stored per-call: headline = pool over all `visibility` calls; per-intent = pool over that intent's calls. 비용(cost.json)·원문(responses.json)은 별도 산출물.
 
 ## 6. Engines & provisioning (§6)
 
@@ -99,7 +91,7 @@ export interface EngineResult { answer: string; citedUrls: string[] }
 | Perplexity | sonar / sonar-pro | `citations[]` + `search_results[]` native | ⭐ cleanest, cheapest. Start here. |
 | OpenAI | Responses API `tools:[{type:'web_search'}]` (NOT legacy `web_search_preview`) | `annotations[].url_citation.url` | Use mid model (GPT-5/5.4), not flagship. Dedicated key w/ web_search. |
 | Gemini | `tools:[{google_search:{}}]`, 2.5/3.x Flash | `groundingMetadata.groundingChunks[].web.uri` | URIs are **vertexaisearch redirects** → resolve to real domain before SoV. 5,000 grounded prompts/mo free. |
-| Claude | `tools:[{name:'web_search',type:'web_search_20250305'}]` | web search result blocks | `user_location` for KR. Billed $10/1k searches. |
+| Claude | `tools:[{name:'web_search',type:'web_search_20260209'}]`(Sonnet 4.6+; 구버전 `web_search_20250305`) | web search result blocks | `user_location` for KR. Billed $10/1k searches. 기본 모델 `claude-sonnet-4-6`(무료 기본값). |
 | Google AIO | **SerpApi** Google AI Overview API | `references` | `gl=kr,hl=ko`. **Visibility seed-only** (p0 per visibility intent, rep=1). |
 | Naver AI Briefing | **SerpApi** Naver AI Overview API | linked sources | KR's biggest surface. Seed-only to stay in free tier. |
 
@@ -107,12 +99,11 @@ export interface EngineResult { answer: string; citedUrls: string[] }
 - **Cost** (OpenAI default = **gpt-5.5**, matching ChatGPT's logged-in default for fidelity — ~2× gpt-5.4): PoC (OpenAI + SERP on SerpApi **free**) ≈ **$60–70/mo**. Full 4 chatbots ≈ **~$140/mo**. Drop OpenAI to `gpt-5.4` (≈½) or `gpt-5` if cost > fidelity. (+ classifier: 1 cheap LLM call per answer via `CLASSIFIER_MODEL`/`OPENAI_API_KEY` ≈ <$3/mo.) SERP is seed-only (~129 searches/mo → fits SerpApi free 250). **Tier policy (industry norm = commercial uses paid tiers): free for PoC/eval; move to Starter $25/mo when SERP goes steady-state commercial; Production $150 only if legal wants the scraping Legal Shield (separate concern — Free & Starter both lack it).** Web-search surcharge dominates tokens; reps are the main cost lever.
 - **Fidelity tiers** (be honest in the dashboard): Perplexity / AIO / Naver = high (≈ the real product). ChatGPT/Gemini/Claude API = **proxy** (consumer apps differ). Run a **quarterly manual calibration** (same queries in the real apps) to quantify the gap. Do NOT browser-automate the consumer apps (ToS/bot-detection).
 
-## 7. The four metric groups (triangulation)
+## 7. Metric groups (현행: A + C)
 
 - **A — Visibility (this repo's core):** Mention Rate, Citation Frequency, SoV, Sentiment, Position, Accuracy. From `citation-monitor`. Headline uses **unbranded (`metricRole:'visibility'`) only** — branded queries trivially mention Codeit and would inflate it.
-- **B — Value:** AI referral sessions + conversion rate. `amplitude-referral-sync` (extraction-only; mirror the `util-acquisition` source list).
-- **C — Leading:** Composite GEO Score. `geo-score-runner` (headless `geo-audit`).
-- **D — Owned-surface truth:** Search Console / Bing AI-surface impressions (`search-console-sync`). Real but our-domain-only; corrects the chatbot-proxy weakness of A.
+- **C — Leading:** Composite GEO Score. `geo-score-runner` (구현방식 미결 — §10). 계약 필드만 예약.
+- **~~B — Value (Amplitude referral)~~ / ~~D — Owned-surface (Search Console)~~ — 드롭됨.** B 는 계측이 이미 Amplitude 에 있어 ad hoc 조회로 충분 + AI 리퍼럴 볼륨 작음/노이즈 큼. D 는 GSC 가 AI 표면 노출을 별도 granularity 로 안 줌(추출 불가). 둘 다 잡·타입·산출물 제거.
 
 ## 8. Query set & per-service config — already authored
 
@@ -135,7 +126,6 @@ Config is **per-service** (multi-service ready). Shared types in `src/config/typ
 ## 10. Build sequence
 
 0. **Scaffold** — `package.json`, `tsconfig`, `types/snapshot.ts`, decide shared-contract mechanism (npm pkg / submodule). Register GitHub Secrets.
-1. **Group B first (fastest value)** — `amplitudeReferralSync`: pull `fromAI` events + conversion mapping. No frontend change.
 2. **Prompt builder** — expand `{role}`/`{competitor}`, apply reps, output the call list.
 3. **`citationMonitor` — phased rollout via `ACTIVE_ENGINES`** (repo Variable; each step = edit the Variable, no code change). Order by KR usage:
    - **PoC**: `chatgpt,google-aio,naver-briefing` — OpenAI (org already has an account; default **gpt-5.5** = ChatGPT's logged-in default) + SerpApi **free**. Validate the whole pipeline (call → classify → SoV → snapshot → rollup) + see real KR results. ≈ $70/mo.
@@ -145,13 +135,12 @@ Config is **per-service** (multi-service ready). Shared types in `src/config/typ
 4. **Analyzers** — sentiment, accuracy (vs `groundTruth`), SoV (competitor matching).
 5. **Store + rollup** — `writeSnapshot(app, isoWeek, bundle)` (per `<app>/<week>` JSON) + `buildRollupIndex(services)` (per-service `<app>/index.json` + `services.json` manifest).
 6. **`weekly-snapshot.yml`** — `schedule:` weekly + `workflow_dispatch`; commit snapshots. Validate via manual dispatch.
-7. **`geoScoreRunner`** (Group C) + **`searchConsoleSync`** (Group D).
+7. **`geoScoreRunner`** (Group C) — 구현방식 확정 후. (Group B/D 는 드롭.)
 8. Start the **6-week collection window** — benchmarks/targets only after ≥4–6 weekly snapshots (per WP VIP). Report on a rolling (e.g. 4-week) trend, not single-week deltas, and annotate when GEO work ships to read the ship→move lag.
 
 ## 11. Human-blocked inputs (not solvable in-repo)
 
 - **Budget approval + key provisioning** for the paid LLM APIs (recurring spend, org account).
-- **Amplitude secret key access** + confirmation the plan tier exposes the export/query API. Conversion events to count: default `complete.application_submission`, `complete.signup` (confirm with growth).
 - **Competitor list final sign-off** + `[경쟁사]` priority (all 10 vs top-4 for vs-comparison).
 - **Public employment-rate number** for `fact.employmentRate.groundTruth`.
 - **SerpApi tier** (deferred — not a PoC blocker; free is fine for PoC/eval) — when SERP goes steady-state commercial, move to **Starter $25/mo** (industry norm; our ~129/mo fits easily). Legal Shield (scraping liability) is a separate call → **Production $150** only if legal wants it. Note **Google v. SerpApi** litigation = continuity risk for the Naver/AIO SERP dependency.

@@ -17,25 +17,29 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          # cache: pnpm 은 pnpm-lock.yaml 커밋 후 활성화(없으면 캐시 단계 실패)
-      # 최초엔 lockfile 없으므로 frozen 끄기. lockfile 커밋 후 --frozen-lockfile 로 전환.
-      - run: pnpm install --no-frozen-lockfile
+          cache: pnpm # pnpm-lock.yaml 커밋됨 → 캐시 활성
+      - run: pnpm install --frozen-lockfile
       - name: 측정 시각 계산 (런타임 — repository.updated_at 은 직전 push 시각이라 부정확)
         id: ts
         run: echo "captured_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
-      - name: 측정 실행 → snapshots/<isoWeek>/ + index.json
+      - name: 측정 실행 → snapshots/<app>/<isoWeek>/ + index.json
         run: pnpm snapshot
         env:
           CAPTURED_AT: ${{ steps.ts.outputs.captured_at }} # 런타임 UTC(src의 argless new Date 금지와 무관)
           # 점진적 활성화 — repo Variable 로 관리. PoC: OpenAI + SerpApi(free) → 이후 gemini 추가
           ACTIVE_ENGINES: ${{ vars.ACTIVE_ENGINES || 'chatgpt,google-aio,naver-briefing' }}
+          ACTIVE_SERVICES: ${{ vars.ACTIVE_SERVICES }} # 미설정이면 전 서비스
+          # 안전장치(Variable 로 제어). 첫 dispatch 는 DRY_RUN=1 또는 SAMPLE_N 권장.
+          DRY_RUN: ${{ vars.DRY_RUN }} # '1' 이면 실호출 없이 계획만
+          SAMPLE_N: ${{ vars.SAMPLE_N }} # 엔진별 콜 수 제한
+          MAX_USD: ${{ vars.MAX_USD }} # 누적 비용 상한(USD)
+          MIN_SUCCESS_RATE: ${{ vars.MIN_SUCCESS_RATE }} # 성공률 미만이면 non-zero exit(기본 0.7)
+          CLASSIFIER_MODEL: ${{ vars.CLASSIFIER_MODEL }} # 미설정이면 gpt-4.1-mini
           PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           SERPAPI_API_KEY: ${{ secrets.SERPAPI_API_KEY }}
-          AMPLITUDE_API_KEY: ${{ secrets.AMPLITUDE_API_KEY }}
-          AMPLITUDE_SECRET_KEY: ${{ secrets.AMPLITUDE_SECRET_KEY }}
       - name: 스냅샷 커밋
         run: |
           git config user.name "geo-bot"

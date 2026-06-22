@@ -9,32 +9,50 @@
 ```bash
 pnpm install
 cp .env.example .env   # 키 채우기(로컬 검증용)
-CAPTURED_AT=2026-06-22T00:00:00Z pnpm snapshot
-pnpm typecheck
+# 첫 실행은 안전하게: 계획만 보거나(DRY_RUN) 엔진별 1콜만(SAMPLE_N)
+DRY_RUN=1 CAPTURED_AT=2026-06-22T00:00:00Z pnpm snapshot
+SAMPLE_N=1 ACTIVE_ENGINES=chatgpt CAPTURED_AT=2026-06-22T00:00:00Z pnpm snapshot
+pnpm typecheck && pnpm lint && pnpm test
 ```
+
+### 실행 안전장치 env (PoC)
+
+| env | 효과 |
+|---|---|
+| `DRY_RUN=1` | 실호출 없이 CallSpec 계획(엔진별 콜 수)만 출력. 스냅샷 미기록 |
+| `SAMPLE_N=N` | 엔진별 콜 N개로 제한(샘플 실행) |
+| `MAX_USD=N` | 누적 비용 N USD 초과 시 이후 콜 스킵(소프트 캡) |
+| `MIN_SUCCESS_RATE=r` | 콜 성공률 r 미만이면 non-zero exit(빈/손상 스냅샷 커밋 차단). 기본 0.7 |
+| `ACTIVE_SERVICES` / `ACTIVE_ENGINES` | 측정 대상 서비스/엔진 게이트(쉼표). 미설정이면 전체 |
 
 ## 구조
 
 ```
-types/snapshot.ts        대시보드와 공유하는 데이터 계약(버저닝)
+types/snapshot.ts        대시보드와 공유하는 데이터 계약(스냅샷 + 롤업 RollupIndex/WeekSummary/ServicesManifest)
 src/
-  config/                prompts.ts(의도×패러프레이즈×rep) · competitors.ts
+  config/
+    types.ts             ServiceConfig·Brand·Competitor·IntentPreset 공유 타입
+    pricing.ts           모델/표면 단가 → 콜당 비용 계산
+    services/<app>.ts    서비스별 측정 설정(브랜드·경쟁사·질의셋) + index.ts 레지스트리
   promptBuilder.ts       {role}/{competitor} 전개 → CallSpec[]
-  engines/               perplexity·openai·gemini·anthropic·serpapi 어댑터(EngineResult 정규화)
-  analyze/               matchEntities(SoV) · classifySentiment · checkAccuracy
-  jobs/                  citationMonitor(A) · amplitudeReferralSync(B) · geoScoreRunner(C) · searchConsoleSync(D)
+  engines/               perplexity·openai·gemini·anthropic·serpapi 어댑터(EngineResult 정규화, 사용량 포함)
+  analyze/               matchEntities(SoV) · classify→llmJudge · classifySentiment · checkAccuracy
+  jobs/                  citationMonitor(A, 본체) · geoScoreRunner(C, 선행지표)  ※ B/D 드롭
   store/                 writeSnapshot · buildRollupIndex
-  index.ts               주간 오케스트레이션
-snapshots/               결과(source of truth, git 히스토리 = 시계열) + index.json 롤업
-.github/workflows/       weekly-snapshot.yml (주간 cron)
+  util/                  runOpts(안전장치 env) · fetchWithRetry(429 백오프) · concurrency · time · env
+  index.ts               주간 오케스트레이션(서비스 루프 + 성공률 abort + 런 요약)
+snapshots/<app>/<isoWeek>/   visibility·responses·cost·geoScore.json
+snapshots/<app>/index.json   서비스별 롤업  ·  snapshots/services.json  서비스 매니페스트
+.github/workflows/       weekly-snapshot.yml(주간 cron) · ci.yml(typecheck/lint/test)
 ```
 
 ## 현재 상태
 
-스캐폴드 + 그룹 A(citation monitor) 골격 + **감성·정확도 LLM 판정기**(`analyze/classify` → `llmJudge`, 휴리스틱 폴백) 완성. 남은 작업:
-- 엔진 응답 필드 경로 검증(Gemini 리다이렉트 해소, Claude 인용 경로, SerpApi Naver AI 블록 키), 모델 ID 현행 확인
-- 잡 B/C/D 실연결(Amplitude / geo-audit 헤드리스 / Search Console)
-- **`pnpm-lock.yaml` 커밋** 후 워크플로를 `--frozen-lockfile` + `cache: pnpm` 으로 전환(현재는 lockfile 없어 비활성)
-- `pnpm install && pnpm typecheck` 로 타입 검증
+멀티서비스 구조 + 그룹 A(citation monitor) + **감성·정확도 LLM 판정기** + **원문 응답 저장(responses.json)** + **API 사용량 기반 비용(cost.json)** + 안전장치(DRY_RUN/SAMPLE_N/MAX_USD/성공률 abort) + 테스트/lint/CI 완료. `tsc --noEmit`·`pnpm lint`·`pnpm test` 통과, `pnpm-lock.yaml` 커밋되어 워크플로는 `--frozen-lockfile` + `cache: pnpm` 사용.
 
-`AGENTS.md` §10·§11 참고.
+남은 작업(에이전트 범위 밖/보류):
+- **라이브 검증**: 실키로 `SAMPLE_N=2` 1회 dispatch → 엔진 응답 필드경로 실증(미검증)
+- 그룹 C `geoScoreRunner` 구현방식 확정(현재 계약 필드만 예약). 그룹 B(Amplitude)·D(GSC)는 드롭됨
+- 보류: Gemini 리다이렉트 URL 해소, `position` 메트릭, Claude/Perplexity 실검증
+
+`AGENTS.md` 참고.
