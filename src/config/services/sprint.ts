@@ -248,6 +248,7 @@ const sprintIntents: IntentPreset[] = [
 export const sprint: ServiceConfig = {
   app: 'sprint',
   displayName: '코드잇 스프린트',
+  siteUrl: 'https://sprint.codeit.kr',
   promptsVersion: 1,
   locale: 'ko-KR',
   userCountry: 'KR',

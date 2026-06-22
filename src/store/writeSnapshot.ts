@@ -13,7 +13,7 @@ export const writeSnapshot = async (app: App, isoWeek: string, bundle: SnapshotB
     save(join(dir, 'visibility.json'), bundle.visibility),
     save(join(dir, 'responses.json'), bundle.responses),
     save(join(dir, 'cost.json'), bundle.cost),
-    save(join(dir, 'geoScore.json'), bundle.geoScore),
+    // geoScore.json 은 geo-audit GitHub Action 이 별도 기록(여기서 안 씀).
   ])
 }
 

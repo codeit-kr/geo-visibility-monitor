@@ -43,6 +43,7 @@ export interface IntentPreset {
 export interface ServiceConfig {
   app: App // 'sprint' | 'cayde' | ... — 스냅샷/저장경로 차원
   displayName: string // 어드민 표시명
+  siteUrl: string // GEO 감사(geo-audit) 대상 URL
   brand: Brand
   competitors: Competitor[]
   priorityCompetitors: string[] // vs 비교 전개를 상위만으로 제한(비용)

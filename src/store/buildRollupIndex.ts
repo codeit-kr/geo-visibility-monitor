@@ -8,6 +8,7 @@ import {
   SCHEMA_VERSION,
   type VisibilitySnapshot,
   type CostSnapshot,
+  type GeoScoreSnapshot,
   type Engine,
   type WeekSummary,
   type RollupIndex,
@@ -30,7 +31,8 @@ export const buildRollupIndex = async (services: ServiceConfig[]): Promise<void>
       const vis = await loadJson<VisibilitySnapshot[]>(join(appDir, isoWeek, 'visibility.json'))
       if (!vis) continue
       const cost = await loadJson<CostSnapshot>(join(appDir, isoWeek, 'cost.json'))
-      summaries.push(summarizeWeek(isoWeek, vis, cost))
+      const geo = await loadJson<GeoScoreSnapshot>(join(appDir, isoWeek, 'geoScore.json'))
+      summaries.push(summarizeWeek(isoWeek, vis, cost, geo))
     }
 
     if (summaries.length) {
@@ -65,6 +67,7 @@ export const summarizeWeek = (
   isoWeek: string,
   all: VisibilitySnapshot[],
   cost: CostSnapshot | null,
+  geo: GeoScoreSnapshot | null = null,
 ): WeekSummary => {
   const vis = all.filter((s) => s.metricRole === 'visibility')
   const mentionRate = rate(vis.filter((s) => s.mentioned).length, vis.length)
@@ -122,6 +125,7 @@ export const summarizeWeek = (
     byEngineCostUsd,
     sampleSize: vis.length,
     costUsd: cost?.total.costUsd ?? null,
+    geoScore: geo?.composite ?? null, // 그룹 C — geo-audit Action 이 기록한 geoScore.json
   }
 }
 

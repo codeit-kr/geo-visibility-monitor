@@ -1,12 +1,13 @@
 // 오케스트레이션 — 주간 측정 1회. GitHub Actions(weekly-snapshot.yml)가 호출.
 //   활성 서비스(getActiveServices)별로:
-//     1) 컨텍스트(CAPTURED_AT 주입) → 2) 4그룹 잡 실행 → 3) 주차 스냅샷 기록
+//     1) 컨텍스트(CAPTURED_AT 주입) → 2) 그룹 A(citation) 실행 → 3) 주차 스냅샷 기록
 //   마지막에 전 서비스 롤업 인덱스 + 서비스 매니페스트 갱신.
-// 측정 그룹: A(citation, 본체) + C(geoScore, 선행지표). B(Amplitude)·D(GSC)는 드롭.
+// 측정 그룹: A(citation, 본체)만 이 node 런이 담당. C(geoScore)는 에이전트형이라 별도
+//   GitHub Action(geo-audit.yml)이 geoScore.json 을 기록 → buildRollupIndex 가 롤업에 합침.
+//   B(Amplitude)·D(GSC)는 드롭.
 import { appendFile } from 'node:fs/promises'
 import { buildContext } from './context'
 import { runCitationMonitor, type RunStats } from './jobs/citationMonitor'
-import { runGeoScoreRunner } from './jobs/geoScoreRunner'
 import { writeSnapshot } from './store/writeSnapshot'
 import { buildRollupIndex } from './store/buildRollupIndex'
 import { SERVICES, getActiveServices } from './config/services'
@@ -20,15 +21,12 @@ const main = async (): Promise<void> => {
   const summary: string[] = ['| service | rows | success | cost(USD) |', '|---|---|---|---|']
   const totals: RunStats = { attempted: 0, succeeded: 0, skipped: 0 }
 
-  // 서비스는 순차 실행(엔진 비용·SerpApi 쿼터 관리). 서비스 내부 B·C·D 잡은 병렬.
+  // 서비스는 순차 실행(엔진 비용·SerpApi 쿼터 관리).
   for (const service of services) {
     const ctx = buildContext(service.app)
     console.info(`[run] ${ctx.app} · ${ctx.isoWeek} · ${ctx.capturedAt}`)
 
-    const [visibilityResult, geoScore] = await Promise.all([
-      runCitationMonitor(ctx, service),
-      runGeoScoreRunner(ctx, service),
-    ])
+    const visibilityResult = await runCitationMonitor(ctx, service)
     const { snapshots: visibility, responses, cost, stats } = visibilityResult
     totals.attempted += stats.attempted
     totals.succeeded += stats.succeeded
@@ -36,7 +34,7 @@ const main = async (): Promise<void> => {
 
     // DRY_RUN 은 계획만 — 스냅샷 기록·롤업 생략(빈 산출물 커밋 방지).
     if (!DRY_RUN) {
-      const bundle: SnapshotBundle = { visibility, responses, cost, geoScore }
+      const bundle: SnapshotBundle = { visibility, responses, cost }
       await writeSnapshot(ctx.app, ctx.isoWeek, bundle)
     }
 

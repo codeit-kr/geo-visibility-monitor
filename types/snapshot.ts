@@ -78,7 +78,8 @@ export interface CostSnapshot {
   total: UsageCost
 }
 
-// 그룹 C — 선행지표 GEO 점수(geoScoreRunner). 러너 구현방식 미결이나 계약은 유지.
+// 그룹 C — 선행지표 GEO 점수. 에이전트형 geo-audit 스킬이 GitHub Action 에서 주차당 1건 산출 →
+//   snapshots/<app>/<isoWeek>/geoScore.json (단일 객체). node 스냅샷 번들과 분리(덮어쓰기 방지).
 export interface GeoScoreSnapshot {
   schemaVersion: number
   capturedAt: string
@@ -93,12 +94,11 @@ export interface GeoScoreSnapshot {
   platform: number
 }
 
-// 그룹 B(Amplitude referral)·D(Search Console owned)는 드롭 → 타입/필드 제거.
+// node 스냅샷 번들 = 그룹 A 산출물. geoScore(C)는 별도 GitHub Action 이 기록, B/D 는 드롭.
 export interface SnapshotBundle {
   visibility: VisibilitySnapshot[]
   responses: ResponseRecord[] // 풀 응답 원문(visibility 행과 조인 키로 1:1)
   cost: CostSnapshot // API 사용량 기반 비용 집계
-  geoScore: GeoScoreSnapshot[]
 }
 
 // ── 롤업 인덱스 계약(대시보드 apps/geo-admin 이 GitHub API 로 읽는 단일 진입점) ──────────
@@ -116,7 +116,7 @@ export interface WeekSummary {
   byEngineCostUsd: Partial<Record<Engine, number>> // 엔진별 비용(cost.json byEngine)
   sampleSize: number // visibility 표본 수
   costUsd: number | null // 주 측정 총비용(cost.json total)
-  geoScore?: number | null // 예약(그룹 C) — geoScoreRunner 방식 확정 후 채움
+  geoScore?: number | null // 그룹 C composite(geoScore.json). 감사 미실행 주차는 null
 }
 
 export interface RollupIndex {

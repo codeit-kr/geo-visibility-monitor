@@ -7,6 +7,8 @@
   "description": "코드잇 AI 가시성 측정 엔진 — 주간 스냅샷 생성(JSON-in-git)",
   "scripts": {
     "snapshot": "tsx src/index.ts",
+    "rollup": "tsx src/rollup.ts",
+    "audit:targets": "tsx src/scripts/auditTargets.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "lint": "eslint ."

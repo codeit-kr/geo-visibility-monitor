@@ -5,6 +5,7 @@ import type { ServiceConfig } from '../src/config/types'
 const svc: ServiceConfig = {
   app: 'sprint',
   displayName: 'X',
+  siteUrl: 'https://x.example',
   promptsVersion: 1,
   locale: 'ko-KR',
   userCountry: 'KR',
