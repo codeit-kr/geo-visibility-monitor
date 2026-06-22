@@ -102,7 +102,7 @@ export interface EngineResult { answer: string; citedUrls: string[] }
 ## 7. Metric groups (현행: A + C)
 
 - **A — Visibility (this repo's core):** Mention Rate, Citation Frequency, SoV, Sentiment, Position, Accuracy. From `citation-monitor`. Headline uses **unbranded (`metricRole:'visibility'`) only** — branded queries trivially mention Codeit and would inflate it.
-- **C — Leading:** Composite GEO Score. `geo-score-runner` (구현방식 미결 — §10). 계약 필드만 예약.
+- **C — Leading:** Composite GEO Score. **에이전트형 `geo-audit` 스킬을 `weekly-geo-audit` GitHub Action 이 헤드리스 실행**(node cron 아님) → 서비스별 `snapshots/<app>/<isoWeek>/geoScore.json` 기록 → `pnpm rollup` 으로 롤업에 합침. `ANTHROPIC_API_KEY` 필요. 점수식: citability0.25+brand0.20+eeat0.20+technical0.15+schema0.10+platform0.10.
 - **~~B — Value (Amplitude referral)~~ / ~~D — Owned-surface (Search Console)~~ — 드롭됨.** B 는 계측이 이미 Amplitude 에 있어 ad hoc 조회로 충분 + AI 리퍼럴 볼륨 작음/노이즈 큼. D 는 GSC 가 AI 표면 노출을 별도 granularity 로 안 줌(추출 불가). 둘 다 잡·타입·산출물 제거.
 
 ## 8. Query set & per-service config — already authored
@@ -135,12 +135,12 @@ Config is **per-service** (multi-service ready). Shared types in `src/config/typ
 4. **Analyzers** — sentiment, accuracy (vs `groundTruth`), SoV (competitor matching).
 5. **Store + rollup** — `writeSnapshot(app, isoWeek, bundle)` (per `<app>/<week>` JSON) + `buildRollupIndex(services)` (per-service `<app>/index.json` + `services.json` manifest).
 6. **`weekly-snapshot.yml`** — `schedule:` weekly + `workflow_dispatch`; commit snapshots. Validate via manual dispatch.
-7. **`geoScoreRunner`** (Group C) — 구현방식 확정 후. (Group B/D 는 드롭.)
+7. **Group C — `weekly-geo-audit.yml`** (claude-code-action 헤드리스로 `/geo-audit` → geoScore.json → `pnpm rollup`). `ANTHROPIC_API_KEY` Secret 등록 후 수동 dispatch 검증. (Group B/D 는 드롭.)
 8. Start the **6-week collection window** — benchmarks/targets only after ≥4–6 weekly snapshots (per WP VIP). Report on a rolling (e.g. 4-week) trend, not single-week deltas, and annotate when GEO work ships to read the ship→move lag.
 
 ## 11. Human-blocked inputs (not solvable in-repo)
 
-- **Budget approval + key provisioning** for the paid LLM APIs (recurring spend, org account).
+- **Budget approval + key provisioning** for the paid LLM APIs (recurring spend, org account). geo-audit Action 은 별도 **`ANTHROPIC_API_KEY` Secret** 필요(5 서브에이전트 × 서비스 주간).
 - **Competitor list final sign-off** + `[경쟁사]` priority (all 10 vs top-4 for vs-comparison).
 - **Public employment-rate number** for `fact.employmentRate.groundTruth`.
 - **SerpApi tier** (deferred — not a PoC blocker; free is fine for PoC/eval) — when SERP goes steady-state commercial, move to **Starter $25/mo** (industry norm; our ~129/mo fits easily). Legal Shield (scraping liability) is a separate call → **Production $150** only if legal wants it. Note **Google v. SerpApi** litigation = continuity risk for the Naver/AIO SERP dependency.

@@ -3,6 +3,7 @@ name: ci
 on:
   push:
     branches: [main]
+    paths-ignore: ['snapshots/**'] # 봇의 주간 데이터 커밋엔 CI 불필요
   pull_request:
 
 jobs:

@@ -37,22 +37,30 @@ src/
   promptBuilder.ts       {role}/{competitor} 전개 → CallSpec[]
   engines/               perplexity·openai·gemini·anthropic·serpapi 어댑터(EngineResult 정규화, 사용량 포함)
   analyze/               matchEntities(SoV) · classify→llmJudge · classifySentiment · checkAccuracy
-  jobs/                  citationMonitor(A, 본체) · geoScoreRunner(C, 선행지표)  ※ B/D 드롭
+  jobs/                  citationMonitor(A, 본체)   ※ C=geo-audit Action 별도, B/D 드롭
   store/                 writeSnapshot · buildRollupIndex
   util/                  runOpts(안전장치 env) · fetchWithRetry(429 백오프) · concurrency · time · env
-  index.ts               주간 오케스트레이션(서비스 루프 + 성공률 abort + 런 요약)
-snapshots/<app>/<isoWeek>/   visibility·responses·cost·geoScore.json
+  scripts/auditTargets.ts  geo-audit Action 용 감사 대상(app·url·isoWeek) 출력
+  index.ts               그룹 A 오케스트레이션(서비스 루프 + 성공률 abort + 런 요약)
+  rollup.ts              롤업 단독 재생성(geo-audit Action 이 geoScore 기록 후 호출)
+snapshots/<app>/<isoWeek>/   visibility·responses·cost.json (+ geoScore.json·geo-audit-report.md = geo-audit Action)
 snapshots/<app>/index.json   서비스별 롤업  ·  snapshots/services.json  서비스 매니페스트
-.github/workflows/       weekly-snapshot.yml(주간 cron) · ci.yml(typecheck/lint/test)
+.github/workflows/       weekly-snapshot.yml(A, 주간) · geo-audit.yml(C, A 완료 후 체이닝) · ci.yml
 ```
+
+## 측정 그룹
+
+- **A — 가시성(node 주간 cron)**: `pnpm snapshot` → visibility·responses·cost.json.
+- **C — GEO 점수(geo-audit GitHub Action)**: `/geo-audit` 스킬(에이전트형)을 `weekly-geo-audit` 워크플로가 헤드리스 실행 → 서비스별 `geoScore.json`(+리포트) 기록 → `pnpm rollup` 으로 `index.json` 에 합침. **`ANTHROPIC_API_KEY` Secret 필요.**
+- B(Amplitude)·D(GSC)는 드롭.
 
 ## 현재 상태
 
-멀티서비스 구조 + 그룹 A(citation monitor) + **감성·정확도 LLM 판정기** + **원문 응답 저장(responses.json)** + **API 사용량 기반 비용(cost.json)** + 안전장치(DRY_RUN/SAMPLE_N/MAX_USD/성공률 abort) + 테스트/lint/CI 완료. `tsc --noEmit`·`pnpm lint`·`pnpm test` 통과, `pnpm-lock.yaml` 커밋되어 워크플로는 `--frozen-lockfile` + `cache: pnpm` 사용.
+멀티서비스 + 그룹 A + 감성·정확도 LLM 판정기 + 원문 저장(responses.json) + 비용(cost.json) + 안전장치(DRY_RUN/SAMPLE_N/MAX_USD/성공률 abort) + **그룹 C geo-audit Action 연동** + 테스트/lint/CI 완료. `tsc`·`lint`·`test` 통과, 워크플로는 `--frozen-lockfile` + `cache: pnpm`.
 
 남은 작업(에이전트 범위 밖/보류):
-- **라이브 검증**: 실키로 `SAMPLE_N=2` 1회 dispatch → 엔진 응답 필드경로 실증(미검증)
-- 그룹 C `geoScoreRunner` 구현방식 확정(현재 계약 필드만 예약). 그룹 B(Amplitude)·D(GSC)는 드롭됨
+- **GitHub Secret**: `ANTHROPIC_API_KEY`(geo-audit Action) 등록 + 첫 수동 dispatch 로 geoScore.json 산출 검증
+- **라이브 검증**: 실키로 그룹 A `SAMPLE_N=2` 1회 dispatch → 엔진 응답 필드경로 실증
 - 보류: Gemini 리다이렉트 URL 해소, `position` 메트릭, Claude/Perplexity 실검증
 
 `AGENTS.md` 참고.
