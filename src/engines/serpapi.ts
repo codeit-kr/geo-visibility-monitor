@@ -3,19 +3,18 @@
 // 응답 경로 검증 완료(2026-06): google AIO 는 ai_overview.{text_blocks,references}(page_token 2차호출),
 //   Naver 는 engine=naver_ai_overview 의 최상위 {text_blocks,references}.
 import { requireEnv } from '../util/env'
+import { fetchWithRetry } from '../util/fetchWithRetry'
 import type { EngineResult } from './types'
 
 const ENDPOINT = 'https://serpapi.com/search.json'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const fetchSerp = async (params: Record<string, string>): Promise<any> => {
   const qs = new URLSearchParams({ ...params, api_key: requireEnv('SERPAPI_API_KEY') })
-  const res = await fetch(`${ENDPOINT}?${qs}`)
+  const res = await fetchWithRetry(`${ENDPOINT}?${qs}`)
   if (!res.ok) throw new Error(`SerpApi ${res.status}: ${await res.text()}`)
   return res.json()
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const parseAiOverview = (overview: any): EngineResult => {
   const answer = (overview?.text_blocks ?? [])
     .map((b: { snippet?: string }) => b.snippet ?? '')

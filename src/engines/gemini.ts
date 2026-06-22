@@ -2,12 +2,13 @@
 // 주의: groundingChunks[].web.uri 는 vertexaisearch 리다이렉트 URL →
 //       SoV/도메인 판정 전 실제 도메인으로 해소(resolveRedirect) 필요.
 import { requireEnv } from '../util/env'
+import { fetchWithRetry } from '../util/fetchWithRetry'
 import type { EngineAdapter } from './types'
 
 export const queryGemini: EngineAdapter = async (query, opts) => {
   const model = opts.model ?? 'gemini-3.5-flash' // 무료 grounding 위해 3.x 권장
   const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`
-  const res = await fetch(endpoint, {
+  const res = await fetchWithRetry(endpoint, {
     method: 'POST',
     headers: {
       'x-goog-api-key': requireEnv('GEMINI_API_KEY'),
@@ -21,7 +22,6 @@ export const queryGemini: EngineAdapter = async (query, opts) => {
   })
   if (!res.ok) throw new Error(`Gemini ${res.status}: ${await res.text()}`)
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const json: any = await res.json()
   const candidate = json.candidates?.[0]
   const answer = (candidate?.content?.parts ?? []).map((p: { text?: string }) => p.text ?? '').join('')
