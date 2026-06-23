@@ -161,10 +161,10 @@ export const AiVisibilityDashboard = ({ rollup, services, usingFixture, selected
                     return (
                       <span
                         key={`${series}-${w.isoWeek}`}
-                        className={cx('dot', series)}
+                        className={cx('pt', series)}
                         style={{ left: `${left}%`, top: `${(1 - v) * 100}%` }}
                       >
-                        <span className={cx('dot-tip')}>
+                        <span className={cx('pt-tip')}>
                           {w.isoWeek.slice(5)} · {(v * 100).toFixed(1)}%
                         </span>
                       </span>
@@ -176,8 +176,16 @@ export const AiVisibilityDashboard = ({ rollup, services, usingFixture, selected
                 {trendWeeks.map((w, i) => {
                   const step = Math.max(1, Math.ceil(n / 8))
                   if (!(i % step === 0 || i === n - 1)) return null
-                  const left = n === 1 ? 0 : (i / (n - 1)) * 100
-                  const transform = i === 0 ? 'none' : i === n - 1 ? 'translateX(-100%)' : 'translateX(-50%)'
+                  // 단일 포인트는 점과 동일하게 중앙 정렬
+                  const left = n === 1 ? 50 : (i / (n - 1)) * 100
+                  const transform =
+                    n === 1
+                      ? 'translateX(-50%)'
+                      : i === 0
+                        ? 'none'
+                        : i === n - 1
+                          ? 'translateX(-100%)'
+                          : 'translateX(-50%)'
                   return (
                     <span key={w.isoWeek} style={{ left: `${left}%`, transform }}>
                       {w.isoWeek.slice(5)}
