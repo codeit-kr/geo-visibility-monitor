@@ -42,6 +42,18 @@
 }
 
 /* 질의 그룹 */
+/* 대시보드에서 넘어온 필터 배지 */
+.filters { max-width: 1180px; margin: 0 auto 12px; padding: 0 32px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.filters-l { font-size: 11px; color: var(--faint); font-family: var(--mono); }
+.filter-chip {
+  display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+  background: #eef0fe; border: 1px solid #bcc4f4; color: var(--accent);
+  font-size: 12px; font-weight: 560; padding: 4px 10px; border-radius: 8px;
+  &:hover { background: #e2e6fd; }
+  &:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+}
+.filter-x { color: var(--accent); opacity: 0.7; }
+
 .groups { max-width: 1180px; margin: 0 auto; padding: 0 32px; display: flex; flex-direction: column; gap: 14px; }
 .noresult { background: var(--surface); border: 1px dashed var(--line); border-radius: 13px; padding: 28px; text-align: center; color: var(--muted); font-size: 13px; }
 .group { background: var(--surface); border: 1px solid var(--line); border-radius: 13px; overflow: hidden; }

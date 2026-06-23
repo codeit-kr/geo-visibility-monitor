@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { getRollup, getVisibility, getResponses } from '../../../src/data'
 import { CallsDetail } from '../../../src/CallsDetail'
 
@@ -21,14 +22,17 @@ const Page = async ({ params }: { params: Promise<{ week: string }> }) => {
   const [visibility, responses] = await Promise.all([getVisibility(app, week), getResponses(app, week)])
 
   return (
-    <CallsDetail
-      app={app}
-      displayName={rollup.displayName}
-      isoWeek={week}
-      visibility={visibility}
-      responses={responses}
-      weeks={rollup.weeks.map((w) => w.isoWeek)}
-    />
+    // useSearchParams(필터)는 Suspense 경계 필요 — 데이터는 props 로 전달, 필터만 클라 반영.
+    <Suspense>
+      <CallsDetail
+        app={app}
+        displayName={rollup.displayName}
+        isoWeek={week}
+        visibility={visibility}
+        responses={responses}
+        weeks={rollup.weeks.map((w) => w.isoWeek)}
+      />
+    </Suspense>
   )
 }
 

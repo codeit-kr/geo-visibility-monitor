@@ -1,6 +1,7 @@
 'use client'
 
 import classnames from 'classnames/bind'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { memo, useDeferredValue, useMemo, useState } from 'react'
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -217,11 +218,30 @@ export const CallsDetail = ({ app, displayName, isoWeek, visibility, responses, 
     [visibility],
   )
 
-  const [active, setActive] = useState<Set<Engine>>(() => new Set(enginesPresent))
+  // 대시보드 클릭 필터(?engine=·?flag=·?sentiment=) — useSearchParams 로 첫 렌더부터 반영(클라 내비에서도 정확).
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const pathname = usePathname()
+
+  const [active, setActive] = useState<Set<Engine>>(() => {
+    const e = searchParams.get('engine')
+    return e && (ENGINE_ORDER as string[]).includes(e) ? new Set([e as Engine]) : new Set(enginesPresent)
+  })
   const [mentionedOnly, setMentionedOnly] = useState(false)
   const [q, setQ] = useState('')
   // 입력은 즉시, 필터는 비긴급(deferred). 행은 memo + 펼칠 때만 마크다운 렌더 → 키 입력 시 재계산 거의 없음.
   const deferredQ = useDeferredValue(q)
+
+  // flag·sentiment 는 URL 에서 파생(반응형) — 해제는 router.replace 로 파라미터 제거.
+  const flag = searchParams.get('flag')
+  const sp = searchParams.get('sentiment')
+  const sentiment: Sentiment | null = sp === 'positive' || sp === 'neutral' || sp === 'negative' ? sp : null
+  const clearFilter = (key: 'flag' | 'sentiment') => {
+    const p = new URLSearchParams(searchParams.toString())
+    p.delete(key)
+    const qs = p.toString()
+    router.replace(qs ? `${pathname}?${qs}` : pathname)
+  }
 
   // 검색 대상 텍스트(질의+답변)를 행마다 1회만 이어붙여 캐시 — 키 입력마다 재연결 방지.
   // 한글 검색이 기본이라 소문자화는 하지 않음(무의미 + 비용).
@@ -244,6 +264,8 @@ export const CallsDetail = ({ app, displayName, isoWeek, visibility, responses, 
     for (const v of visibility) {
       if (!active.has(v.engine)) continue
       if (mentionedOnly && !v.mentioned) continue
+      if (flag && !v.accuracyFlags.includes(flag)) continue
+      if (sentiment && v.sentiment !== sentiment) continue
       if (needle && !(searchIndex.get(v) ?? '').includes(needle)) continue
       const g = byParaphrase.get(v.paraphraseId) ?? { query: v.query, intentId: v.intentId, rows: [] }
       g.rows.push(v)
@@ -257,7 +279,7 @@ export const CallsDetail = ({ app, displayName, isoWeek, visibility, responses, 
         const bm = b.rows.filter((r) => r.mentioned).length
         return bm - am || a.query.localeCompare(b.query)
       })
-  }, [visibility, searchIndex, active, mentionedOnly, deferredQ])
+  }, [visibility, searchIndex, active, mentionedOnly, flag, sentiment, deferredQ])
 
   const totalShown = groups.reduce((s, g) => s + g.rows.length, 0)
   const mentionedCount = visibility.filter((v) => v.mentioned).length
@@ -321,6 +343,22 @@ export const CallsDetail = ({ app, displayName, isoWeek, visibility, responses, 
               aria-label="질의·답변 검색"
             />
           </div>
+
+          {(flag || sentiment) && (
+            <div className={cx('filters')}>
+              <span className={cx('filters-l')}>필터</span>
+              {flag && (
+                <button type="button" className={cx('filter-chip')} onClick={() => clearFilter('flag')}>
+                  오정보 · {FLAG_LABEL[flag] ?? flag} <span className={cx('filter-x')}>✕</span>
+                </button>
+              )}
+              {sentiment && (
+                <button type="button" className={cx('filter-chip')} onClick={() => clearFilter('sentiment')}>
+                  감성 · {SENTI_META[sentiment].label} <span className={cx('filter-x')}>✕</span>
+                </button>
+              )}
+            </div>
+          )}
 
           <div className={cx('groups')}>
             {groups.length === 0 && (

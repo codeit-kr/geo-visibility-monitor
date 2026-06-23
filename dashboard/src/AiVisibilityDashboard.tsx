@@ -1,6 +1,7 @@
 'use client'
 
 import classnames from 'classnames/bind'
+import Link from 'next/link'
 import type { Engine, RollupIndex, ServicesManifest } from '../../types/snapshot'
 import { measureRange } from './isoWeek'
 import { DashboardHeader } from './DashboardHeader'
@@ -207,11 +208,11 @@ export const AiVisibilityDashboard = ({ rollup, services, usingFixture, selected
           {measured.map((e) => {
             const v = latest.byEngine[e] ?? 0
             return (
-              <div className={cx('erow')} key={e}>
+              <Link className={cx('erow', 'erow-link')} key={e} href={`/calls/${latest.isoWeek}?engine=${e}`}>
                 <div className={cx('ename')}><span className={cx('sw')} style={{ background: ENGINE_META[e].color }} />{ENGINE_META[e].label}</div>
                 <div className={cx('ebar')}><i style={{ width: `${(v ?? 0) * 100}%`, background: ENGINE_META[e].color }} /></div>
                 <div className={cx('eval')}>{pct1(v)}%</div>
-              </div>
+              </Link>
             )
           })}
           {planned.map((e) => (
@@ -230,9 +231,14 @@ export const AiVisibilityDashboard = ({ rollup, services, usingFixture, selected
           <PanelHead title="경쟁 점유 (SoV)" sub="무브랜드" />
           <p className={cx('p-sub')}>AI가 함께 호명한 비중.</p>
           <div className={cx('sov-bar')}>
-            <i style={{ width: `${brandShare * 100}%`, background: BRAND_COLOR }}>{brandShare >= 0.1 ? `${Math.round(brandShare * 100)}%` : ''}</i>
+            <i style={{ width: `${brandShare * 100}%`, background: BRAND_COLOR }}>
+              {brandShare >= 0.1 ? `${Math.round(brandShare * 100)}%` : ''}
+              <span className={cx('sov-tip')}>{rollup.displayName} {Math.round(brandShare * 100)}%</span>
+            </i>
             {compEntries.map(([name, v], i) => (
-              <i key={name} style={{ width: `${v * 100}%`, background: compColor(name, i) }} />
+              <i key={name} style={{ width: `${v * 100}%`, background: compColor(name, i) }}>
+                <span className={cx('sov-tip')}>{name} {Math.round(v * 100)}%</span>
+              </i>
             ))}
           </div>
           <div className={cx('sov-leg')}>
@@ -248,11 +254,11 @@ export const AiVisibilityDashboard = ({ rollup, services, usingFixture, selected
           <p className={cx('p-sub')}>AI가 사실을 틀리게 말한 건 → 콘텐츠 수정 트리거.</p>
           {flags.length === 0 && <div className={cx('alert')}><div className={cx('ic', 'ok')}>✓</div><div className={cx('a-t')}>오정보 플래그 없음</div></div>}
           {flags.map(([flag, count]) => (
-            <div className={cx('alert')} key={flag}>
+            <Link className={cx('alert', 'alert-link')} key={flag} href={`/calls/${latest.isoWeek}?flag=${flag}`}>
               <div className={cx('ic')}>⚠</div>
               <div><div className={cx('a-t')}>{FLAG_LABEL[flag] ?? flag}</div><div className={cx('a-d')}>{flag}</div></div>
               <span className={cx('a-flag')}>{count}건</span>
-            </div>
+            </Link>
           ))}
           <div className={cx('senti')}>
             <span className={cx('senti-l')}>감성</span>
@@ -266,7 +272,17 @@ export const AiVisibilityDashboard = ({ rollup, services, usingFixture, selected
               )}
             </div>
             <span className={cx('senti-n')}>
-              {positive + neutral + negative > 0 ? `긍 ${positive} · 중 ${neutral} · 부 ${negative}` : '언급 없음'}
+              {positive + neutral + negative > 0 ? (
+                <>
+                  <Link className={cx('senti-link')} href={`/calls/${latest.isoWeek}?sentiment=positive`}>긍 {positive}</Link>
+                  {' · '}
+                  <Link className={cx('senti-link')} href={`/calls/${latest.isoWeek}?sentiment=neutral`}>중 {neutral}</Link>
+                  {' · '}
+                  <Link className={cx('senti-link')} href={`/calls/${latest.isoWeek}?sentiment=negative`}>부 {negative}</Link>
+                </>
+              ) : (
+                '언급 없음'
+              )}
             </span>
           </div>
         </section>

@@ -63,6 +63,8 @@
   &.mention { background: var(--accent); }
   &.sov { background: #119da4; }
   &:hover { z-index: 3; }
+  // 투명 hit 영역 확장(보이는 점은 그대로) — hover 인식 범위 ↑
+  &::after { content: ''; position: absolute; inset: -8px; border-radius: 50%; }
 }
 .pt-tip {
   position: absolute; bottom: calc(100% + 7px); left: 50%; transform: translateX(-50%);
@@ -88,10 +90,27 @@
 .ebar > i { display: block; height: 100%; border-radius: 5px; }
 .eval { width: 44px; text-align: right; font-family: var(--mono); font-size: 12.5px; font-variant-numeric: tabular-nums; }
 .erow.off { opacity: 0.45; }
+.erow-link {
+  text-decoration: none; color: inherit; cursor: pointer;
+  margin: 0 -10px; padding-left: 10px; padding-right: 10px; // hover bg 좌우 여백
+}
+.erow-link:hover { background: var(--ground); }
+.erow-link:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 
 /* SoV */
-.sov-bar { display: flex; height: 30px; border-radius: 7px; overflow: hidden; margin-bottom: 14px; }
-.sov-bar > i { display: flex; align-items: center; justify-content: center; color: #fff; font-family: var(--mono); font-size: 11px; font-weight: 600; min-width: 0; }
+.sov-bar { display: flex; height: 30px; border-radius: 7px; margin-bottom: 14px; }
+.sov-bar > i { position: relative; display: flex; align-items: center; justify-content: center; color: #fff; font-family: var(--mono); font-size: 11px; font-weight: 600; min-width: 0; }
+.sov-bar > i:first-child { border-radius: 7px 0 0 7px; }
+.sov-bar > i:last-child { border-radius: 0 7px 7px 0; }
+.sov-bar > i:hover { z-index: 5; }
+.sov-tip {
+  position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+  background: var(--ink); color: #fff; font-family: var(--mono); font-size: 10.5px; font-weight: 400;
+  padding: 3px 7px; border-radius: 6px; white-space: nowrap; pointer-events: none;
+  opacity: 0; transition: opacity 0.1s; z-index: 5;
+}
+.sov-bar > i:hover .sov-tip { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .sov-tip { transition: none; } }
 .sov-leg { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; font-size: 12.5px; }
 .sov-leg div { display: flex; align-items: center; gap: 7px; color: var(--muted); }
 .sov-leg b { margin-left: auto; font-family: var(--mono); color: var(--ink); font-variant-numeric: tabular-nums; }
@@ -100,6 +119,12 @@
 /* 정확도 + 감성 */
 .alert { display: flex; gap: 11px; padding: 11px 0; border-top: 1px solid var(--line); align-items: flex-start; }
 .alert:first-of-type { border-top: 0; }
+.alert-link {
+  text-decoration: none; color: inherit; cursor: pointer;
+  margin: 0 -10px; padding-left: 10px; padding-right: 10px; // hover bg 좌우 여백
+}
+.alert-link:hover { background: var(--ground); }
+.alert-link:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .ic { width: 22px; height: 22px; border-radius: 6px; background: #fcecec; flex-shrink: 0; display: grid; place-items: center; font-size: 12px; }
 .ic.ok { background: #e7f4ee; }
 .a-t { font-size: 13px; font-weight: 560; }
@@ -110,6 +135,7 @@
 .senti-bar { flex: 1; display: flex; height: 9px; border-radius: 5px; overflow: hidden; background: var(--ground); }
 .senti-bar > i { height: 100%; }
 .senti-n { font-family: var(--mono); font-size: 11px; color: var(--faint); }
+.senti-link { color: inherit; text-decoration: none; cursor: pointer; &:hover { color: var(--ink); text-decoration: underline; } }
 
 .foot { max-width: 1180px; margin: 8px auto 0; padding: 0 32px; font-size: 11.5px; color: var(--faint); font-family: var(--mono); line-height: 1.7; }
 
