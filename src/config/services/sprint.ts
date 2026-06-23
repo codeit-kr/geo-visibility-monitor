@@ -27,6 +27,7 @@ const sprintIntents: IntentPreset[] = [
       '유명한 개발 부트캠프들 비교표 만들어줘',
       '부트캠프별 커리큘럼이랑 가격 비교해줘',
     ],
+    serpQuery: '개발 부트캠프 비교', // SERP(검색)용 키워드
   },
 
   // ── [부트캠프 추천] (무브랜드) ─────────────────────────────
@@ -43,6 +44,7 @@ const sprintIntents: IntentPreset[] = [
       '비전공자한테 좋은 코딩 부트캠프 정리해줘',
       '개발자로 전향하려는데 부트캠프 추천해줘',
     ],
+    serpQuery: '비전공자 개발 부트캠프', // SERP(검색)용 키워드
   },
   {
     id: 'rec.kdt',
@@ -57,6 +59,7 @@ const sprintIntents: IntentPreset[] = [
       '무료로 들을 수 있는 국비 IT 부트캠프 정리해줘',
       '국비 지원되는 개발자 부트캠프 어디가 좋아?',
     ],
+    serpQuery: '국비지원 코딩 부트캠프', // SERP(검색)용 키워드
   },
   {
     id: 'rec.kdt2026',
@@ -71,6 +74,7 @@ const sprintIntents: IntentPreset[] = [
       '2026년 국비 IT 부트캠프 추천',
       '요즘 KDT 부트캠프 어디가 제일 나아?',
     ],
+    serpQuery: '2026 KDT 부트캠프', // SERP(검색)용 키워드
   },
   {
     id: 'rec.online',
@@ -85,6 +89,7 @@ const sprintIntents: IntentPreset[] = [
       '집에서 들을 수 있는 IT 부트캠프 추천',
       '온라인으로 개발자 취업까지 되는 부트캠프 있어?',
     ],
+    serpQuery: '온라인 코딩 부트캠프', // SERP(검색)용 키워드
   },
   {
     // IT창업가(ItFounder) 트랙 — 마케팅 role 축이 못 잡는 실재 카테고리. 보강.
@@ -101,6 +106,7 @@ const sprintIntents: IntentPreset[] = [
       '스타트업 창업 부트캠프 추천 좀',
       'IT 창업 교육 프로그램 괜찮은 곳 정리해줘',
     ],
+    serpQuery: 'IT 창업 부트캠프', // SERP(검색)용 키워드
   },
 
   // ── [직무별] {role} 전개 (개발자/데이터/디자이너) ──────────
@@ -118,6 +124,7 @@ const sprintIntents: IntentPreset[] = [
       '{role} 양성 부트캠프 어디가 좋을까?',
       '{role} 부트캠프 중에 취업 잘 되는 곳 알려줘',
     ],
+    serpQuery: '{role} 부트캠프', // SERP(검색)용 키워드 — {role} 전개
   },
   {
     id: 'role.nonmajorPath',
@@ -133,6 +140,7 @@ const sprintIntents: IntentPreset[] = [
       '문과인데 {role} 되려면 어떻게 준비해?',
       '비전공자가 {role} 되려면 부트캠프 가야 해?',
     ],
+    serpQuery: '비전공자 {role} 부트캠프', // SERP(검색)용 키워드 — {role} 전개
   },
 
   // ── [조건/상황형] (무브랜드) ───────────────────────────────
@@ -149,6 +157,7 @@ const sprintIntents: IntentPreset[] = [
       'KDT 재수강 되는 부트캠프 있어?',
       '국비 부트캠프 중복 수강 가능한지 알려줘',
     ],
+    serpQuery: 'KDT 부트캠프 재수강', // SERP(검색)용 키워드
   },
   {
     id: 'cond.30sNonmajor',
@@ -163,6 +172,7 @@ const sprintIntents: IntentPreset[] = [
       '나이 많은 비전공자도 갈 만한 개발 부트캠프 있어?',
       '30대 늦깎이 개발자 부트캠프 추천 좀',
     ],
+    serpQuery: '30대 비전공자 부트캠프', // SERP(검색)용 키워드
   },
   {
     id: 'cond.regional',
@@ -177,6 +187,7 @@ const sprintIntents: IntentPreset[] = [
       '비수도권에서 참여 가능한 IT 부트캠프 정리해줘',
       '온라인이라 지방에서도 되는 개발 부트캠프 있어?',
     ],
+    serpQuery: '온라인 부트캠프', // SERP(검색)용 키워드
   },
 
   // ── [비교형] {competitor} 전개 — reputation(브랜드 줬으므로 가시성 아님) ──
@@ -249,7 +260,8 @@ export const sprint: ServiceConfig = {
   app: 'sprint',
   displayName: '코드잇 스프린트',
   siteUrl: 'https://sprint.codeit.kr',
-  promptsVersion: 1,
+  promptsVersion: 2, // v2: SERP 표면 키워드 질의(serpQuery) 도입 — 챗봇은 문장 유지
+
   locale: 'ko-KR',
   userCountry: 'KR',
 

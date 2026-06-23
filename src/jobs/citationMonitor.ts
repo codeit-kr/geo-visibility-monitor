@@ -93,8 +93,12 @@ export const runCitationMonitor = async (
   const chatbotTasks = activeChatbots.flatMap(([engine, adapter]) =>
     chatbotCalls.map((call) => makeTask(engine as Engine, call, () => adapter(call.query, callOpts))),
   )
+  // SERP(검색) 표면은 키워드로 질의(serpQuery). 저장 query 도 실제 보낸 키워드로 맞춘다.
   const serpTasks = activeSerp.flatMap(([engine, adapter]) =>
-    serpQueries.map((call) => makeTask(engine as Engine, { ...call, rep: 1 }, () => adapter(call.query))),
+    serpQueries.map((call) => {
+      const q = call.serpQuery ?? call.query
+      return makeTask(engine as Engine, { ...call, rep: 1, query: q }, () => adapter(q))
+    }),
   )
 
   const tasks = [...chatbotTasks, ...serpTasks]
@@ -178,8 +182,11 @@ const sumUsageCost = (a: UsageCost, b: UsageCost): UsageCost => ({
 const selectSerpQueries = (calls: CallSpec[]): CallSpec[] => {
   const seen = new Set<string>()
   return calls.filter((c) => {
-    if (c.metricRole !== 'visibility' || c.paraphraseIndex !== 0 || seen.has(c.query)) return false
-    seen.add(c.query)
+    if (c.metricRole !== 'visibility' || c.paraphraseIndex !== 0) return false
+    // 실제 보낼 SERP 질의(키워드 우선) 기준으로 중복 제거 — 키워드가 겹치면 한 번만.
+    const q = c.serpQuery ?? c.query
+    if (seen.has(q)) return false
+    seen.add(q)
     return true
   })
 }

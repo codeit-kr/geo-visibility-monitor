@@ -32,7 +32,11 @@ export interface IntentPreset {
   metricRole: MetricRole
   app: App
   competitorAware: boolean // SoV 경쟁사 매칭 대상 여부
-  paraphrases: string[] // {role}/{competitor} 토큰 포함 가능
+  paraphrases: string[] // {role}/{competitor} 토큰 포함 가능 — 챗봇(문장형)용
+  // SERP(Google AIO·Naver) 표면용 키워드 질의. 검색창엔 문장이 아니라 키워드를 치므로 분리한다.
+  // {role}/{competitor} 토큰 사용 가능(promptBuilder 가 전개). 미지정 시 seed 문장으로 폴백.
+  // visibility 의도에서만 의미 있음(SERP 는 visibility seed 만 호출).
+  serpQuery?: string
   reps?: number // 패러프레이즈당 반복(기본 2)
   expand?: { roles?: boolean; competitors?: boolean } // placeholder 전개 지시
   groundTruth?: Record<string, unknown>

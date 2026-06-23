@@ -16,7 +16,8 @@ export interface CallSpec {
   competitorAware: boolean
   paraphraseId: string // 안정 ID(추이 비교용) — rep 은 제외, 전개값은 포함
   paraphraseIndex: number // 의도 내 패러프레이즈 순번(0 = seed). SERP seed-only 선택용
-  query: string // placeholder 치환 완료된 최종 문장
+  query: string // placeholder 치환 완료된 최종 문장(챗봇용)
+  serpQuery?: string // SERP 표면용 키워드(치환 완료). 미지정 시 selectSerpQueries 가 query 로 폴백
   rep: number // 1..reps
   locale: string
   role?: string // {role} 전개분일 때
@@ -52,6 +53,10 @@ export const buildCalls = (service: ServiceConfig, opts: BuildOptions = {}): Cal
         for (const role of roles) {
           for (const competitor of competitors) {
             const query = applyTokens(template, role?.token, competitor?.canonical)
+            // SERP 키워드도 동일 토큰 전개({role} 등). 없으면 undefined → 호출부에서 query 폴백.
+            const serpQuery = intent.serpQuery
+              ? applyTokens(intent.serpQuery, role?.token, competitor?.canonical)
+              : undefined
             const paraphraseId = [
               `${intent.id}#p${pIndex}`,
               role ? `role=${role.token}` : '',
@@ -70,6 +75,7 @@ export const buildCalls = (service: ServiceConfig, opts: BuildOptions = {}): Cal
                 paraphraseId,
                 paraphraseIndex: pIndex,
                 query,
+                ...(serpQuery ? { serpQuery } : {}),
                 rep,
                 locale,
                 ...(role ? { role: role.token, roleServed: role.codeitServes } : {}),
