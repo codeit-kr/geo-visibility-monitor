@@ -1,0 +1,33 @@
+{
+  "name": "geo-visibility-dashboard",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI 가시성 대시보드 — 같은 레포의 snapshots/*.json 을 읽어 시각화(Google codeit.com 로그인)",
+  "scripts": {
+    "dev": "next dev -p 4350",
+    "build": "next build",
+    "start": "next start -p 4350",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "classnames": "^2.5.1",
+    "next": "^16.2.6",
+    "next-auth": "^4.24.14",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "eslint": "^10.5.0",
+    "globals": "^15.14.0",
+    "sass": "^1.83.0",
+    "typescript": "^5.7.0",
+    "typescript-eslint": "^8.61.1"
+  }
+}

@@ -1,0 +1,95 @@
+.page {
+  --ground: #e7ebf2;
+  --surface: #fff;
+  --ink: #14181f;
+  --muted: #5b6675;
+  --faint: #97a0b0;
+  --line: #d6dbe6;
+  --accent: #2d43e0;
+  --up: #138a63;
+  --down: #c23a52;
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+
+  background: var(--ground);
+  color: var(--ink);
+  min-height: 100vh;
+  padding-bottom: 56px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.wrap { max-width: 1180px; margin: 22px auto 0; padding: 0 32px; display: flex; flex-direction: column; gap: 16px; }
+
+.section { background: var(--surface); border: 1px solid var(--line); border-radius: 13px; padding: 18px 20px 20px; }
+.sec-h { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 16px; }
+.sec-t { font-size: 15px; font-weight: 660; letter-spacing: -0.01em; }
+.sec-s { font-size: 11.5px; color: var(--faint); font-family: var(--mono); }
+
+/* 방법론 정의 */
+.defs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+.def { background: var(--ground); border-radius: 10px; padding: 12px 13px; }
+.def-t { font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--accent); }
+.def-d { font-size: 12px; color: var(--muted); margin-top: 5px; line-height: 1.55; }
+.rules { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 5px; }
+.rules li { font-size: 12.5px; color: var(--muted); }
+
+/* 질의셋 */
+.role-group { margin-top: 14px; &:first-of-type { margin-top: 0; } }
+.role-h { display: flex; align-items: center; gap: 9px; margin-bottom: 9px; }
+.role-name { font-family: var(--mono); font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 6px; }
+.role-name.visibility { color: var(--accent); background: #e7eafe; }
+.role-name.reputation { color: #7c5cff; background: #efe9ff; }
+.role-name.accuracy { color: var(--down); background: #fcecec; }
+.role-cnt { font-size: 11.5px; color: var(--faint); font-family: var(--mono); }
+
+.intent { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; }
+.intent-h { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; margin-bottom: 8px; }
+.intent-id { font-family: var(--mono); font-size: 12.5px; font-weight: 600; }
+.badge { font-family: var(--mono); font-size: 10px; color: var(--muted); border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px; }
+.badge.exp { color: var(--accent); border-color: #bcc4f4; background: #eef0fe; }
+.reps { font-family: var(--mono); font-size: 10.5px; color: var(--faint); margin-left: auto; }
+.plist { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 3px; }
+.plist li { font-size: 13px; color: var(--ink); }
+.serp { display: flex; align-items: baseline; gap: 9px; margin-top: 9px; padding-top: 9px; border-top: 1px dashed var(--line); }
+.serp-l { font-family: var(--mono); font-size: 10.5px; color: var(--faint); flex-shrink: 0; }
+.serp-q { font-size: 12.5px; color: var(--up); font-weight: 560; }
+.serp-q.mono { font-family: var(--mono); color: var(--muted); font-weight: 400; word-break: break-all; }
+
+/* 테이블 */
+.tbl-wrap { overflow-x: auto; margin-bottom: 12px; &:last-of-type { margin-bottom: 0; } }
+.tbl { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+.tbl th, .tbl td { border: 1px solid var(--line); padding: 7px 11px; text-align: left; vertical-align: top; }
+.tbl th { background: var(--ground); font-weight: 620; color: var(--muted); white-space: nowrap; font-size: 11.5px; }
+.strong { font-weight: 600; }
+.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.soft { color: var(--muted); }
+.state { font-family: var(--mono); font-size: 10.5px; color: var(--faint); border: 1px solid var(--line); border-radius: 5px; padding: 1px 7px; }
+.state.on { color: var(--up); border-color: #b6dcc9; background: #e7f4ee; }
+
+/* key-value */
+.kv { display: flex; gap: 14px; padding: 9px 0; border-top: 1px solid var(--line); &:first-of-type { border-top: 0; } }
+.k { width: 110px; flex-shrink: 0; font-size: 12px; color: var(--muted); font-weight: 560; }
+.v { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 13px; }
+.chips { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px; }
+.chip.mono { font-family: var(--mono); }
+
+/* GEO 감사 */
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.col-h { font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 8px; }
+.url-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.url-list li { font-family: var(--mono); font-size: 12px; color: var(--ink); padding: 3px 0; border-top: 1px solid var(--line); word-break: break-all; }
+.url-list li:first-child { border-top: 0; }
+
+.note { font-size: 12px; color: var(--muted); margin-top: 12px; line-height: 1.6; }
+.foot { max-width: 1180px; margin: 16px auto 0; padding: 0 32px; font-size: 11.5px; color: var(--faint); font-family: var(--mono); }
+
+@media (max-width: 860px) {
+  .defs { grid-template-columns: 1fr; }
+  .cols { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .wrap { padding-left: 16px; padding-right: 16px; }
+  .foot { padding-left: 16px; padding-right: 16px; }
+  .k { width: 84px; }
+}

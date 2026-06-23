@@ -1,0 +1,38 @@
+/* 다크 헤더 위 서비스 탭 — 상단 중앙 정렬 */
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.tab {
+  font-size: 13px;
+  font-weight: 560;
+  color: #aeb8cc;
+  background: none;
+  border: 0;
+  padding: 7px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.12s, background 0.12s;
+
+  &:hover:not(:disabled) {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+  }
+  &:focus-visible { outline: 2px solid #6c84ff; outline-offset: 2px; }
+  &.active {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.14);
+    font-weight: 650;
+  }
+  &.soon {
+    color: #5b6675;
+    cursor: default;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tab { transition: none; }
+}
