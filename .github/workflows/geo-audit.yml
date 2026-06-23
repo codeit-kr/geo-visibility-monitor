@@ -13,7 +13,7 @@ permissions:
   id-token: write # claude-code-action GitHub 토큰 OIDC 교환용(github_token 제공 시 미사용)
 
 jobs:
-  # 0) 격주 게이트 — weekly-visibility-snapshot 과 동일 규칙(ISO 홀수주만). 짝수주엔 감사·집계·알림 전부 스킵.
+  # 0) 격주 게이트 — weekly-visibility-snapshot 과 동일 규칙(ISO 짝수주만). 홀수주엔 감사·집계·알림 전부 스킵.
   gate:
     runs-on: ubuntu-latest
     outputs:
@@ -25,10 +25,10 @@ jobs:
             echo "run=true" >> "$GITHUB_OUTPUT"; echo "수동 실행 — 게이트 통과"; exit 0
           fi
           WK=$(date -u +%V) # ISO 주차 01-53
-          if [ $((10#$WK % 2)) -eq 1 ]; then
-            echo "run=true" >> "$GITHUB_OUTPUT"; echo "ISO주차 $WK(홀수) — 실행"
+          if [ $((10#$WK % 2)) -eq 0 ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"; echo "ISO주차 $WK(짝수) — 실행"
           else
-            echo "run=false" >> "$GITHUB_OUTPUT"; echo "ISO주차 $WK(짝수) — 스킵(격주)"
+            echo "run=false" >> "$GITHUB_OUTPUT"; echo "ISO주차 $WK(홀수) — 스킵(격주)"
           fi
 
   # 1) 동일 감사 3회 병렬 → 각 run 결과를 아티팩트로 보존.
