@@ -3,7 +3,7 @@ import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import type { App, GeoScoreSnapshot } from '../../types/snapshot'
 import { DashboardHeader } from './DashboardHeader'
-import { isoWeekRange } from './isoWeek'
+import { measureRange } from './isoWeek'
 import styles from './GeoAudit.module.scss'
 
 const cx = classnames.bind(styles)
@@ -39,7 +39,7 @@ export const GeoAudit = ({ app, displayName, isoWeek, score, report, weeks }: Pr
         app={app}
         kicker="GEO 감사 · 선행지표"
         title={`${displayName} — GEO Audit`}
-        measured={isoWeek ? `측정 ${isoWeek}${isoWeekRange(isoWeek) ? ` (${isoWeekRange(isoWeek)})` : ''}` : '측정 전'}
+        measured={isoWeek ? `측정 ${isoWeek}${measureRange(isoWeek) ? ` (${measureRange(isoWeek)})` : ''}` : '측정 전'}
         weekNav={weeks.length && isoWeek ? { weeks, current: isoWeek, hrefBase: '/geo' } : undefined}
         sub={score ? `composite ${score.composite}${score.runs ? ` · ${score.runs}회 평균` : ''}` : undefined}
       />

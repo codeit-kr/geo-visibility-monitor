@@ -5,7 +5,7 @@ import { useMemo, useState } from 'react'
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import type { App, Engine, ResponseRecord, Sentiment, VisibilitySnapshot } from '../../types/snapshot'
-import { isoWeekRange } from './isoWeek'
+import { measureRange } from './isoWeek'
 import { DashboardHeader } from './DashboardHeader'
 import styles from './CallsDetail.module.scss'
 
@@ -172,7 +172,7 @@ export const CallsDetail = ({ app, displayName, isoWeek, visibility, responses, 
         app={app}
         kicker="AI 응답 기록 · query → answer"
         title={`${displayName} — AI 응답 상세`}
-        measured={isoWeek ? `측정 ${isoWeek}${isoWeekRange(isoWeek) ? ` (${isoWeekRange(isoWeek)})` : ''}` : '측정 전'}
+        measured={isoWeek ? `측정 ${isoWeek}${measureRange(isoWeek) ? ` (${measureRange(isoWeek)})` : ''}` : '측정 전'}
         weekNav={weeks.length && isoWeek ? { weeks, current: isoWeek, hrefBase: '/calls' } : undefined}
         sub={`${visibility.length}개 응답 · 언급 ${mentionedCount}`}
       />

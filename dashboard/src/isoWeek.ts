@@ -14,15 +14,19 @@ export const isoWeekStart = (isoWeek: string): Date | null => {
   return monday
 }
 
-// '2026-W26' → '6.22–6.28'.
-export const isoWeekRange = (isoWeek: string): string | null => {
+// '2026-W26' → 시작 월요일부터 weeks 주 범위(기본 1주). 예: weeks=2 → '6.22–7.5'.
+export const isoWeekRange = (isoWeek: string, weeks = 1): string | null => {
   const monday = isoWeekStart(isoWeek)
   if (!monday) return null
-  const sunday = new Date(monday)
-  sunday.setUTCDate(monday.getUTCDate() + 6)
+  const end = new Date(monday)
+  end.setUTCDate(monday.getUTCDate() + weeks * 7 - 1)
   const fmt = (d: Date) => `${d.getUTCMonth() + 1}.${d.getUTCDate()}`
-  return `${fmt(monday)}–${fmt(sunday)}`
+  return `${fmt(monday)}–${fmt(end)}`
 }
+
+// 측정 주기(격주 = 2주). 측정 라벨의 날짜범위는 한 측정이 대표하는 기간이므로 2주로 표기.
+export const MEASURE_WEEKS = 2
+export const measureRange = (isoWeek: string): string | null => isoWeekRange(isoWeek, MEASURE_WEEKS)
 
 // 임의 날짜 → 그 날이 속한 ISO 주차 '2026-W26'(주의 목요일 기준 연도).
 export const isoWeekOf = (date: Date): string => {

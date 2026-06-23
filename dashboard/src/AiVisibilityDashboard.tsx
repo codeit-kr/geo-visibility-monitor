@@ -2,7 +2,7 @@
 
 import classnames from 'classnames/bind'
 import type { Engine, RollupIndex, ServicesManifest } from '../../types/snapshot'
-import { isoWeekRange } from './isoWeek'
+import { measureRange } from './isoWeek'
 import { DashboardHeader } from './DashboardHeader'
 import styles from './AiVisibilityDashboard.module.scss'
 
@@ -43,7 +43,7 @@ const compColor = (name: string, i: number) => COMP_COLOR[name] ?? COMP_COLORS[i
 
 // 주차 라벨 뒤 날짜범위 괄호. 파싱 실패 시 빈 문자열.
 const rangeSuffix = (isoWeek: string) => {
-  const r = isoWeekRange(isoWeek)
+  const r = measureRange(isoWeek)
   return r ? ` (${r})` : ''
 }
 

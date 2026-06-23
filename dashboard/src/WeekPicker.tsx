@@ -3,14 +3,14 @@
 import classnames from 'classnames/bind'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { isoWeekOf, isoWeekRange, isoWeekStart } from './isoWeek'
+import { isoWeekOf, isoWeekStart, measureRange } from './isoWeek'
 import styles from './DashboardHeader.module.scss'
 
 const cx = classnames.bind(styles)
 
 const WD = ['월', '화', '수', '목', '금', '토', '일']
 const triggerLabel = (w: string) => {
-  const r = isoWeekRange(w)
+  const r = measureRange(w)
   return r ? `${w} (${r})` : w
 }
 const addDays = (d: Date, n: number) => {
@@ -105,8 +105,12 @@ export const WeekPicker = ({
             </div>
             <div className={cx('cal-body')}>
               {rows.map(({ iso, days }) => {
-                const selected = iso === current
-                if (!avail.has(iso)) {
+                // 격주: 한 측정(member)이 자기 주 + 다음 주 2주를 대표.
+                // 이 행이 속한 측정 = 자기 주가 데이터 있으면 자기, 아니면 직전 주(그 측정의 둘째 주).
+                const prev = isoWeekOf(addDays(days[0], -7))
+                const member = avail.has(iso) ? iso : avail.has(prev) ? prev : null
+                const selected = member != null && member === current
+                if (!member) {
                   return (
                     <div key={iso} className={cx('cal-row', 'off')} aria-disabled>
                       {rowInner(iso, days)}
@@ -117,7 +121,7 @@ export const WeekPicker = ({
                 return hrefBase ? (
                   <Link
                     key={iso}
-                    href={`${hrefBase}/${iso}`}
+                    href={`${hrefBase}/${member}`}
                     className={cls}
                     aria-current={selected ? 'true' : undefined}
                     onClick={() => setOpen(false)}
@@ -131,7 +135,7 @@ export const WeekPicker = ({
                     className={cls}
                     aria-current={selected ? 'true' : undefined}
                     onClick={() => {
-                      onSelect?.(iso)
+                      onSelect?.(member)
                       setOpen(false)
                     }}
                   >
