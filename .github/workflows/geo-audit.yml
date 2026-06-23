@@ -150,3 +150,10 @@ jobs:
             echo "push 경합, 재시도 $i/5"; sleep 5
           done
           echo "push 실패(재시도 소진)"; exit 1
+
+      - name: Slack 알림(서비스별 채널 — visibility+GEO 요약)
+        run: pnpm -s notify:slack
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }} # 봇 토큰(chat:write). 미설정이면 스크립트가 스킵.
+          ACTIVE_SERVICES: ${{ vars.ACTIVE_SERVICES }} # 측정 대상과 동일 게이트
+          DASHBOARD_URL: ${{ vars.DASHBOARD_URL || 'https://codeit-geo-visibility-monitor.vercel.app' }}

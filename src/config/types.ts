@@ -47,6 +47,8 @@ export interface IntentPreset {
 export interface ServiceConfig {
   app: App // 'sprint' | 'cayde' | ... — 스냅샷/저장경로 차원
   displayName: string // 어드민 표시명
+  // 주간 측정 완료 후 알림 보낼 Slack 채널 ID(예: sprint → #bu-sprint). 봇(SLACK_BOT_TOKEN)을 채널에 초대해둘 것.
+  slackChannelId?: string
   siteUrl: string // GEO 감사(geo-audit) 대상 사이트 루트
   // geo-audit 재현성: 매 실행 동일 페이지만 감사(sitemap 랜덤샘플 금지).
   auditUrls: string[]

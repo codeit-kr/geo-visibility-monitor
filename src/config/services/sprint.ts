@@ -259,6 +259,7 @@ const sprintIntents: IntentPreset[] = [
 export const sprint: ServiceConfig = {
   app: 'sprint',
   displayName: '코드잇 스프린트',
+  slackChannelId: 'C0ADKQXR3FV', // #bu-sprint
   siteUrl: 'https://sprint.codeit.kr',
   promptsVersion: 2, // v2: SERP 표면 키워드 질의(serpQuery) 도입 — 챗봇은 문장 유지
 
