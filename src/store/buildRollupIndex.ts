@@ -125,7 +125,8 @@ export const summarizeWeek = (
     byEngineCostUsd,
     sampleSize: vis.length,
     costUsd: cost?.total.costUsd ?? null,
-    geoScore: geo?.composite ?? null, // 그룹 C — geo-audit Action 이 기록한 geoScore.json
+    geoScore: geo?.composite ?? null, // 그룹 C composite N회 평균(geo-audit Action)
+    geoScoreRange: geo?.compositeRange ?? null,
   }
 }
 

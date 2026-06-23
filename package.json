@@ -9,6 +9,7 @@
     "snapshot": "tsx src/index.ts",
     "rollup": "tsx src/rollup.ts",
     "audit:targets": "tsx src/scripts/auditTargets.ts",
+    "geo:aggregate": "tsx src/scripts/aggregateGeoAudit.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "lint": "eslint ."

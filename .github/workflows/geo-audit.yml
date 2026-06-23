@@ -1,7 +1,7 @@
 name: weekly-geo-audit
 
-# 그룹 C(GEO 점수). geo-audit 은 에이전트형 스킬(5 서브에이전트)이라 일반 node cron 불가 →
-# Claude Code Action 으로 헤드리스 실행. 주간 스냅샷(weekly-visibility-snapshot) 완료 후 체이닝.
+# 그룹 C(GEO 점수). 에이전트형 geo-audit 스킬은 LLM 채점 변동이 커서, 동일 감사를 N회(3) 실행해
+# 평균/range 로 집계(변동을 통계로 흡수). 주간 스냅샷(weekly-visibility-snapshot) 완료 후 체이닝.
 on:
   workflow_run:
     workflows: ['weekly-visibility-snapshot']
@@ -10,13 +10,18 @@ on:
 
 permissions:
   contents: write # geoScore.json 커밋
-  id-token: write # claude-code-action 의 GitHub 토큰 OIDC 교환용(github_token 제공 시 미사용이나 안전상)
+  id-token: write # claude-code-action GitHub 토큰 OIDC 교환용(github_token 제공 시 미사용)
 
 jobs:
-  geo-audit:
+  # 1) 동일 감사 3회(순차 — 구독 동시호출 회피) → 각 run 결과를 아티팩트로 보존.
+  audit:
     runs-on: ubuntu-latest
-    # 주간 스냅샷이 성공했을 때만(수동 dispatch 는 항상).
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        run: [1, 2, 3]
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -26,11 +31,10 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
 
-      - name: 측정 시각 + 감사 대상(audit-targets.json) 산출
+      - name: 감사 대상(audit-targets.json) 산출
         run: |
-          CAPTURED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          CAPTURED_AT="$CAPTURED_AT" pnpm -s audit:targets > audit-targets.json
-          echo "대상:"; cat audit-targets.json
+          CAPTURED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)" pnpm -s audit:targets > audit-targets.json
+          cat audit-targets.json
         env:
           ACTIVE_SERVICES: ${{ vars.ACTIVE_SERVICES }}
 
@@ -39,14 +43,12 @@ jobs:
           git clone --depth 1 https://github.com/zubair-trabzada/geo-seo-claude /tmp/geo-skill
           bash /tmp/geo-skill/install.sh
 
-      - name: GEO 감사 실행 — 서비스별 /geo-audit → geoScore.json
+      - name: GEO 감사 (run ${{ matrix.run }}/3)
         uses: anthropics/claude-code-action@v1
         with:
-          # Claude 구독(Pro/Max) OAuth 토큰으로 인증 — 별도 종량제 API 키 불필요.
-          #   발급: 로컬에서 `claude setup-token` → 출력 토큰을 Secret CLAUDE_CODE_OAUTH_TOKEN 으로 등록.
-          #   (대안: anthropic_api_key 로 종량제 키 사용 가능)
+          # Claude 구독 OAuth 토큰 인증(별도 종량제 키 불필요). 발급: `claude setup-token`.
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          # 내장 토큰 명시 → 액션이 GitHub 토큰을 OIDC(Claude GitHub App)로 받지 않음(앱 미설치 환경).
+          # 내장 토큰 명시 → GitHub 토큰을 OIDC 로 받지 않음(앱 미설치 환경).
           github_token: ${{ secrets.GITHUB_TOKEN }}
           prompt: |
             `audit-targets.json` 을 읽어라. 배열의 각 항목
@@ -83,17 +85,56 @@ jobs:
             --max-turns 150
             --allowedTools "Read,Write,Bash,WebFetch,Task,Glob,Grep"
 
-      - name: 롤업 + 커밋 + 푸시(동시 push 경합 대비 rebase 재시도)
+      - name: run 결과 파일명 부여(geoScore-run${{ matrix.run }}.json)
         run: |
-          rm -f audit-targets.json
+          for f in snapshots/*/*/geoScore.json; do [ -e "$f" ] && mv "$f" "${f%.json}-run${{ matrix.run }}.json"; done
+          for f in snapshots/*/*/geo-audit-report.md; do [ -e "$f" ] && mv "$f" "${f%.md}-run${{ matrix.run }}.md"; done
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: geo-run-${{ matrix.run }}
+          path: |
+            snapshots/**/geoScore-run${{ matrix.run }}.json
+            snapshots/**/geo-audit-report-run${{ matrix.run }}.md
+          if-no-files-found: warn
+
+  # 2) 3회 집계(평균/range) → 롤업 → 커밋.
+  aggregate:
+    needs: audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: run 아티팩트 복원(snapshots/ 로)
+        uses: actions/download-artifact@v4
+        with:
+          pattern: geo-run-*
+          merge-multiple: true
+          path: .
+
+      - name: 집계(평균/range) + 롤업
+        run: |
+          CAPTURED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)" pnpm -s geo:aggregate
+          pnpm rollup
+        env:
+          ACTIVE_SERVICES: ${{ vars.ACTIVE_SERVICES }}
+
+      - name: 커밋(동시 push 경합 대비 rebase 재시도)
+        run: |
           git config user.name "geo-bot"
           git config user.email "geo-bot@users.noreply.github.com"
           git add snapshots/
           if git diff --cached --quiet; then echo "변경 없음"; exit 0; fi
-          git commit -m "chore(geo-audit): weekly ${{ github.run_number }}"
+          git commit -m "chore(geo-audit): weekly ${{ github.run_number }} (3-run 평균)"
           for i in $(seq 1 5); do
             git pull --rebase --autostash origin main || { echo "rebase 실패, 재시도 $i/5"; sleep 5; continue; }
-            pnpm rollup                 # 머지된 트리 기준으로 index.json 재생성
+            pnpm rollup
             git add snapshots/
             git commit --amend --no-edit
             git push && { echo "push 성공"; exit 0; }

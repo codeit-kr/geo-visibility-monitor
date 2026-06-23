@@ -78,20 +78,23 @@ export interface CostSnapshot {
   total: UsageCost
 }
 
-// 그룹 C — 선행지표 GEO 점수. 에이전트형 geo-audit 스킬이 GitHub Action 에서 주차당 1건 산출 →
+// 그룹 C — 선행지표 GEO 점수. 에이전트형 geo-audit 스킬을 GitHub Action 이 주차당 N회(기본 3) 실행 →
+//   각 카테고리/composite 는 N회 평균(LLM 채점 변동을 통계로 흡수). 원시 N회는 geoScoreRuns.json.
 //   snapshots/<app>/<isoWeek>/geoScore.json (단일 객체). node 스냅샷 번들과 분리(덮어쓰기 방지).
 export interface GeoScoreSnapshot {
   schemaVersion: number
   capturedAt: string
   isoWeek: string
   app: App
-  composite: number
+  composite: number // N회 평균(반올림)
   citability: number
   brand: number
   eeat: number
   technical: number
   schema: number
   platform: number
+  runs?: number // 집계에 쓴 측정 횟수
+  compositeRange?: [number, number] // composite 의 [최소, 최대] — 변동폭
 }
 
 // node 스냅샷 번들 = 그룹 A 산출물. geoScore(C)는 별도 GitHub Action 이 기록, B/D 는 드롭.
@@ -116,7 +119,8 @@ export interface WeekSummary {
   byEngineCostUsd: Partial<Record<Engine, number>> // 엔진별 비용(cost.json byEngine)
   sampleSize: number // visibility 표본 수
   costUsd: number | null // 주 측정 총비용(cost.json total)
-  geoScore?: number | null // 그룹 C composite(geoScore.json). 감사 미실행 주차는 null
+  geoScore?: number | null // 그룹 C composite N회 평균(geoScore.json). 감사 미실행 주차는 null
+  geoScoreRange?: [number, number] | null // composite 변동폭[min,max]
 }
 
 export interface RollupIndex {
