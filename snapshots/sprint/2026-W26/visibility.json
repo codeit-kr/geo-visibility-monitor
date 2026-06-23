@@ -3717,9 +3717,7 @@
       "https://sprint.codeit.kr/"
     ],
     "sentiment": "positive",
-    "accuracyFlags": [
-      "wrong-employment-rate"
-    ],
+    "accuracyFlags": [],
     "position": null,
     "rawSnippet": "공식 공개 수치 기준으로는 **코드잇 스프린트 취업률은 71% 정도**로 보면 돼요. 코드잇 스프린트 과정 페이지에 “**2025년 온라인 부트캠프 1위, 취업률 71%**”라고 표시되어 있고, 비교 기준은 “연 취업자 250명 이상의 온라인 부트캠프”라고 설명되어 있어요. ([sprint-dev.codeit.kr](https://sprint-dev.codeit.kr/admissions/180))\n\n다만 해석할 때는 조금 주의해야 해요.\n\n- 코드잇 메인 페이지는 취업률 기준을 **“2025년 고용24 기준 · 수강생 2,598명 대상”**이라고 밝히고 있어요. ([sprint.codeit.kr](https://sprint.codeit.kr/))  \n- 같은 페이지/트랙 소개에는 **취업자 중 91%가 IT"
   },
@@ -3741,9 +3739,7 @@
       "https://sprint-dev.codeit.kr/admissions/180"
     ],
     "sentiment": "neutral",
-    "accuracyFlags": [
-      "wrong-employment-rate"
-    ],
+    "accuracyFlags": [],
     "position": null,
     "rawSnippet": "코드잇 스프린트가 **공식 페이지에서 내세우는 취업률은 71%**입니다.\n\n다만 표기 기준은 **“2025년 온라인 부트캠프, 연 취업자 250명 이상 과정 비교”**이고, 코드잇 페이지에는 **“수료 후 6개월 내 실제 취업”** 기업 사례라고 설명되어 있어요. 또 별도로 취업자 중 **91%가 IT 직무로 취업**했다고도 안내합니다. ([sprint-dev.codeit.kr](https://sprint-dev.codeit.kr/admissions/180))\n\n즉, 짧게 말하면 **공식 기준 취업률 71%**로 보면 됩니다."
   },
@@ -3768,9 +3764,7 @@
       "https://sprint-page.codeit.kr/frontend-advanced"
     ],
     "sentiment": "neutral",
-    "accuracyFlags": [
-      "wrong-employment-rate"
-    ],
+    "accuracyFlags": [],
     "position": null,
     "rawSnippet": "확인되는 **코드잇 스프린트의 공식 공개 취업률은 71%**입니다. 코드잇 스프린트 트랙 페이지에 “**2025년 온라인 부트캠프 1위, 취업률 71%**”라고 표기되어 있고, 비교 기준은 “연 취업자 250명 이상의 온라인 부트캠프”라고 설명돼 있습니다. ([sprint-dev.codeit.kr](https://sprint-dev.codeit.kr/track/frontend))\n\n다만 주의할 점은, 메인 페이지에는 취업률 항목이 “**2025년 고용24 기준 · 수강생 2,598명 대상**”이라고 되어 있지만 숫자 부분이 웹페이지상 애니메이션으로 표시돼 텍스트로는 잘 추출되지 않았습니다. ([sprint.codeit.kr](https://sprint.codeit.kr/)) 고용24 쪽 기준 설명을 보면 취"
   },
@@ -3794,9 +3788,7 @@
       "https://sprint.codeit.kr/"
     ],
     "sentiment": "positive",
-    "accuracyFlags": [
-      "wrong-employment-rate"
-    ],
+    "accuracyFlags": [],
     "position": null,
     "rawSnippet": "공식 사이트에 공개된 숫자 기준으로 보면:\n\n- **완주율: 86%** — “수강생 86%가 수료 완료, 중도 포기 없이 완주 성공”이라고 안내돼 있어요. ([sprint.codeit.kr](https://sprint.codeit.kr/track/DATA))  \n- **취업률: 71%** — “2025년 온라인 부트캠프 1위, 취업률 71%”로 표시돼 있고, 비교 기준은 “연 취업자 250명 이상의 온라인 부트캠프”라고 적혀 있습니다. ([sprint.codeit.kr](https://sprint.codeit.kr/track/DATA))  \n\n참고로 코드잇 스프린트 메인 페이지의 성과 지표 설명에는 **완주율은 2025년 내부 기준·수강생 2,598명 대상**, **취업률은 2025년 고용24 기준·수강생 "
   },
@@ -3819,9 +3811,7 @@
       "https://www.work24.go.kr/hr/a/a/3100/selectTracseDetl.do?crseTracseSe=C0061&cstmConsTme=&focusId=&tracseId=AIG20230000412586&tracseReqstsCd=&tracseTme=23&trainstCstmrId=500042496680&utm_source=openai"
     ],
     "sentiment": "positive",
-    "accuracyFlags": [
-      "wrong-employment-rate"
-    ],
+    "accuracyFlags": [],
     "position": null,
     "rawSnippet": "2026년 6월 23일 기준, **코드잇 스프린트(코드잇 부트캠프)가 공개한 취업 성공률/취업률 수치는 71%**입니다. 코드잇은 이를 **“2025년 온라인 부트캠프 1위, 취업률 71%”**라고 표기하고 있으며, 비교 기준은 **연 취업자 250명 이상 온라인 부트캠프**라고 설명합니다. ([sprint-dev.codeit.kr](https://sprint-dev.codeit.kr/admissions/200?utm_source=openai))\n\n| 항목 | 공개 수치 | 기준/비고 |\n|---|---:|---|\n| **취업률** | **71%** | 2025년 온라인 부트캠프 기준, 연 취업자 250명 이상 비교 |\n| **취업자 중 IT 직무 취업 비율** | **91%** | “배운 기술 그대로 일하"
   },
@@ -3869,9 +3859,7 @@
       "https://sprint.codeit.kr/admissions/127"
     ],
     "sentiment": "neutral",
-    "accuracyFlags": [
-      "wrong-price"
-    ],
+    "accuracyFlags": [],
     "position": null,
     "rawSnippet": "확인 기준: **2026년 6월 23일 현재 공개된 코드잇 스프린트 페이지 기준**입니다.\n\n**대부분의 코드잇 스프린트 부트캠프는 국비지원 적용 후 본인 부담금이 60만 원**으로 안내되어 있습니다. 정가는 과정별로 약 **2,100만~2,270만 원대**이고, 대부분 지원금이 적용되는 구조예요. 예를 들어 프론트엔드는 정가 **22,651,200원 → 지원 22,051,200원 → 본인 부담금 60만 원**, 데이터/풀스택은 정가 **22,687,500원 → 지원 22,087,500원 → 본인 부담금 60만 원**으로 표시되어 있습니다. ([sprint.codeit.kr](https://sprint.codeit.kr/admissions/127))\n\n| 과정 예시 | 정가 | 지원금 | 본인 부담금 |\n|"
   },

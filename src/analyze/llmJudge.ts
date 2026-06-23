@@ -71,7 +71,7 @@ ${input.answer}
 
 판정해서 아래 JSON 으로만 답하라:
 - "sentiment": 답변에서 "${brand}"가 언급된 맥락의 톤. "positive" | "neutral" | "negative". 브랜드 언급이 없으면 null. (부정/추천안함 맥락은 negative, 단순 중립 나열은 neutral)
-- "accuracyFlags": 정답 데이터가 주어졌고 답변이 "${brand}"에 대해 말한 사실이 그와 어긋나면 해당 항목 플래그(예: "wrong-price", "wrong-employment-rate"). 경쟁사 정보나 일반 진술은 무시. 어긋남 없거나 정답 데이터 없으면 [].
+- "accuracyFlags": 정답 데이터가 주어졌고 답변이 "${brand}"에 대해 말한 사실이 그와 **명백히** 어긋날 때만 해당 항목 플래그(예: "wrong-price", "wrong-employment-rate"). 정답 데이터의 라벨/basis 를 기준으로 판단한다. 가격은 **본인부담금** 기준으로만 보고 정가·지원금 액수는 무시. FE 단기심화와 그 외 트랙 본인부담금이 다름에 유의. 경쟁사 정보·일반 진술·애매한 경우는 플래그하지 말 것. 어긋남 없거나 정답 데이터 없으면 [].
 
 출력 예: {"sentiment": "positive", "accuracyFlags": []}`
 }

@@ -24,10 +24,7 @@
         "neutral": 15,
         "negative": 0
       },
-      "accuracyFlags": {
-        "wrong-employment-rate": 5,
-        "wrong-price": 1
-      },
+      "accuracyFlags": {},
       "byEngine": {
         "chatgpt": 0.32,
         "google-aio": 0.3333333333333333,

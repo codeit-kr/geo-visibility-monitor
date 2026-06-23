@@ -236,7 +236,11 @@ const sprintIntents: IntentPreset[] = [
       '코드잇 부트캠프 취업 성공률 수치로 알려줘',
     ],
     // 마케팅 확정 공개 취업률. ±3%p 허용으로 오정보 대조.
-    groundTruth: { sampleSize: 2598, source: '2025 고용24 기준', employmentRatePct: 71 },
+    groundTruth: {
+      employmentRatePct: 71, // 공시 취업률(%)
+      sampleSize: 2598,
+      basis: '2025 고용24 공시 취업률(%). ±3%p 벗어나면 오정보.',
+    },
   },
   {
     id: 'fact.price',
@@ -251,8 +255,13 @@ const sprintIntents: IntentPreset[] = [
       '코드잇 스프린트 환급받으면 실제 비용 얼마야?',
       '코드잇 스프린트 트랙별 가격 정리해줘',
     ],
-    // util-seo 스키마 값과 동기화 (변경 시 갱신)
-    groundTruth: { feIntensive: 300000, others: 600000, currency: 'KRW' },
+    // util-seo 스키마 값과 동기화 (변경 시 갱신). 판정은 '본인부담금' 기준 — 정가·지원금은 제외.
+    groundTruth: {
+      feIntensive: 300000, // FE 단기심화 본인부담금
+      others: 600000, // 그 외 트랙 본인부담금
+      basis: '국비지원 후 본인부담금(KRW) 기준. 정가·지원금 액수는 오정보 판정 대상 아님.',
+      currency: 'KRW',
+    },
   },
 ]
 
