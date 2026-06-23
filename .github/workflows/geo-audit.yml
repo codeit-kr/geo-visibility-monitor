@@ -151,6 +151,33 @@ jobs:
           done
           echo "push 실패(재시도 소진)"; exit 1
 
+      # 알림 링크가 404 안 나도록, 방금 push 한 커밋이 Vercel production 에 READY 될 때까지 대기.
+      # 토큰/프로젝트 미설정이거나 타임아웃이면 그냥 진행(알림을 막지 않음).
+      - name: Vercel 재배포 완료 대기(해당 커밋 READY)
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }} # 팀/조직 프로젝트면 필요
+        run: |
+          if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
+            echo "Vercel 변수 미설정 — 대기 스킵"; exit 0
+          fi
+          SHA=$(git rev-parse HEAD)
+          echo "대기 대상 커밋: $SHA"
+          TEAM=""; [ -n "$VERCEL_TEAM_ID" ] && TEAM="&teamId=$VERCEL_TEAM_ID"
+          for i in $(seq 1 40); do # 40 × 9s ≈ 6분
+            RES=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+              "https://api.vercel.com/v6/deployments?projectId=$VERCEL_PROJECT_ID&target=production&limit=20$TEAM")
+            STATE=$(echo "$RES" | jq -r --arg sha "$SHA" '.deployments[] | select(.meta.githubCommitSha==$sha) | .readyState' | head -1)
+            echo "[$i/40] readyState=${STATE:-(미발견)}"
+            case "$STATE" in
+              READY) echo "재배포 완료"; exit 0 ;;
+              ERROR|CANCELED) echo "배포 실패/취소 — 알림은 진행"; exit 0 ;;
+            esac
+            sleep 9
+          done
+          echo "대기 타임아웃(~6분) — 알림 진행"; exit 0
+
       - name: Slack 알림(서비스별 채널 — visibility+GEO 요약)
         run: pnpm -s notify:slack
         env:
