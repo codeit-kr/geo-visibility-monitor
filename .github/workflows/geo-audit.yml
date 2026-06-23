@@ -86,17 +86,26 @@ jobs:
             --max-turns 150
             --allowedTools "Read,Write,Bash,WebFetch,Task,Glob,Grep"
 
-      - name: run 결과 파일명 부여(geoScore-run${{ matrix.run }}.json)
+      # 루트 평면 파일로(app 인코딩) — upload-artifact 의 공통경로 스트립 회피.
+      - name: run 결과 루트로 추출(georun-<app>-run${{ matrix.run }})
         run: |
-          for f in snapshots/*/*/geoScore.json; do [ -e "$f" ] && mv "$f" "${f%.json}-run${{ matrix.run }}.json"; done
-          for f in snapshots/*/*/geo-audit-report.md; do [ -e "$f" ] && mv "$f" "${f%.md}-run${{ matrix.run }}.md"; done
+          for f in snapshots/*/*/geoScore.json; do
+            [ -e "$f" ] || continue
+            app=$(echo "$f" | cut -d/ -f2)
+            mv "$f" "georun-${app}-run${{ matrix.run }}.json"
+          done
+          for f in snapshots/*/*/geo-audit-report.md; do
+            [ -e "$f" ] || continue
+            app=$(echo "$f" | cut -d/ -f2)
+            mv "$f" "georeport-${app}-run${{ matrix.run }}.md"
+          done
 
       - uses: actions/upload-artifact@v4
         with:
           name: geo-run-${{ matrix.run }}
           path: |
-            snapshots/**/geoScore-run${{ matrix.run }}.json
-            snapshots/**/geo-audit-report-run${{ matrix.run }}.md
+            georun-*-run${{ matrix.run }}.json
+            georeport-*-run${{ matrix.run }}.md
           if-no-files-found: warn
 
   # 2) 3회 집계(평균/range) → 롤업 → 커밋.
@@ -121,10 +130,9 @@ jobs:
 
       - name: 집계(평균/range) + 롤업
         run: |
-          CAPTURED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)" pnpm -s geo:aggregate
+          ls georun-*-run*.json georeport-*-run*.md 2>/dev/null || echo "(수합된 run 파일 확인)"
+          pnpm -s geo:aggregate
           pnpm rollup
-        env:
-          ACTIVE_SERVICES: ${{ vars.ACTIVE_SERVICES }}
 
       - name: 커밋(동시 push 경합 대비 rebase 재시도)
         run: |
