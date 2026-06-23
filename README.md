@@ -1,6 +1,6 @@
 # geo-visibility-monitor
 
-코드잇 서비스(우선 코드잇 스프린트)의 **AI 가시성 측정 엔진**. 매주 AI 엔진/SERP 표면에 질의해 코드잇이 어떻게 인용되는지 측정하고, AI 리퍼럴·GEO 점수·소유 표면 노출을 모아 **시계열 스냅샷**(`snapshots/*.json`)을 생성한다. 대시보드는 별도(`frontend-mono/apps/geo-admin`)에서 이 스냅샷을 읽는다.
+코드잇 서비스(우선 코드잇 스프린트)의 **AI 가시성 측정 엔진**. 매주 AI 엔진/SERP 표면에 질의해 코드잇이 어떻게 인용되는지 측정하고, GEO 점수와 비용을 모아 **시계열 스냅샷**(`snapshots/*.json`)을 생성한다. 같은 레포의 **대시보드(`dashboard/`, Next.js)** 가 이 스냅샷을 직접 읽어 시각화한다(`types/snapshot.ts` 계약을 그대로 import).
 
 > **에이전트/기여자는 먼저 [`AGENTS.md`](./AGENTS.md) 를 읽을 것.** 아키텍처·확정 결정·데이터 계약·엔진 provisioning·빌드 순서·미해결 블로커가 모두 거기 있다.
 
@@ -46,6 +46,7 @@ src/
 snapshots/<app>/<isoWeek>/   visibility·responses·cost.json (+ geoScore.json·geo-audit-report.md = geo-audit Action)
 snapshots/<app>/index.json   서비스별 롤업  ·  snapshots/services.json  서비스 매니페스트
 .github/workflows/       weekly-snapshot.yml(A, 주간) · geo-audit.yml(C, A 완료 후 체이닝) · ci.yml
+dashboard/               in-repo 대시보드(Next.js) — snapshots/ 직접 read + types/snapshot.ts import, Google 로그인
 ```
 
 ## 측정 그룹

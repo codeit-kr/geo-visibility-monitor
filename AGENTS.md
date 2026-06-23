@@ -4,7 +4,7 @@
 
 ## 1. Mission
 
-This repo is the **measurement engine** for the AI Visibility of Codeit services (primarily 코드잇 스프린트 / `sprint.codeit.kr`, later cayde/ascent/10x). Each week it queries AI engines + SERP surfaces, classifies whether/how Codeit is cited, and writes time-series **snapshots**. A separate dashboard (in `frontend-mono`, see §3) reads those snapshots. **This repo never renders UI** — it produces data.
+This repo is the **measurement engine** for the AI Visibility of Codeit services (primarily 코드잇 스프린트 / `sprint.codeit.kr`, later cayde/ascent/10x). Each week it queries AI engines + SERP surfaces, classifies whether/how Codeit is cited, and writes time-series **snapshots**. The **in-repo dashboard (`dashboard/`, Next.js, see §3)** reads those snapshots directly.
 
 It exists because `frontend-mono` is a pure frontend monorepo with **no scheduler, no database, and no LLM clients**, and we don't want LLM/DB/scheduler deps + API keys in the product build. So the engine is split out here.
 
@@ -18,10 +18,10 @@ These are facts about the outside world. Do not re-derive or contradict them.
 - **Codeit OpenAI usage exists but is unrelated** — `frontend-mono` only uses OpenAI for an AI-interview *realtime/voice* feature. There is no reusable text/web-search key. Provision a dedicated key with web_search.
 - **Codeit Sprint tracks** (authoritative): Frontend (+ 단기심화), Backend (+Spring/Nodejs), Fullstack, Data(데이터분석가), AI, ProductDesign(디자이너), ItFounder(IT창업가). **No Mobile track** (exists in the GraphQL enum but is not offered).
 
-## 3. The other repo (dashboard) & the contract
+## 3. The dashboard (in-repo) & the contract
 
-- The dashboard is a **new Nx app `apps/geo-admin`** inside `frontend-mono` (App Router, its own Vercel project), reusing that monorepo's design-system, `Role.SprintAdmin` auth, and GraphQL proxy. It is **read-only** and consumes this repo's snapshots.
-- **The snapshot schema (§5) is a shared contract** between the two repos. Treat `types/snapshot.ts` as a public API: version it (`SCHEMA_VERSION`), never break it silently. The dashboard imports it (npm package or git submodule).
+- The dashboard is an **in-repo Next.js app at `dashboard/`** (App Router, own Vercel project, Google `codeit.com` 로그인). It is **read-only**: `dashboard/src/data.ts` reads the committed `snapshots/` directly at build time (no GitHub API/token) with fixture fallback. (원래 frontend-mono/apps/geo-admin 계획이었으나 in-repo 로 이전.)
+- **`types/snapshot.ts` is the data contract.** in-repo 라 대시보드가 **`../../types/snapshot` 을 직접 import** — 복사/sync/npm/submodule 불필요. 여전히 공개 API 처럼 다루고 `SCHEMA_VERSION` 으로 버전 관리.
 - Override editing (GEO inventory) stays in each product app's `/admin/seo`, NOT here — out of scope (§12).
 
 ## 4. Locked decisions (do NOT re-litigate)
@@ -31,7 +31,7 @@ These are facts about the outside world. Do not re-derive or contradict them.
 | Runner | **GitHub Actions `schedule:`** (weekly cron `0 0 * * 1`). Cost ≈ $0. Weekly chosen over biweekly: cost is negligible and you can always smooth weekly data into rolling trends, but can't recover unsampled resolution. No Vercel cron / worker. |
 | Storage | **JSON-in-git is source of truth** — `snapshots/2026-Wnn/*.json` (append-only) + weekly rollup `snapshots/index.json`. Git history = the time series. |
 | Query layer | Start = parse JSON in app. If queries get complex = **DuckDB over the JSON** (no server). Postgres only if multi-user/sub-second/scale truly demands it. |
-| Repo split | Engine = here. Dashboard = `frontend-mono/apps/geo-admin`. |
+| Repo | Engine + 대시보드(`dashboard/`) 한 레포. 대시보드는 snapshots/ 직접 read·types 직접 import. |
 | Locale | Every engine call uses **KR `user_location` + Korean** (else you measure US answers). |
 
 ## 5. Data contract — `types/snapshot.ts`
@@ -147,7 +147,7 @@ Config is **per-service** (multi-service ready). Shared types in `src/config/typ
 
 ## 12. Out of scope (do NOT build here)
 
-- Dashboard UI (it's `frontend-mono/apps/geo-admin`).
+- 대시보드 디자인/콘텐츠 다듬기는 `dashboard/` 에서(엔진 스코프 밖).
 - GEO override editing / `/admin/seo` (stays per product app — cache-revalidation is per-deployment).
 - Any change to `frontend-mono` (AI-referral instrumentation already exists there).
 - Browser automation of consumer AI apps.
