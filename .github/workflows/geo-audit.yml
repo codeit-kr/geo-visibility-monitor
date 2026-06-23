@@ -13,13 +13,14 @@ permissions:
   id-token: write # claude-code-action GitHub 토큰 OIDC 교환용(github_token 제공 시 미사용)
 
 jobs:
-  # 1) 동일 감사 3회(순차 — 구독 동시호출 회피) → 각 run 결과를 아티팩트로 보존.
+  # 1) 동일 감사 3회 병렬 → 각 run 결과를 아티팩트로 보존.
+  #    fail-fast:false + aggregate 가 성공분만 평균 → 일부 run 이 rate-limit(429)로 죽어도 비치명적.
+  #    구독 동시호출이 자주 429 나면 max-parallel: 1 로 낮출 것.
   audit:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     strategy:
       fail-fast: false
-      max-parallel: 1
       matrix:
         run: [1, 2, 3]
     steps:
