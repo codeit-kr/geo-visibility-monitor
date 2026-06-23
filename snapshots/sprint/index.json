@@ -5,31 +5,41 @@
   "weeks": [
     {
       "isoWeek": "2026-W26",
-      "mentionRate": 0.3333333333333333,
-      "sov": 0.16666666666666666,
+      "mentionRate": 0.34285714285714286,
+      "sov": 0.2101449275362319,
       "competitorSov": {
-        "내일배움캠프": 0.5,
-        "프로그래머스 데브코스": 0.2,
-        "멋쟁이사자처럼": 0.1
+        "내일배움캠프": 0.17277486910994763,
+        "엘리스": 0.09424083769633508,
+        "프로그래머스 데브코스": 0.2094240837696335,
+        "패스트캠퍼스": 0.08900523560209424,
+        "커널 아카데미": 0.06282722513089005,
+        "멋쟁이사자처럼": 0.08376963350785341,
+        "구름": 0.05235602094240838,
+        "코드캠프": 0.005235602094240838,
+        "제로베이스": 0.031413612565445025,
+        "항해99": 0.010471204188481676
       },
       "sentiment": {
-        "positive": 2,
-        "neutral": 0,
+        "positive": 70,
+        "neutral": 15,
         "negative": 0
       },
-      "accuracyFlags": {},
+      "accuracyFlags": {
+        "wrong-employment-rate": 5,
+        "wrong-price": 1
+      },
       "byEngine": {
-        "chatgpt": 0.5,
-        "google-aio": 0.5,
-        "naver-briefing": 0
+        "chatgpt": 0.32,
+        "google-aio": 0.3333333333333333,
+        "naver-briefing": 0.4666666666666667
       },
       "byEngineCostUsd": {
-        "chatgpt": 1.3315199999999998,
+        "chatgpt": 50.32414500000004,
         "google-aio": 0,
         "naver-briefing": 0
       },
-      "sampleSize": 6,
-      "costUsd": 1.3338003999999999,
+      "sampleSize": 105,
+      "costUsd": 50.388420200000034,
       "geoScore": 73,
       "geoScoreRange": [
         73,

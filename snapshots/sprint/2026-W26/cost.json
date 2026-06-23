@@ -1,48 +1,48 @@
 {
   "schemaVersion": 1,
-  "capturedAt": "2026-06-22T15:26:07Z",
+  "capturedAt": "2026-06-23T09:25:35Z",
   "isoWeek": "2026-W26",
   "app": "sprint",
   "byEngine": {
     "chatgpt": {
-      "calls": 2,
-      "inputTokens": 150040,
-      "outputTokens": 12044,
-      "webSearches": 22,
+      "calls": 130,
+      "inputTokens": 5908955,
+      "outputTokens": 393979,
+      "webSearches": 896,
       "serpCredits": 0,
-      "costUsd": 1.3315199999999998
+      "costUsd": 50.32414500000004
     },
     "classifier": {
-      "calls": 2,
-      "inputTokens": 5597,
-      "outputTokens": 26,
+      "calls": 91,
+      "inputTokens": 155868,
+      "outputTokens": 1205,
       "webSearches": 0,
       "serpCredits": 0,
-      "costUsd": 0.0022804
+      "costUsd": 0.0642752
     },
     "google-aio": {
-      "calls": 2,
+      "calls": 15,
       "inputTokens": 0,
       "outputTokens": 0,
       "webSearches": 0,
-      "serpCredits": 4,
+      "serpCredits": 26,
       "costUsd": 0
     },
     "naver-briefing": {
-      "calls": 2,
+      "calls": 15,
       "inputTokens": 0,
       "outputTokens": 0,
       "webSearches": 0,
-      "serpCredits": 2,
+      "serpCredits": 15,
       "costUsd": 0
     }
   },
   "total": {
-    "calls": 8,
-    "inputTokens": 155637,
-    "outputTokens": 12070,
-    "webSearches": 22,
-    "serpCredits": 6,
-    "costUsd": 1.3338003999999999
+    "calls": 251,
+    "inputTokens": 6064823,
+    "outputTokens": 395184,
+    "webSearches": 896,
+    "serpCredits": 41,
+    "costUsd": 50.388420200000034
   }
 }
