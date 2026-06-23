@@ -37,7 +37,7 @@ export interface IntentPreset {
   // {role}/{competitor} 토큰 사용 가능(promptBuilder 가 전개). 미지정 시 seed 문장으로 폴백.
   // visibility 의도에서만 의미 있음(SERP 는 visibility seed 만 호출).
   serpQuery?: string
-  reps?: number // 패러프레이즈당 반복(기본 2)
+  reps?: number // 패러프레이즈당 반복(기본 1)
   expand?: { roles?: boolean; competitors?: boolean } // placeholder 전개 지시
   groundTruth?: Record<string, unknown>
 }

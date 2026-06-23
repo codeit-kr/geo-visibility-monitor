@@ -6,7 +6,7 @@
 import type { ServiceConfig, IntentGroup, MetricRole } from './config/types'
 import type { App } from '../types/snapshot'
 
-const DEFAULT_REPS = 2
+const DEFAULT_REPS = 1 // 패러프레이즈가 의도당 ~5개라 표현 분산 평균이 충분 + 헤드라인은 이동평균 → reps 1 로 비용 절반
 
 export interface CallSpec {
   intentId: string

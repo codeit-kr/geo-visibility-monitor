@@ -2,14 +2,34 @@ name: weekly-visibility-snapshot
 
 on:
   schedule:
-    - cron: '0 0 * * 1' # 매주 월 00:00 UTC (= 월 09:00 KST)
-  workflow_dispatch: {} # 수동 실행(첫 검증·재측정)
+    - cron: '0 0 * * 1' # 매주 월 00:00 UTC(월 09:00 KST) — gate 가 ISO 홀수주만 통과(격주)
+  workflow_dispatch: {} # 수동 실행(첫 검증·재측정) — gate 무시하고 항상 실행
 
 permissions:
   contents: write # 스냅샷 커밋
 
 jobs:
+  # 격주 게이트 — 스케줄(매주 cron) 중 ISO 홀수주만 통과. 수동 dispatch 는 항상 통과.
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.g.outputs.run }}
+    steps:
+      - id: g
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"; echo "수동 실행 — 게이트 통과"; exit 0
+          fi
+          WK=$(date -u +%V) # ISO 주차 01-53
+          if [ $((10#$WK % 2)) -eq 1 ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"; echo "ISO주차 $WK(홀수) — 실행"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"; echo "ISO주차 $WK(짝수) — 스킵(격주)"
+          fi
+
   snapshot:
+    needs: gate
+    if: ${{ needs.gate.outputs.run == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

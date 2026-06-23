@@ -30,6 +30,7 @@ const svc: ServiceConfig = {
       app: 'sprint',
       competitorAware: true,
       expand: { roles: true },
+      reps: 2, // 기본값(1)과 무관하게 reps 곱 검증
       paraphrases: ['{role} 추천'],
     },
     {
@@ -46,7 +47,7 @@ const svc: ServiceConfig = {
 }
 
 describe('buildCalls', () => {
-  it('{role} 전개 × reps 곱(기본 2) + placeholder 완전 치환', () => {
+  it('{role} 전개 × reps 곱(명시 2) + placeholder 완전 치환', () => {
     const calls = buildCalls(svc).filter((c) => c.intentId === 'r')
     expect(calls.length).toBe(4) // 1 paraphrase × 2 roles × 2 reps
     expect(calls.map((c) => c.query)).toContain('개발자 추천')
