@@ -235,8 +235,8 @@ const sprintIntents: IntentPreset[] = [
       '코드잇 스프린트 완주율이랑 취업률 어떻게 돼?',
       '코드잇 부트캠프 취업 성공률 수치로 알려줘',
     ],
-    // 공개 수치 확정 대기(마케팅). 예시 자리표시자.
-    groundTruth: { sampleSize: 2598, source: '2025 고용24 기준', employmentRatePct: null },
+    // 마케팅 확정 공개 취업률. ±3%p 허용으로 오정보 대조.
+    groundTruth: { sampleSize: 2598, source: '2025 고용24 기준', employmentRatePct: 71 },
   },
   {
     id: 'fact.price',
