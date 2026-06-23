@@ -6,37 +6,41 @@ import styles from './Sidebar.module.scss'
 
 const cx = classnames.bind(styles)
 
-// base = 라우트 루트. 주차 인지 페이지(/ · /calls · /geo)는 현재 주차를 슬러그로 이어 붙여 이동 시 주차 유지.
+// 경로는 /<app>/... 형태. seg = 라우트 섹션('' = 대시보드). 주차 인지 섹션은 현재 주차를 슬러그로 이어 붙여 유지.
 const NAV = [
-  { base: '/', label: '대시보드' },
-  { base: '/calls', label: 'AI 응답 상세' },
-  { base: '/geo', label: 'GEO 감사' },
-  { base: '/methodology', label: '측정 기준' },
+  { seg: '', label: '대시보드' },
+  { seg: 'calls', label: 'AI 응답 상세' },
+  { seg: 'geo', label: 'GEO 감사' },
+  { seg: 'methodology', label: '측정 기준' },
 ]
-const WEEK_AWARE = new Set(['/', '/calls', '/geo'])
+const WEEK_AWARE = new Set(['', 'calls', 'geo'])
 const WEEK_RE = /(\d{4}-W\d{2})/
-
-const isActive = (path: string, base: string) =>
-  base === '/' ? path === '/' || /^\/\d{4}-W\d{2}$/.test(path) : path.startsWith(base)
-
-const hrefFor = (base: string, week?: string) => {
-  if (!week || !WEEK_AWARE.has(base)) return base
-  return base === '/' ? `/${week}` : `${base}/${week}`
-}
+const SECTIONS = new Set(['calls', 'geo', 'methodology'])
 
 export const Sidebar = () => {
   const path = usePathname()
+  const parts = path.split('/').filter(Boolean)
+  const app = parts[0]
+  if (!app) return null
   const week = path.match(WEEK_RE)?.[1]
+  // 현재 섹션 — parts[1] 이 알려진 섹션이면 그것, 아니면(주차 슬러그/없음) 대시보드.
+  const cur = SECTIONS.has(parts[1]) ? parts[1] : ''
+
+  const hrefFor = (seg: string) => {
+    const base = seg ? `/${app}/${seg}` : `/${app}`
+    return week && WEEK_AWARE.has(seg) ? `${base}/${week}` : base
+  }
+
   return (
     <aside className={cx('sidebar')}>
       <div className={cx('eyebrow')}>탐색</div>
       <nav className={cx('nav')} aria-label="페이지">
         {NAV.map((n) => {
-          const active = isActive(path, n.base)
+          const active = n.seg === cur
           return (
             <a
-              key={n.base}
-              href={hrefFor(n.base, week)}
+              key={n.seg || 'home'}
+              href={hrefFor(n.seg)}
               className={cx('item', { active })}
               aria-current={active ? 'page' : undefined}
             >

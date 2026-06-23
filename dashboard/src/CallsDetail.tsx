@@ -46,6 +46,7 @@ type Props = {
   visibility: VisibilitySnapshot[]
   responses: ResponseRecord[]
   weeks: string[] // 선택 가능한 전체 주차(헤더 주차 선택기)
+  available?: string[] // 데이터 있는 서비스(탭 활성 여부)
 }
 
 type Term = { term: string; kind: 'brand' | 'comp' }
@@ -206,7 +207,7 @@ const Record = memo(({ row, resp, brandTerms }: RecordProps) => {
 })
 Record.displayName = 'Record'
 
-export const CallsDetail = ({ app, displayName, isoWeek, visibility, responses, weeks }: Props) => {
+export const CallsDetail = ({ app, displayName, isoWeek, visibility, responses, weeks, available }: Props) => {
   const responsesByKey = useMemo(() => {
     const m = new Map<string, ResponseRecord>()
     for (const r of responses) m.set(joinKey(r.paraphraseId, r.engine, r.rep), r)
@@ -296,10 +297,11 @@ export const CallsDetail = ({ app, displayName, isoWeek, visibility, responses, 
     <div className={cx('page')}>
       <DashboardHeader
         app={app}
+        available={available}
         kicker="AI 응답 기록 · query → answer"
         title={`${displayName} — AI 응답 상세`}
         measured={isoWeek ? `측정 ${isoWeek}${measureRange(isoWeek) ? ` (${measureRange(isoWeek)})` : ''}` : '측정 전'}
-        weekNav={weeks.length && isoWeek ? { weeks, current: isoWeek, hrefBase: '/calls' } : undefined}
+        weekNav={weeks.length && isoWeek ? { weeks, current: isoWeek, hrefBase: `/${app}/calls` } : undefined}
         sub={`${visibility.length}개 응답 · 언급 ${mentionedCount}`}
       />
 

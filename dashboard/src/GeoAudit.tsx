@@ -26,9 +26,10 @@ type Props = {
   score: GeoScoreSnapshot | null
   report: string | null
   weeks: string[] // 선택 가능한 전체 주차(헤더 주차 선택기)
+  available?: string[] // 데이터 있는 서비스(탭 활성 여부)
 }
 
-export const GeoAudit = ({ app, displayName, isoWeek, score, report, weeks }: Props) => {
+export const GeoAudit = ({ app, displayName, isoWeek, score, report, weeks, available }: Props) => {
   const cats = score ? CATS.map((c) => ({ ...c, value: Number(score[c.key]) })) : []
   const weakest = cats.length ? cats.reduce((a, b) => (b.value < a.value ? b : a)) : null
   const range = score?.compositeRange
@@ -37,10 +38,11 @@ export const GeoAudit = ({ app, displayName, isoWeek, score, report, weeks }: Pr
     <div className={cx('page')}>
       <DashboardHeader
         app={app}
+        available={available}
         kicker="GEO 감사 · 선행지표"
         title={`${displayName} — GEO Audit`}
         measured={isoWeek ? `측정 ${isoWeek}${measureRange(isoWeek) ? ` (${measureRange(isoWeek)})` : ''}` : '측정 전'}
-        weekNav={weeks.length && isoWeek ? { weeks, current: isoWeek, hrefBase: '/geo' } : undefined}
+        weekNav={weeks.length && isoWeek ? { weeks, current: isoWeek, hrefBase: `/${app}/geo` } : undefined}
         sub={score ? `composite ${score.composite}${score.runs ? ` · ${score.runs}회 평균` : ''}` : undefined}
       />
 

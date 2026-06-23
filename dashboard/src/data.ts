@@ -34,8 +34,26 @@ const readText = async (rel: string): Promise<string | null> => {
 export const getServicesManifest = async (): Promise<ServicesManifest> =>
   (await readJson<ServicesManifest>('services.json')) ?? FIXTURE_SERVICES
 
-export const getRollup = async (app: App): Promise<RollupIndex> =>
-  (await readJson<RollupIndex>(join(app, 'index.json'))) ?? FIXTURE_ROLLUP
+// 데이터(스냅샷)가 있는 서비스 키 — 라우팅(generateStaticParams)·기본 서비스 선택의 단일 출처.
+// 매니페스트 기반이라 새 서비스가 첫 스냅샷을 쌓으면 라우트가 자동 생성된다(대시보드 코드 수정 불필요).
+export const getApps = async (): Promise<App[]> => (await getServicesManifest()).services.map((s) => s.app)
+
+export const getDefaultApp = async (): Promise<App> => (await getApps())[0] ?? 'sprint'
+
+// 앱×주차 조합 전체 — 주차 단위 정적 경로(/[app]/[week] 등)의 generateStaticParams.
+export const getAppWeeks = async (): Promise<{ app: App; week: string }[]> => {
+  const apps = await getApps()
+  const rollups = await Promise.all(apps.map((app) => getRollup(app)))
+  return apps.flatMap((app, i) => rollups[i].weeks.map((w) => ({ app, week: w.isoWeek })))
+}
+
+export const getRollup = async (app: App): Promise<RollupIndex> => {
+  const r = await readJson<RollupIndex>(join(app, 'index.json'))
+  if (r) return r
+  // 스냅샷 전무(로컬 데모)면 sprint fixture, 그 외 앱은 요청 app 을 보존한 빈 롤업.
+  // (fixture 의 'sprint' 가 새어나가 타 서비스 페이지 링크·주차가 /sprint 로 가는 것 방지)
+  return app === FIXTURE_ROLLUP.app ? FIXTURE_ROLLUP : { ...FIXTURE_ROLLUP, app, displayName: app, weeks: [] }
+}
 
 // 상세 드릴다운 — 주차별 per-call 메트릭(visibility) + 응답 원문(responses).
 export const getVisibility = async (app: App, isoWeek: string): Promise<VisibilitySnapshot[]> =>

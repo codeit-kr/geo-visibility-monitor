@@ -116,7 +116,7 @@ export const AiVisibilityDashboard = ({ rollup, services, usingFixture, selected
         rollup={rollup}
         services={services}
         latestWeek={latest.isoWeek}
-        weekNav={{ weeks: weeks.map((w) => w.isoWeek), current: latest.isoWeek, hrefBase: '' }}
+        weekNav={{ weeks: weeks.map((w) => w.isoWeek), current: latest.isoWeek, hrefBase: `/${rollup.app}` }}
       />
 
       {usingFixture && <div className={cx('fixture-note')}>● 샘플(fixture) 데이터 — 스냅샷 없음</div>}
@@ -208,7 +208,7 @@ export const AiVisibilityDashboard = ({ rollup, services, usingFixture, selected
           {measured.map((e) => {
             const v = latest.byEngine[e] ?? 0
             return (
-              <Link className={cx('erow', 'erow-link')} key={e} href={`/calls/${latest.isoWeek}?engine=${e}`}>
+              <Link className={cx('erow', 'erow-link')} key={e} href={`/${rollup.app}/calls/${latest.isoWeek}?engine=${e}`}>
                 <div className={cx('ename')}><span className={cx('sw')} style={{ background: ENGINE_META[e].color }} />{ENGINE_META[e].label}</div>
                 <div className={cx('ebar')}><i style={{ width: `${(v ?? 0) * 100}%`, background: ENGINE_META[e].color }} /></div>
                 <div className={cx('eval')}>{pct1(v)}%</div>
@@ -254,7 +254,7 @@ export const AiVisibilityDashboard = ({ rollup, services, usingFixture, selected
           <p className={cx('p-sub')}>AI가 사실을 틀리게 말한 건 → 콘텐츠 수정 트리거.</p>
           {flags.length === 0 && <div className={cx('alert')}><div className={cx('ic', 'ok')}>✓</div><div className={cx('a-t')}>오정보 플래그 없음</div></div>}
           {flags.map(([flag, count]) => (
-            <Link className={cx('alert', 'alert-link')} key={flag} href={`/calls/${latest.isoWeek}?flag=${flag}`}>
+            <Link className={cx('alert', 'alert-link')} key={flag} href={`/${rollup.app}/calls/${latest.isoWeek}?flag=${flag}`}>
               <div className={cx('ic')}>⚠</div>
               <div><div className={cx('a-t')}>{FLAG_LABEL[flag] ?? flag}</div><div className={cx('a-d')}>{flag}</div></div>
               <span className={cx('a-flag')}>{count}건</span>
@@ -274,11 +274,11 @@ export const AiVisibilityDashboard = ({ rollup, services, usingFixture, selected
             <span className={cx('senti-n')}>
               {positive + neutral + negative > 0 ? (
                 <>
-                  <Link className={cx('senti-link')} href={`/calls/${latest.isoWeek}?sentiment=positive`}>긍 {positive}</Link>
+                  <Link className={cx('senti-link')} href={`/${rollup.app}/calls/${latest.isoWeek}?sentiment=positive`}>긍 {positive}</Link>
                   {' · '}
-                  <Link className={cx('senti-link')} href={`/calls/${latest.isoWeek}?sentiment=neutral`}>중 {neutral}</Link>
+                  <Link className={cx('senti-link')} href={`/${rollup.app}/calls/${latest.isoWeek}?sentiment=neutral`}>중 {neutral}</Link>
                   {' · '}
-                  <Link className={cx('senti-link')} href={`/calls/${latest.isoWeek}?sentiment=negative`}>부 {negative}</Link>
+                  <Link className={cx('senti-link')} href={`/${rollup.app}/calls/${latest.isoWeek}?sentiment=negative`}>부 {negative}</Link>
                 </>
               ) : (
                 '언급 없음'

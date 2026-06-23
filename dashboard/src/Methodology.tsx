@@ -46,9 +46,10 @@ type Props = {
   serpCredit: number
   paraphraseCount: number
   visibilityCount: number
+  available?: string[]
 }
 
-export const Methodology = ({ service, pricing, serpCredit, paraphraseCount, visibilityCount }: Props) => {
+export const Methodology = ({ service, pricing, serpCredit, paraphraseCount, visibilityCount, available }: Props) => {
   const byRole = ROLE_ORDER.map((role) => ({
     role,
     intents: service.intents.filter((i) => i.metricRole === role),
@@ -58,6 +59,7 @@ export const Methodology = ({ service, pricing, serpCredit, paraphraseCount, vis
     <div className={cx('page')}>
       <DashboardHeader
         app={service.app}
+        available={available}
         kicker="측정 설정 · methodology"
         title={`${service.displayName} — 측정 기준`}
         measured={`프롬프트 v${service.promptsVersion} · 감사소스 v${service.brandSourcesVersion}`}

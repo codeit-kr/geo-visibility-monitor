@@ -6,6 +6,7 @@
   flex-wrap: wrap;
 }
 .tab {
+  display: inline-block;
   font-size: 13px;
   font-weight: 560;
   color: #aeb8cc;
@@ -15,6 +16,7 @@
   border-radius: 8px;
   cursor: pointer;
   white-space: nowrap;
+  text-decoration: none;
   transition: color 0.12s, background 0.12s;
 
   &:hover:not(:disabled) {
