@@ -12,7 +12,7 @@ const DASHBOARD_URL = process.env.DASHBOARD_URL ?? 'https://codeit-geo-visibilit
 
 const pct = (v: number | null | undefined) => (v == null ? '—' : (v * 100).toFixed(1))
 
-const buildBlocks = (displayName: string, w: WeekSummary) => {
+const buildBlocks = (app: string, displayName: string, w: WeekSummary) => {
   const geo =
     w.geoScore == null
       ? '측정 중'
@@ -32,7 +32,7 @@ const buildBlocks = (displayName: string, w: WeekSummary) => {
     {
       type: 'actions',
       elements: [
-        { type: 'button', text: { type: 'plain_text', text: '대시보드 보기' }, url: `${DASHBOARD_URL}/${w.isoWeek}` },
+        { type: 'button', text: { type: 'plain_text', text: '대시보드 보기' }, url: `${DASHBOARD_URL}/${app}/${w.isoWeek}` },
       ],
     },
   ]
@@ -76,7 +76,7 @@ const main = async () => {
       continue
     }
     try {
-      await postSlack(token, channel, `${svc.displayName} — AI 가시성 주간 (${w.isoWeek})`, buildBlocks(svc.displayName, w))
+      await postSlack(token, channel, `${svc.displayName} — AI 가시성 주간 (${w.isoWeek})`, buildBlocks(svc.app, svc.displayName, w))
       console.info(`[notify] ${svc.app} → ${channel}${override ? ' (override)' : ''} ✓ (${w.isoWeek})`)
     } catch (error) {
       console.error(`[notify] ${svc.app} 전송 실패:`, error instanceof Error ? error.message : error)
