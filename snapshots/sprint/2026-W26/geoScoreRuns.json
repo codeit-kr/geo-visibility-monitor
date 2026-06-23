@@ -1,0 +1,32 @@
+[
+  {
+    "run": 1,
+    "composite": 73,
+    "citability": 84,
+    "brand": 38,
+    "eeat": 65,
+    "technical": 95,
+    "schema": 90,
+    "platform": 83
+  },
+  {
+    "run": 2,
+    "composite": 73,
+    "citability": 78,
+    "brand": 50,
+    "eeat": 76,
+    "technical": 80,
+    "schema": 88,
+    "platform": 70
+  },
+  {
+    "run": 3,
+    "composite": 74,
+    "citability": 74,
+    "brand": 57,
+    "eeat": 64,
+    "technical": 95,
+    "schema": 82,
+    "platform": 85
+  }
+]
