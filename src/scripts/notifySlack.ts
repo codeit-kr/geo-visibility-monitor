@@ -54,9 +54,12 @@ const main = async () => {
     console.warn('[notify] SLACK_BOT_TOKEN 미설정 — 알림 스킵')
     return
   }
+  // 테스트용: 설정 시 모든 서비스 알림을 이 채널로 보냄(코드의 slackChannelId 무시).
+  const override = process.env.SLACK_CHANNEL_OVERRIDE?.trim()
 
   for (const svc of getActiveServices()) {
-    if (!svc.slackChannelId) {
+    const channel = override || svc.slackChannelId
+    if (!channel) {
       console.warn(`[notify] ${svc.app}: slackChannelId 없음 — 스킵`)
       continue
     }
@@ -73,8 +76,8 @@ const main = async () => {
       continue
     }
     try {
-      await postSlack(token, svc.slackChannelId, `${svc.displayName} — AI 가시성 주간 (${w.isoWeek})`, buildBlocks(svc.displayName, w))
-      console.info(`[notify] ${svc.app} → ${svc.slackChannelId} ✓ (${w.isoWeek})`)
+      await postSlack(token, channel, `${svc.displayName} — AI 가시성 주간 (${w.isoWeek})`, buildBlocks(svc.displayName, w))
+      console.info(`[notify] ${svc.app} → ${channel}${override ? ' (override)' : ''} ✓ (${w.isoWeek})`)
     } catch (error) {
       console.error(`[notify] ${svc.app} 전송 실패:`, error instanceof Error ? error.message : error)
     }
