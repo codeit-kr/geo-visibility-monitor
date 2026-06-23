@@ -1,32 +1,32 @@
 [
   {
     "run": 1,
-    "composite": 73,
+    "composite": 69,
     "citability": 84,
-    "brand": 38,
-    "eeat": 65,
-    "technical": 95,
-    "schema": 90,
-    "platform": 83
+    "brand": 21,
+    "eeat": 74,
+    "technical": 75,
+    "schema": 88,
+    "platform": 92
   },
   {
     "run": 2,
-    "composite": 73,
-    "citability": 78,
-    "brand": 50,
-    "eeat": 76,
-    "technical": 80,
-    "schema": 88,
-    "platform": 70
+    "composite": 79,
+    "citability": 84,
+    "brand": 52,
+    "eeat": 75,
+    "technical": 96,
+    "schema": 87,
+    "platform": 90
   },
   {
     "run": 3,
     "composite": 74,
-    "citability": 74,
-    "brand": 57,
-    "eeat": 64,
-    "technical": 95,
-    "schema": 82,
-    "platform": 85
+    "citability": 80,
+    "brand": 48,
+    "eeat": 73,
+    "technical": 85,
+    "schema": 90,
+    "platform": 80
   }
 ]

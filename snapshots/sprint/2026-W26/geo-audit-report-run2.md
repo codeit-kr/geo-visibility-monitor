@@ -1,177 +1,274 @@
-# GEO 감사 리포트 — 코드잇 스프린트 (sprint)
+# GEO Audit Report: 코드잇 스프린트 (Codeit Sprint)
 
-- **대상 URL:** https://sprint.codeit.kr
-- **app:** `sprint`
-- **isoWeek:** `2026-W26`
-- **capturedAt:** `2026-06-23T03:59:20Z`
-- **brandSourcesVersion:** `2`
-- **시장/현지화:** 한국(KR) — 엔티티 그라운딩·평판·플랫폼은 한국 생태계 기준 평가
-- **재현성:** 감사 대상은 아래 고정 `auditUrls` 10개로만 한정. sitemap 임의 크롤·블로그 랜덤 샘플 없음. 동일 입력 = 동일 점수.
+**Audit Date:** 2026-06-23
+**capturedAt:** 2026-06-23T10:10:18Z
+**isoWeek:** 2026-W26
+**App:** sprint
+**URL:** https://sprint.codeit.kr
+**Business Type:** EdTech / 코딩 부트캠프 (국비지원 KDT)
+**Locale:** Korean (KR) — 한국 시장 서비스
+**brandSourcesVersion:** 2
+**Pages Analyzed:** 10 (고정 `auditUrls`)
 
-## 종합 점수
+> **재현성 고지 (Reproducibility).** 이 감사는 `audit-targets.json` 의 `sprint` 항목에 고정된 입력만 사용했습니다.
+> 감사 대상 페이지는 그 항목의 `auditUrls` 10개로 한정했고(sitemap 임의 크롤·블로그 랜덤 샘플 없음),
+> 기술 신호 파일 점검은 robots.txt / sitemap.xml / server-sitemap.xml / llms.txt / llms-full.txt 의 **존재 여부**로만 한정했으며,
+> composite 에 반영한 외부 신호는 `brandSources` (**version 2**) 고정 체크리스트 8개뿐입니다.
+> 각 카테고리 점수는 주관 인상이 아니라 아래 객관 신호 체크리스트의 가점 합으로 산정했고 항목별 근거를 남겼습니다.
+> 이전 주차 점수를 앵커로 사용하지 않았습니다(delta-context 미사용). 모든 신호는 이번 회차에 라이브로 직접 검증했습니다.
 
-| 카테고리 | 가중치 | 점수 | 가중 기여 |
+---
+
+## Executive Summary
+
+**Overall GEO Score: 79/100 (Good)**
+
+코드잇 스프린트는 **기술 인프라(96)·플랫폼 최적화(90)·구조화 데이터(87)** 가 최상위권이다. 10개 고정 페이지 전부 풀 SSR 로 제공되고(빈 JS 셸 없음), `robots.txt` 가 AI 크롤러(GPTBot/ClaudeBot/PerplexityBot/Google-Extended/CCBot)를 전부 허용하며, `EducationalOrganization`→`parentOrganization`(코드잇)→`Course`/`FAQPage`/`BreadcrumbList`/`ItemList` 그래프가 유효한 JSON-LD 로 전 페이지에 심겨 있다. 이번 회차에 `<head>` 를 원본 HTML 로 직접 검증해 **`html lang="ko"`(전 페이지)·OG/Twitter 카드·canonical·viewport** 존재를 확정했고(이전 회차의 "미검증" 항목 해소), 그 결과 플랫폼·스키마·기술 점수가 상향됐다. **인용가능성(84)** 도 트랙별 주차 커리큘럼·정량 성과·비교표·`teaches[]` 배열 덕분에 높다.
+
+가장 큰 취약점은 여전히 **브랜드 권위(52)** 다. 모회사 코드잇의 **한국어 위키백과 문서·Wikidata 아이템이 부재**하고(둘 다 KR/언어무관 핵심이라 down-weight 대상 아님), 스프린트 전용 엔티티는 어떤 플랫폼에도 없다. E-E-A-T(75)는 강사 이력·정부 인증·정량 성과가 우수하나, 운영사 법인 식별정보·환불정책·통계 산출 방법론이 감사 대상 페이지에 노출되지 않아 신뢰성에서 감점됐다.
+
+### Score Breakdown
+
+| Category | Score | Weight | Weighted |
 |---|---|---|---|
-| AI Citability | 0.25 | **78** | 19.50 |
-| Brand Authority | 0.20 | **50** | 10.00 |
-| Content E-E-A-T | 0.20 | **76** | 15.20 |
-| Technical GEO | 0.15 | **80** | 12.00 |
-| Schema & Structured Data | 0.10 | **88** | 8.80 |
-| Platform Optimization | 0.10 | **70** | 7.00 |
-| **Composite** | | **73** | 72.50 → 73 (반올림) |
+| AI Citability | 84/100 | 25% | 21.00 |
+| Brand Authority | 52/100 | 20% | 10.40 |
+| Content E-E-A-T | 75/100 | 20% | 15.00 |
+| Technical GEO | 96/100 | 15% | 14.40 |
+| Schema & Structured Data | 87/100 | 10% | 8.70 |
+| Platform Optimization | 90/100 | 10% | 9.00 |
+| **Overall GEO Score** | | | **78.50 → 79** |
 
-> 등급: **Fair 상단(60–74)** — Good(75+) 진입 직전. composite 의 핵심 발목은 brand(50): 한국어 지식그래프(Wikidata/ko.Wikipedia) 엔티티 부재.
+`composite = round(84·0.25 + 52·0.20 + 75·0.20 + 96·0.15 + 87·0.10 + 90·0.10) = round(78.5) = 79`
+
+> **이전 회차 대비.** 점수 상승(77→79)은 새 사실이 아니라 **검증 깊이**의 차이다. 이번엔 원본 SSR HTML 의 `<head>` 를
+> 직접 파싱해 `html lang=ko`·OG/Twitter·canonical·viewport 를 확정했고(이전엔 WebFetch 의 마크다운 변환이 `<head>`/`<script>` 를
+> 제거해 "미검증" 으로 감점), 이에 따라 플랫폼(83→90)·스키마(83→87)·기술(92→96)을 정정했다. 브랜드(52)는 고정 체크리스트라 불변.
 
 ---
 
-## 고정 입력 (재현성)
+## Critical Issues (Fix Immediately)
 
-### 감사 대상 페이지 (auditUrls, 10)
-| # | URL | HTTP | SSR 본문(chars) | ld+json |
+KR 현지화 기준상 **critical 등급 이슈는 없음.** (영문 Wikipedia/Reddit/G2/Trustpilot/Clutch 부재는 규칙에 따라 critical 로 분류하지 않고 가중치를 낮춤.)
+
+## High Priority Issues
+
+1. **모회사 코드잇의 한국어 위키백과 문서 부재** — `ko.wikipedia.org/wiki/코드잇` 직접 조회 결과 **HTTP 404** (검색 API 도 무관 결과만). 한국어 위키백과는 KR 시장에서 핵심 엔티티 근거이며(영문 위키와 달리 down-weight 대상 아님), AI 엔티티 그라운딩의 큰 공백.
+2. **모회사 코드잇의 Wikidata 아이템 부재** — `wbsearchentities`(ko) 0건, (en) 은 무관한 `Q30299760 CodeIT (Norway)` 만 존재. Wikidata 는 언어무관 핵심 신호로 가중치를 유지했으며, 부재는 `sameAs` 엔티티 링크의 최상위 근거를 잃는 것.
+3. **운영사 법인 식별정보·신뢰 정책 미노출** — 감사 대상 페이지에 사업자등록번호/주소/연락처, 환불·보증 정책, 성과통계(취업률 등)의 산출 방법론·기준연도·모집단이 노출되지 않음(E-E-A-T 신뢰성 핵심 감점).
+
+## Medium Priority Issues
+
+1. **`hasCourseInstance` 누락 (frontend-advanced)** — 7개 트랙 중 `프론트엔드 단기심화` Course 만 `hasCourseInstance` 결측(JSON-LD 직접 확인). 나머지 6개 트랙은 보유.
+2. **Organization `sameAs` 에 Wikipedia/Wikidata 미포함** — AI 엔티티 링킹 최강 신호 부재(엔티티 자체가 없으므로 선결과제는 High #1·#2).
+3. **스프린트 전용 IG `@codeit_sprint` 미확인** — `sameAs` 는 모회사 핸들 `instagram.com/codeit_kr` 만 포함. 체크리스트의 스프린트 전용 핸들은 직접 조회 시 302(로그인 리다이렉트)로 존재 확정 불가.
+4. **`ItemList` 의 `/track/frontend` 참조** — 홈 `ItemList`(8개) 가 고정 감사셋에 없는 `/track/frontend`(position 7) 를 포함. `llms.txt` 에는 `frontend` 와 `frontend-advanced` 가 별개 과정으로 존재하나, 감사셋과의 불일치는 stale 가능성.
+5. **`og:locale` 미설정** — `html lang="ko"` 는 전 페이지 확정이나 `og:locale=ko_KR` 메타는 부재(플랫폼 로케일 항목 부분 감점).
+
+## Low Priority Issues
+
+1. `WebSite` 에 `SearchAction`(사이트링크 검색창) 없음.
+2. FAQ 답변/코스 요약에 `speakable` 속성 없음.
+3. 명시적 `Content-Security-Policy` 헤더 부재(그 외 보안 헤더 HSTS/nosniff/SAMEORIGIN/Referrer-Policy/Permissions-Policy 는 양호).
+4. `#organization` 동일 @id 에서 로고 불일치(Org 블록 `codeit-logo.png` vs Course.provider `sprint-logo.png`).
+5. `llms-full.txt` 부재(404) — `llms.txt` 는 존재.
+
+---
+
+## Category Deep Dives
+
+### AI Citability (84/100)
+
+객관 체크리스트 가점 합. 10개 고정 URL 모두 실 텍스트가 SSR 로 추출 가능(빈 JS 셸 없음, HTML 198KB–1.8MB).
+
+| # | 항목 | 가능 | 가점 | 근거 |
 |---|---|---|---|---|
-| 1 | https://sprint.codeit.kr/ | 200 | 1,991 | 6 |
-| 2 | https://sprint.codeit.kr/career | 200 | 1,447 | 2 |
-| 3 | https://sprint.codeit.kr/track/frontend-advanced | 200 | 8,186 | 4 |
-| 4 | https://sprint.codeit.kr/track/backend-spring | 200 | 19,424 | 4 |
-| 5 | https://sprint.codeit.kr/track/fullstack | 200 | 16,401 | 4 |
-| 6 | https://sprint.codeit.kr/track/ai | 200 | 19,591 | 4 |
-| 7 | https://sprint.codeit.kr/track/data | 200 | 12,775 | 4 |
-| 8 | https://sprint.codeit.kr/track/product-design | 200 | 14,267 | 4 |
-| 9 | https://sprint.codeit.kr/track/it-founder | 200 | 15,096 | 4 |
-| 10 | https://sprint.codeit.kr/llms.txt | 200 | (텍스트 파일) | — |
+| 1 | 독립 인용가능 정량 블록 | 15 | 14 | 취업률·완주율·비전공자 비율 등 정량 stat 이 트랙 전반 일관. 출처/방법론 표기 약함 −1 |
+| 2 | 질문형 헤딩(쿼리 매칭) | 10 | 7 | 실제 FAQ 질문 다수("비전공자도 따라올 수 있나요?", "훈련장려금은 어떻게 지급되나요?") vs 슬로건성 H2 혼재 |
+| 3 | 상단 정의/요약 문장 | 10 | 6 | 도입부가 홍보성("압도적인 결과로 증명하는…"), "X는 ~이다" 정의 패턴 적음 |
+| 4 | 사실 리스트·표(커리큘럼/트랙/성과/가격) | 20 | 19 | 주차별 커리큘럼·정가표·`teaches[]`(예: backend "Java·객체지향·Spring·JPA·RESTful API·대용량 트래픽") 매우 추출 친화 |
+| 5 | 고유명사·구체 수치 | 15 | 15 | 정확한 학비(₩600,000 본인부담)·기수일정·기간(27/29/30주)·툴(Spring/JPA/Transformers/BERT)·고용사 |
+| 6 | FAQ형 콘텐츠 | 10 | 8 | `FAQPage` 홈(7문항)+전 트랙, 실 Q→A |
+| 7 | 구조화 llms.txt 요약 | 10 | 9 | 유효 llms.txt(H1+요약 blockquote+트랙/취업/회사 섹션 링크). 헤드라인 통계 인라인 부재 −1 |
+| 8 | 낮은 부풀림 비율 | 10 | 6 | 트랙=사실 위주(양호), 홈/career=홍보 부풀림으로 희석 |
+| | **합계** | **100** | **84** | |
 
-### 기술 신호 (존재여부만 점검)
-| 신호 | 결과 | 근거 |
-|---|---|---|
-| `/robots.txt` | ✅ 존재 (200) | `User-agent: *` / `Disallow: /admin, /become` 만. AI 크롤러(GPTBot·ClaudeBot·PerplexityBot) 차단 없음. 두 sitemap·Host 선언 포함 |
-| `/sitemap.xml` | ✅ 존재 (200) | `/`, `/career` 2 URL (lastmod 2026-06-23) |
-| `/server-sitemap.xml` | ✅ 존재 (200) | 8개 track URL (동적 sitemap) |
-| `/llms.txt` | ✅ 존재 (200) | 트랙·취업지원·회사(모회사 코드잇 링크) 구조화. Course/FAQPage/BreadcrumbList 안내 명시 |
-| `/llms-full.txt` | ❌ 부재 (404) | 404 + SPA fallback HTML 반환 (실파일 아님) |
+- **강한 인용 예시:** `/track/ai` Course `teaches[]` 에 NLP/LLM 스택; `/track/backend-spring` "본인부담 ₩600,000" Offer.
+- **약한 예시:** 홈/트랙 도입부 "압도적인 결과로 증명하는…"(슬로건, 사실 0).
+
+### Brand Authority (52/100)
+
+composite 반영은 **`brandSources` (version 2) 고정 8개 소스의 존재/연결 여부**만. "(모회사)" 항목은 코드잇(parent) 엔티티이며,
+사이트 Organization 스키마가 `parentOrganization` 으로 코드잇(`www.codeit.kr/#organization`)에 연결되어 있고 **그 모회사 엔티티가 존재하면 부분 가점**(자식이 부모 상속).
+완전 가점은 스프린트 전용 엔티티가 있을 때만. 새로 발견한 소스는 디스커버리에만 기록(점수 미반영).
+
+| # | 고정 소스 | 가능 | 가점 | 존재/연결 근거 | 완전/부분 |
+|---|---|---|---|---|---|
+| 1 | namu.wiki/w/코드잇 (모회사) | 15 | 8 | 직접 fetch **403**(규칙상 불이익 없음). `parentOrganization`→코드잇(`www.codeit.kr/#organization`) 연결을 JSON-LD 로 확정 → 모회사 인정. 스프린트 전용 엔티티 아님 | 부분 |
+| 2 | ko.wikipedia/코드잇 (모회사) | 15 | 0 | 직접 조회 **404**, 검색 API 무관 결과만 → 모회사 문서 부재. 한국어 위키는 KR 핵심(down-weight 대상 아님) → 상속할 엔티티 없음 | 없음 |
+| 3 | Wikidata 코드잇/Codeit (모회사) | 15 | 0 | `wbsearchentities` ko 0건, en 은 `Q30299760 CodeIT(Norway)` 만(무관). 언어무관 핵심 → 가중치 유지, 엔티티 없어 가점 불가 | 없음 |
+| 4 | blog.naver.com/codeitofficial | 10 | 9 | Org `sameAs` 에 **정확히 동일 핸들** + 라이브 **200** → 존재·연결 확정 | 부분(모회사 채널) |
+| 5 | youtube.com/@codeit | 15 | 13 | `sameAs` + 라이브 **200** 확정. 구독/조회수 JS-gated 미확인 −2 | 준-완전 |
+| 6 | Instagram @codeit.kr, @codeit_sprint | 10 | 7 | `sameAs` 에 `instagram.com/codeit_kr`(모회사) 확정. `@codeit.kr`/`@codeit_sprint` 직접 조회 302(로그인) → 스프린트 전용 핸들 미확정 | 부분 |
+| 7 | linkedin/company/codeit-official | 10 | 10 | `sameAs` + 라이브 **200** 확정 | 완전 |
+| 8 | 잡플래닛: 코드잇 기업 페이지 | 10 | 5 | 직접 조회 **403**(미확정). 법인 `(주) 코드잇` 실재 → 페이지 개연 높으나 본 회차 미확인 | 부분 |
+| | **합계** | **100** | **52** | | |
+
+`8 + 0 + 0 + 9 + 13 + 7 + 10 + 5 = 52`
+
+**Organization schema 연결 (원본 SSR HTML 직접 파싱, 권위 근거):**
+- 엔티티 `EducationalOrganization` `@id: https://sprint.codeit.kr/#organization`, name `코드잇 스프린트`, logo `codeit-logo.png`.
+- `sameAs`(5): `youtube.com/@codeit`, `instagram.com/codeit_kr`, `facebook.com/codeit.kr`, `blog.naver.com/codeitofficial`, `linkedin.com/company/codeit-official`.
+- `parentOrganization`: `{ "@id": "https://www.codeit.kr/#organization", "name": "코드잇", "url": "https://www.codeit.kr" }` — **확정**. 자식(sprint)이 모회사(코드잇) 엔티티 상속 근거.
+- Wikipedia/Wikidata 링크는 `sameAs` 에 없음(해당 엔티티 자체 부재).
+
+### Content E-E-A-T (75/100)
+
+| 축 | 가능 | 가점 | 핵심 근거 |
+|---|---|---|---|
+| Experience | 25 | 20 | 실명 수료생 성과·1인칭 후기·트랙별 실제 프로젝트. 학생 포트폴리오 이미지 미확인, 일부 후기 익명화 − |
+| Expertise | 25 | 22 | 트랙별 실명 강사+이력, 주차별 커리큘럼·정확한 기술용어(`teaches[]` 검증). CEO 가 다수 트랙에 중복 노출되어 트랙별 전문성 희석 − |
+| Authoritativeness | 25 | 18 | KDT/고용노동부/내일배움카드, 고용사 30+(토스·쿠팡·카카오페이 등), 장관상. 외부 평판 링크(잡플래닛/네이버 후기) 부재 −, 운영사 권위 페이지 감사셋 내 부재 − |
+| Trustworthiness | 25 | 15 | HTTPS·HSTS, 정량 성과, 투명 학비·국비지원 내역, 신선한 기수일정. **사업자등록번호/주소/연락처·환불정책·통계 산출 방법론 미노출** −10 |
+| **합계** | **100** | **75** | |
+
+### Technical GEO (96/100)
+
+규칙: 기술 신호 **파일 존재 점검은 5개 파일(robots/sitemap/server-sitemap/llms.txt/llms-full.txt)의 존재 여부로만** 한정(임의 파일 탐색 없음). 그 외 항목은 고정 `auditUrls` 의 HTTP 응답·SSR HTML 에서만 도출. 정규화 100/104 → **96**.
+
+| 항목 | 가능 | 가점 | 근거 |
+|---|---|---|---|
+| HTTPS/TLS | 8 | 8 | HTTPS 강제, 라이브 200 |
+| HSTS | 4 | 4 | `strict-transport-security: max-age=31536000` (헤더 확인) |
+| robots.txt 존재 | 6 | 6 | **200**, 유효, 양 sitemap 참조 |
+| AI 크롤러 허용 | 8 | 8 | `User-agent: *` 가 `/admin`,`/become` 만 Disallow. GPTBot/ClaudeBot/PerplexityBot/Google-Extended/CCBot 전부 허용 |
+| sitemap.xml | 6 | 6 | **200**, 유효 XML, lastmod |
+| server-sitemap.xml | 4 | 4 | **200**, 8개 트랙 URL+lastmod |
+| llms.txt | 6 | 6 | **200**, 유효 포맷 |
+| llms-full.txt | 3 | 0 | **404 (부재)** |
+| SSR(실 HTML) | 20 | 20 | 9개 HTML 전부 풀 SSR(JSON-LD 포함, 198KB–1.8MB), CSR 빈 셸 아님 |
+| canonical | 6 | 6 | 9개 HTML 전부 `rel=canonical` (head 직접 확인) |
+| meta robots noindex 아님 | 6 | 6 | noindex 없음, 차단 X-Robots-Tag 없음 |
+| viewport | 4 | 4 | 9개 전부 `name="viewport"` (head 확인) |
+| structured data 존재 | 5 | 5 | Course/FAQPage/BreadcrumbList/Org 전 페이지 |
+| 보안 헤더 | 8 | 7 | nosniff/SAMEORIGIN/Referrer-Policy/Permissions-Policy 확인 O, **CSP 부재 −1** |
+| 클린 URL | 4 | 4 | 소문자·하이픈·계층(`/track/<slug>`) |
+| 10개 URL 200 | 6 | 6 | 9개 HTML + llms.txt 전부 HTTP 200 |
+| **합계** | **104 → 100 정규화** | **100 → 96** | |
+
+**5-File 존재표:** robots.txt **200** · sitemap.xml **200** · server-sitemap.xml **200** · llms.txt **200** · llms-full.txt **404**.
+
+### Schema & Structured Data (87/100)
+
+원본 SSR HTML 직접 파싱. 100% JSON-LD(Microdata/RDFa 없음), 전 블록 파싱 성공. 정규화 94/108 → **87**.
+
+| 페이지 | @types |
+|---|---|
+| / | EducationalOrganization(+sameAs5,+parentOrganization), WebSite(+publisher), FAQPage(7문항), ItemList(8 트랙) |
+| /career | EducationalOrganization, WebSite |
+| /track/frontend-advanced | EduOrg, WebSite, Course(**hasCourseInstance 결측**, +offers/teaches/datePublished/inLanguage=ko), FAQPage, BreadcrumbList |
+| /track/{backend-spring,fullstack,ai,data,product-design,it-founder} | EduOrg, WebSite, Course(+hasCourseInstance/offers/teaches), FAQPage, BreadcrumbList |
+| /llms.txt | n/a(text/plain) |
+
+| 항목 | 가능 | 가점 | 근거 |
+|---|---|---|---|
+| Organization 스키마(유효) | 12 | 12 | `EducationalOrganization` 전 HTML 페이지 |
+| Org `sameAs`(소셜) | 8 | 7 | 5개 소셜 링크 ✓, Wikipedia/Wikidata 미포함 −1 |
+| `parentOrganization` 링크 | 6 | 6 | →코드잇 `www.codeit.kr/#organization` ✓ |
+| Course 스키마 | 12 | 12 | 7개 트랙, name/description/provider/offers/teaches ✓ |
+| `hasCourseInstance` | 8 | 7 | 6/7 트랙 보유, frontend-advanced 결측 −1 |
+| FAQPage | 12 | 12 | 홈 + 7개 트랙 ✓ |
+| BreadcrumbList | 8 | 8 | 7개 트랙 ✓ |
+| WebSite(+publisher) | 6 | 6 | 전 페이지 ✓ |
+| ItemList | 6 | 5 | 8개 트랙; stale `/track/frontend` 참조 −1 |
+| JSON-LD 포맷 | 6 | 6 | 100% JSON-LD ✓ |
+| WebSite `SearchAction` | 4 | 0 | 부재 |
+| `speakable` | 4 | 0 | 부재 |
+| Offer/가격 디테일 | 8 | 7 | `offers`+price 존재, 부분 |
+| 일관 @id/로고 | 4 | 2 | Org `codeit-logo` vs Course.provider `sprint-logo` 불일치 −2 |
+| 스키마 내 로케일(inLanguage) | 4 | 4 | Course `inLanguage: "ko"` ✓ |
+| **합계** | **108 → 100 정규화** | **94 → 87** | |
+
+### Platform Optimization (90/100)
+
+10개 고정 URL 의 on-page 신호만. KR 현지화(네이버/구글-KR 가중). 이번 회차에 `<head>` 원본 직접 검증으로 lang/OG/Twitter/viewport 항목 정정.
+
+| 항목 | 가능 | 가점 | 근거 |
+|---|---|---|---|
+| 한국어 콘텐츠 | 8 | 8 | 10페이지 전부 한국어 |
+| html lang / og:locale | 7 | 5 | **`html lang="ko"` 전 페이지 확정** ✓; `og:locale` 부재 −2 |
+| AI Overview/Briefing 추출 블록 | 12 | 10 | 직답 FAQ + 정량 stat 블록 |
+| FAQ/구조화 Q&A | 12 | 11 | 전 페이지 `FAQPage` |
+| FAQPage/Course/Org JSON-LD | 12 | 11 | 전 페이지 유효·SSR(직접 검증) |
+| 비교/리스트(Perplexity 친화) | 10 | 10 | 트랙 비교표·`teaches[]`·`ItemList` |
+| 헤딩 계층 | 8 | 6 | 단일 H1+논리적 H2/H3, 슬로건 H2 일부 |
+| 신선도/날짜 | 8 | 7 | 기수일정·`datePublished`(스키마). 가시적 publish/modified 타임스탬프는 아님 |
+| llms.txt 크롤러 피딩 | 6 | 6 | 유효 llms.txt(200) |
+| OG/Twitter 카드 | 5 | 5 | **`og:title`+`twitter:card` 전 페이지 확정** ✓ |
+| SSR/크롤 가능 텍스트 | 7 | 7 | 전 페이지 SSR |
+| 모바일 viewport | 3 | 3 | **viewport 전 페이지 확정** ✓ |
+| canonical/hreflang | 2 | 1 | canonical 전 페이지 ✓, hreflang 없음 −1 |
+| **합계** | **100** | **90** | |
+
+**서피스별:** 네이버 AI Briefing/Perplexity/Google AIO = 강함(비교표·FAQ·SSR·llms.txt·lang=ko). ChatGPT/Gemini/Bing = 중상(스키마·엔티티·OG 보강 확정, off-page 엔티티가 한계).
 
 ---
 
-## 카테고리별 체크리스트 근거
+## Discovery (composite 점수 미반영)
 
-### 1. AI Citability — 78 / 100 (가중 0.25)
-객관 신호 가점 합. 추출 가능한 자기완결 패시지 중심 평가.
+규칙상 고정 `brandSources` 외 새로 발견한 소스/커뮤니티는 **점수에 넣지 않고 여기에만 기록**한다.
 
-| 체크 항목 | 결과 | 근거 |
-|---|---|---|
-| 자기완결 FAQ Q&A 블록 | ✅ | track 페이지 8–13개 질문/페이지, home 7개. (career 0) |
-| FAQ 답변 길이 적정(인용가능) | ✅ | 평균 130–190자 — 단독 인용 가능한 길이 |
-| 명확한 제목 계층(h1/h2/h3) | ✅ | track 페이지 h1=1, h2 2–7, h3 2–13 |
-| 인용가능 수치 팩트(취업률·기간·% 등) | ✅ | track 페이지당 19–56개 수치 신호 |
-| 콘텐츠 페이지 SSR 본문 충분 | ⚠️ 부분 | track 7개 8K–19K자 충분 / **home·career 1.4–2K자(클라이언트 렌더 의존)** |
-| 정의·리스트형 구조 | ✅ | track 본문 구조화 양호 |
+- **Facebook** `facebook.com/codeit.kr` — 모회사 공식 페이지(Org `sameAs`). 고정 리스트 외.
+- **실제 IG 핸들 `@codeit_kr`** — `sameAs` 의 실 핸들(체크리스트 표기 `@codeit.kr` 와 상이).
+- **Sprint `frontend` 트랙** `sprint.codeit.kr/track/frontend` — `llms.txt`·홈 `ItemList` 에 존재하나 고정 감사셋(frontend-advanced)엔 없음.
+- **`llms.txt` 의 모회사 명시** — "회사" 섹션에 `코드잇 (Codeit) — 온라인 코딩 교육 플랫폼 (모회사)" 로 parent 관계를 텍스트로도 노출.
+- 미확인 KR 커뮤니티(OKKY·블라인드·커리어리·네이버 카페 등) — 본 회차 점검 안 함(점수 무관, 디스커버리 기록만).
 
-**감점 사유:** home·career 본문이 JS 렌더 의존 → JS 미실행 크롤러가 보는 본문 빈약(스키마·FAQ는 SSR 되어 일부 상쇄).
+---
 
-### 2. Brand Authority — 50 / 100 (가중 0.20)
-composite 반영 외부 신호 = `brandSources` (v2) 고정 체크리스트 **8개뿐**. 각 소스 존재/연결 여부로 채점. 동일 가중(12.5점/소스).
-KR 현지화: 영문 위키·Reddit·G2·Trustpilot·Clutch 는 목록에 없음. **Wikidata 는 언어무관 핵심이라 가중 유지**.
+## Quick Wins (This Week)
 
-| # | brandSource | 판정 | 점수 | 근거 |
+1. `frontend-advanced` Course 에 `hasCourseInstance`(courseMode/startDate/endDate) 추가 — 타 6개 트랙과 정합.
+2. `llms-full.txt` 생성 — 현재 404, `llms.txt` 와 함께 풀 본문 제공.
+3. 홈 `ItemList` 의 `/track/frontend` 참조 정합성 점검(감사셋과 불일치 해소 또는 frontend 트랙 정식 편입).
+4. `#organization` 로고 불일치 해소(동일 @id 단일 로고).
+5. 운영사 법인정보(사업자등록번호/주소/연락처)·환불정책을 감사 대상 페이지 푸터에 노출(E-E-A-T 신뢰성).
+
+## 30-Day Action Plan
+
+### Week 1: 엔티티 그라운딩 (최우선)
+- [ ] 모회사 **코드잇 Wikidata 아이템 생성**(언어무관 핵심) + 한국어 위키백과 문서화 추진.
+- [ ] 생성 후 Organization `sameAs` 에 Wikidata/위키백과 URL 추가.
+
+### Week 2: 신뢰성(E-E-A-T) 보강
+- [ ] 취업률·완주율 등 핵심 통계의 **산출 방법론·기준(모집단/연도) 명시**.
+- [ ] 환불·보증 정책 페이지 노출, 운영사 식별정보 푸터 표준화.
+
+### Week 3: 스키마/플랫폼
+- [ ] FAQ 답변·코스 요약에 `speakable` 추가, `WebSite.SearchAction` 추가, `og:locale=ko_KR` 보강.
+- [ ] CSP 헤더 도입.
+
+### Week 4: 인용가능성
+- [ ] 트랙/홈 도입부에 "X는 ~이다" **정의·요약 문장** 추가, 슬로건 H2 를 질문형으로 전환.
+- [ ] `llms.txt` 에 헤드라인 통계 스냅샷(취업률/완주율) 인라인 추가, `llms-full.txt` 동반 제공.
+
+---
+
+## Appendix: Pages Analyzed (고정 auditUrls)
+
+| # | URL | HTTP | SSR | JSON-LD @types |
 |---|---|---|---|---|
-| 1 | namu.wiki/w/코드잇 (모회사) | 🟡 부분 | 6.25 | 직접 fetch 403. **단 모회사 코드잇(`www.codeit.kr/#organization`) sameAs 에 `namu.wiki/w/코드잇` 포함 확인 → 연결 인정**(직접 fetch 불필요). 부모 엔티티 상속. |
-| 2 | ko.wikipedia.org/wiki/코드잇 (모회사) | 🔴 부재 | 0 | API `missing`, HTTP 404. 한국어 위키 문서 없음 |
-| 3 | Wikidata: 코드잇/Codeit (모회사) | 🔴 부재 | 0 | `wbsearchentities` 한국어/영문 검색 결과 무관 엔티티(CodeIT Norway, Q30299760)만. 코드잇 교육사 엔티티 없음 |
-| 4 | blog.naver.com/codeitofficial | 🟢 연결 | 12.5 | sprint `sameAs` + 모회사 `sameAs` 양쪽 등재 |
-| 5 | youtube.com/@codeit | 🟢 연결 | 12.5 | sprint `sameAs` 등재 |
-| 6 | Instagram @codeit.kr / @codeit_sprint | 🟡 부분 | 6.25 | `sameAs` 에 `instagram.com/codeit_kr`(모회사 핸들) 연결 ✅ / **sprint 전용 `@codeit_sprint` 는 sameAs 미연결** ❌ |
-| 7 | linkedin.com/company/codeit-official | 🟢 연결 | 12.5 | sprint `sameAs` 등재 |
-| 8 | 잡플래닛: 코드잇 기업 페이지 | 🔴 미확인 | 0 | 직접 fetch 403, 어떤 sameAs/스키마 연결로도 확인 불가 |
-| | **합계** | | **50.0 / 100** | 4.0 / 8 소스 |
+| 1 | https://sprint.codeit.kr/ | 200 | Y | EduOrg, WebSite, FAQPage, ItemList(8) |
+| 2 | https://sprint.codeit.kr/career | 200 | Y | EduOrg, WebSite |
+| 3 | https://sprint.codeit.kr/track/frontend-advanced | 200 | Y | EduOrg, WebSite, Course(**hasCourseInstance 결측**), FAQPage, BreadcrumbList |
+| 4 | https://sprint.codeit.kr/track/backend-spring | 200 | Y | EduOrg, WebSite, Course(+instance), FAQPage, BreadcrumbList |
+| 5 | https://sprint.codeit.kr/track/fullstack | 200 | Y | EduOrg, WebSite, Course(+instance), FAQPage, BreadcrumbList |
+| 6 | https://sprint.codeit.kr/track/ai | 200 | Y | EduOrg, WebSite, Course(+instance), FAQPage, BreadcrumbList |
+| 7 | https://sprint.codeit.kr/track/data | 200 | Y | EduOrg, WebSite, Course(+instance), FAQPage, BreadcrumbList |
+| 8 | https://sprint.codeit.kr/track/product-design | 200 | Y | EduOrg, WebSite, Course(+instance), FAQPage, BreadcrumbList |
+| 9 | https://sprint.codeit.kr/track/it-founder | 200 | Y | EduOrg, WebSite, Course(+instance), FAQPage, BreadcrumbList |
+| 10 | https://sprint.codeit.kr/llms.txt | 200 | n/a | 유효 llms.txt(text/plain) |
 
-**모회사(코드잇) 그라운딩 메모:** sprint 의 Organization 스키마는 `parentOrganization → 코드잇(@id https://www.codeit.kr/#organization)` 로 연결되어 있고, 동일 @id 의 부모 엔티티가 `www.codeit.kr` 에 실재하며 자체 sameAs(YouTube·Instagram·Facebook·Naver·LinkedIn·namu.wiki)를 보유 → **"(모회사)" 표기 소스는 부분 가점** 규칙 적용. **완전 가점은 sprint 전용 엔티티(예: Wikidata sprint 항목)가 생길 때만** 부여 — 현재 미존재.
+**Technical signal files:** robots.txt **200** · sitemap.xml **200** · server-sitemap.xml **200** · llms.txt **200** · llms-full.txt **404**.
 
-### 3. Content E-E-A-T — 76 / 100 (가중 0.20)
-KR 기준. 객관 신호 마커 카운트 기반.
-
-| 신호 (E-E-A-T) | 결과 | 근거 |
-|---|---|---|
-| Expertise — 멘토/현직/강사 | ✅ | track 페이지 19–34회 언급 |
-| Experience — 수강생 후기/인터뷰 | ✅ | track 페이지 31–35회 |
-| Experience — 취업률·성과 수치 | ✅ | track 페이지 7–18회 |
-| Trust — 국비지원/내일배움카드 | ✅ | track 페이지 8회(frontend-advanced 3) |
-| Trust — 사업자/대표/개인정보 표기 | ⚠️ 부분 | 일부 track(9–10) SSR 확인 / home·일부 track 0 (푸터 클라이언트 렌더 추정) |
-| Authoritativeness — 모회사 코드잇 그라운딩 | ✅ | parentOrganization 연결, 확립된 교육 플랫폼 |
-| Authoritativeness — 외부 지식그래프 엔티티 | 🔴 | Wikidata/ko.Wikipedia 엔티티 부재(2번·3번 참조) |
-| Trust — 외부 리뷰 집계(Review/AggregateRating) | 🔴 | 해당 스키마 없음 |
-| 채용 연계사/제휴 증빙 | 🔴 | SSR 본문에서 채용사·제휴 마커 0 |
-
-### 4. Technical GEO — 80 / 100 (가중 0.15)
-기술 신호 5종 존재여부만(가점 20점/항목).
-
-| 항목 | 결과 | 점수 |
-|---|---|---|
-| robots.txt | ✅ | 20 |
-| sitemap.xml | ✅ | 20 |
-| server-sitemap.xml | ✅ | 20 |
-| llms.txt | ✅ | 20 |
-| llms-full.txt | ❌ (404) | 0 |
-| **합계** | | **80** |
-
-보조 관찰(가점 외): robots.txt 가 AI 크롤러를 차단하지 않고 두 sitemap 을 명시 → 접근성 양호.
-
-### 5. Schema & Structured Data — 88 / 100 (가중 0.10)
-JSON-LD GEO 핵심 타입 체크리스트(전 페이지 파싱 오류 0).
-
-| 체크 항목 | 결과 | 근거 |
-|---|---|---|
-| Organization/EducationalOrganization | ✅ (10) | 전 페이지 `#organization` |
-| Organization `sameAs` | ✅ (10) | YouTube·Instagram·Facebook·Naver·LinkedIn |
-| `parentOrganization` 연결 | ✅ (10) | → `www.codeit.kr/#organization` |
-| WebSite | ✅ (10) | 전 페이지 |
-| Course | ✅ (10) | 전 track 페이지 |
-| Offer + CourseInstance | ✅ (9) | Offer 전 track / **CourseInstance 는 frontend-advanced 누락** |
-| FAQPage + Question/Answer | ✅ (10) | 전 페이지(career 제외) |
-| BreadcrumbList | ✅ (9) | track 8/8 / **career 누락**(home 은 ItemList 대체) |
-| Review/AggregateRating | ❌ (0) | 평점·리뷰 스키마 없음 |
-| 유효 JSON(파싱 오류 없음) | ✅ (10) | 전 블록 정상 파싱 |
-| **합계** | | **88** |
-
-### 6. Platform Optimization — 70 / 100 (가중 0.10)
-플랫폼 준비도 신호 + brandSources 기반 외부 채널 존재(외부 신호는 brandSources 한정).
-
-| 체크 항목 | 결과 | 근거 |
-|---|---|---|
-| AI Overviews/Perplexity — FAQ 스키마 | ✅ | 전 페이지 FAQPage |
-| ChatGPT/Claude — llms.txt | ✅ | 존재(트랙 구조화) |
-| AI 크롤러 robots 허용 | ✅ | GPTBot·ClaudeBot·PerplexityBot 차단 없음 |
-| 영상 플랫폼(YouTube) | ✅ | sameAs 연결 |
-| 한국형 채널(Naver 블로그) | ✅ | sameAs 연결 |
-| 소셜(LinkedIn/Instagram) | 🟡 | LinkedIn ✅ / Instagram 부분(sprint 핸들 미연결) |
-| 지식패널 엔티티(Wikidata/Wikipedia) | 🔴 | 부재 → Google/Gemini 엔티티 패널 약함 |
-| 크롤 가능 SSR 본문 | 🟡 | track ✅ / home·career 빈약 |
-
----
-
-## 디스커버리 (composite 미반영 — 기록 전용)
-
-> 아래는 이번 감사 중 발견한, `brandSources` v2 체크리스트에 **없는** 신호/기회. 점수에 반영하지 않음.
-
-- **Facebook 페이지** `facebook.com/codeit.kr` — sprint·모회사 schema `sameAs` 에 존재하나 brandSources 체크리스트엔 없음 → 차기 버전 후보.
-- **모회사 namu.wiki 문서** 실재(코드잇) — 모회사 sameAs 로 확인됨. sprint 전용 namu 문서는 미확인.
-- **Instagram sprint 전용 핸들** `@codeit_sprint` — brandSources 에 명시되나 site schema `sameAs` 미연결 → 연결 시 brand 부분→완전 상향 여지.
-- **한국 개발/커리어 커뮤니티 후보(미점검·미반영):** OKKY, 블라인드, 커리어리, 네이버 카페(부트캠프/취준), 인프런·DevOcean 등 — 한국 생태계 평판 신호 확장 후보.
-- **잡플래닛 기업 페이지** — 직접 fetch 403 으로 이번 회차 검증 실패. 별도 인증/수동 확인 필요(현재 brand 0점 처리).
-
----
-
-## 주요 갭 & 권고 (재현 가능 신호 기반)
-
-1. **[brand/eeat 치명] 한국어 지식그래프 엔티티 생성** — Wikidata(언어무관 핵심) + ko.Wikipedia 에 코드잇/스프린트 엔티티 부재. composite 최대 상승 레버.
-2. **[technical] `/llms-full.txt` 추가** — 현재 404. 전체 콘텐츠 인덱스 제공 시 technical +20 여지.
-3. **[citability] home·career SSR 본문 강화** — 클라이언트 렌더 의존 → 핵심 본문 SSR/프리렌더.
-4. **[brand] sprint 전용 소셜 그라운딩** — `@codeit_sprint` 를 Organization `sameAs` 에 연결.
-5. **[schema] Review/AggregateRating 추가** — 후기 다수 보유하나 스키마 미반영.
-
----
-
-## 부록 — 사용 버전/방법
-- **brandSourcesVersion:** 2 (audit-targets.json 고정 체크리스트)
-- **외부 신호 정책:** composite 반영 외부 신호는 brandSources 8종 한정. 그 외 발견 소스는 디스커버리 전용.
-- **모회사 규칙:** "(모회사)" 표기 소스는 parentOrganization→코드잇 연결 + 부모 엔티티 실재 시 부분 가점(자식이 부모 상속). 완전 가점은 sprint 전용 엔티티 존재 시.
-- **기술 신호:** robots.txt/sitemap.xml/server-sitemap.xml/llms.txt/llms-full.txt 존재여부만.
-- **검증 도구:** curl(HTTP 상태·파일 존재), JSON-LD 파서(스키마 타입·sameAs·parentOrganization), HTML 텍스트 추출(제목·FAQ·수치·EEAT 마커), Wikidata `wbsearchentities` / Wikipedia API(엔티티 실재 확인).
+**brandSources used:** `brandSourcesVersion: 2` (8개 고정 소스, 위 Brand Authority 표 참조).
