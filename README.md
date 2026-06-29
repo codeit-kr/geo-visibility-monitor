@@ -13,13 +13,13 @@
 ```
 월요일 09:00 KST · ISO 짝수주(격주) — GitHub Actions cron
 ┌────────────────────────────────────────────────────────────────┐
-│ weekly-visibility-snapshot (그룹 A)                              │
+│ weekly-visibility-snapshot                             │
 │   pnpm snapshot → snapshots/<app>/<week>/{visibility,responses,  │
 │                    cost}.json + index.json 커밋·push             │
 └───────────────┬────────────────────────────────────────────────┘
                 │ 성공 시 workflow_run 체이닝
 ┌───────────────▼────────────────────────────────────────────────┐
-│ weekly-geo-audit (그룹 C)                                        │
+│ weekly-geo-audit                                      │
 │   audit ×3 (Claude 구독 OAuth, opus) → aggregate 평균/변동폭     │
 │   → geoScore.json + geo-audit-report.md + rollup 커밋·push       │
 │   → Vercel 재배포 READY 대기 → Slack 서비스 채널 알림            │
@@ -44,11 +44,11 @@ src/
   promptBuilder.ts         intent → paraphrase × {role}/{competitor} 전개 × reps → CallSpec[]
   engines/                 openai·gemini·anthropic·perplexity(챗봇) + serpapi(google-aio·naver) 어댑터
   analyze/                 matchEntities(SoV) · classify→llmJudge(감성·정확도) · checkAccuracy(휴리스틱 폴백)
-  jobs/citationMonitor.ts  그룹 A 본체 — 콜 실행·분류·비용 집계
+  jobs/citationMonitor.ts  콜 실행·분류·비용 집계
   store/                   writeSnapshot · buildRollupIndex
   util/                    runOpts(안전장치 env) · fetchWithRetry(429 백오프) · concurrency · time
   scripts/                 auditTargets(geo-audit 대상 산출) · aggregateGeoAudit(3회 집계) · notifySlack
-  index.ts                 그룹 A 오케스트레이션(서비스 루프 + 성공률 abort + 런 요약)
+  index.ts                 오케스트레이션(서비스 루프 + 성공률 abort + 런 요약)
   rollup.ts                롤업 단독 재생성(geo-audit 가 geoScore 기록 후 호출)
 snapshots/
   <app>/<isoWeek>/         visibility·responses·cost.json (+ geoScore·geoScoreRuns.json·geo-audit-report.md)
@@ -60,7 +60,7 @@ dashboard/                 in-repo Next.js 대시보드 (아래 §대시보드)
 
 ---
 
-## 측정 로직 (그룹 A — `pnpm snapshot`)
+## 측정 로직 (`pnpm snapshot`)
 
 1. **질의셋 전개** (`config/services/<app>.ts` → `promptBuilder`): 의도(intent) → 패러프레이즈(같은 의도 다른 문구 ~5) → rep(반복, 기본 1)로 펼쳐 `CallSpec[]` 생성. `{role}`·`{competitor}` 토큰 전개.
    - **metricRole**: `visibility`(무브랜드 — **헤드라인 인용률·SoV는 이것만**), `reputation`(브랜드 평판·감성), `accuracy`(팩트 vs groundTruth).
@@ -72,7 +72,7 @@ dashboard/                 in-repo Next.js 대시보드 (아래 §대시보드)
 
 > 챗봇 API는 소비자 앱의 proxy → **절대값보다 추이·SoV가 신뢰도 높음**. 단일 주 델타는 노이즈(이동평균으로 판단).
 
-## GEO 점수 (그룹 C — `weekly-geo-audit`)
+## GEO 점수 (`weekly-geo-audit`)
 
 선행지표. `/geo-audit` 에이전트 스킬을 GitHub Action이 헤드리스 실행해 서비스별 `geoScore.json`(+리포트) 산출.
 - **인증**: Claude 구독 OAuth 토큰(`claude setup-token` → Secret `CLAUDE_CODE_OAUTH_TOKEN`, 별도 종량제 키 불필요). ⏰ **1년 만료 — 최종 2026-06-23, ~2027-06-23 갱신.**
