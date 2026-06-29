@@ -21,7 +21,10 @@
 /* 헤더는 DashboardHeader.module.scss(공유)로 이동 */
 
 /* 툴바 */
-.toolbar { max-width: 1180px; margin: 20px auto 14px; padding: 0 32px; display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; }
+.toolbar { max-width: 1180px; margin: 20px auto 14px; padding: 0 32px; display: flex; flex-direction: column; gap: 10px; }
+.tb-row { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; }
+.chip-grp { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+.grp-l { font-size: 11px; color: var(--faint); font-family: var(--mono); flex-shrink: 0; width: 48px; }
 .chips { display: flex; gap: 7px; flex-wrap: wrap; }
 .chip {
   display: inline-flex; align-items: center; gap: 6px;
@@ -30,10 +33,31 @@
   transition: border-color 0.12s, color 0.12s;
   &:hover { border-color: var(--faint); }
   &.on { border-color: var(--accent); color: var(--ink); box-shadow: inset 0 0 0 1px var(--accent); }
-  &.pill { font-family: var(--mono); font-size: 11px; }
-  &.pill.on { border-color: var(--up); box-shadow: inset 0 0 0 1px var(--up); color: var(--up); }
 }
 .sw { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+
+/* 우측 컨트롤(세그먼트 + 초기화) */
+.tb-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.reset {
+  display: inline-flex; align-items: center; gap: 5px; cursor: pointer;
+  background: var(--surface); border: 1px solid var(--line); color: var(--muted);
+  font-size: 12px; font-weight: 560; padding: 5px 11px; border-radius: 8px;
+  transition: border-color 0.12s, color 0.12s;
+  &:hover:not(:disabled) { border-color: var(--down); color: var(--down); }
+  &:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  &:disabled { opacity: 0.45; cursor: default; }
+}
+.reset-x { opacity: 0.7; font-size: 11px; }
+
+/* 언급 여부 세그먼트(전체 / 언급 / 미언급) */
+.seg { display: inline-flex; flex-shrink: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 2px; gap: 2px; }
+.seg-btn {
+  background: none; border: 0; color: var(--muted); cursor: pointer;
+  font-size: 12px; font-weight: 560; padding: 4px 12px; border-radius: 6px;
+  transition: background 0.12s, color 0.12s;
+  &:hover { color: var(--ink); }
+  &.on { background: var(--accent); color: #fff; }
+}
 .search {
   background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
   font-family: var(--mono); font-size: 12px; color: var(--ink); padding: 6px 12px; width: 220px;
@@ -54,7 +78,15 @@
 }
 .filter-x { color: var(--accent); opacity: 0.7; }
 
-.groups { max-width: 1180px; margin: 0 auto; padding: 0 32px; display: flex; flex-direction: column; gap: 14px; }
+/* 카테고리 클러스터 */
+.cats { max-width: 1180px; margin: 0 auto; padding: 0 32px; display: flex; flex-direction: column; gap: 28px; }
+.cat { display: flex; flex-direction: column; gap: 14px; }
+.cat-hd { display: flex; align-items: baseline; gap: 12px; padding: 0 2px 2px; border-bottom: 2px solid var(--line); }
+.cat-name { font-size: 13px; font-weight: 720; letter-spacing: 0.01em; color: var(--ink); margin: 0; }
+.cat-stat { font-family: var(--mono); font-size: 11px; color: var(--faint); margin-left: auto; }
+.cat-ment.hit { color: var(--up); }
+
+.groups { display: flex; flex-direction: column; gap: 14px; }
 .noresult { background: var(--surface); border: 1px dashed var(--line); border-radius: 13px; padding: 28px; text-align: center; color: var(--muted); font-size: 13px; }
 .group { background: var(--surface); border: 1px solid var(--line); border-radius: 13px; overflow: hidden; }
 .g-hd { display: flex; justify-content: space-between; align-items: baseline; gap: 14px; padding: 15px 18px 13px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
@@ -158,7 +190,7 @@
 }
 @media (max-width: 560px) {
   .toolbar { padding-left: 16px; padding-right: 16px; }
-  .groups { padding-left: 16px; padding-right: 16px; }
+  .cats { padding-left: 16px; padding-right: 16px; }
   .foot { padding-left: 16px; padding-right: 16px; }
   .rec-sum { padding-left: 14px; padding-right: 14px; }
 }
