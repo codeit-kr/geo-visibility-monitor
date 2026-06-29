@@ -13,16 +13,16 @@
 ```
 월요일 09:00 KST · ISO 짝수주(격주) — GitHub Actions cron
 ┌────────────────────────────────────────────────────────────────┐
-│ weekly-visibility-snapshot                             │
-│   pnpm snapshot → snapshots/<app>/<week>/{visibility,responses,  │
-│                    cost}.json + index.json 커밋·push             │
+│ weekly-visibility-snapshot                                     │
+│   pnpm snapshot → snapshots/<app>/<week>/{visibility,responses,│
+│                    cost}.json + index.json 커밋·push            │
 └───────────────┬────────────────────────────────────────────────┘
                 │ 성공 시 workflow_run 체이닝
 ┌───────────────▼────────────────────────────────────────────────┐
-│ weekly-geo-audit                                      │
-│   audit ×3 (Claude 구독 OAuth, opus) → aggregate 평균/변동폭     │
-│   → geoScore.json + geo-audit-report.md + rollup 커밋·push       │
-│   → Vercel 재배포 READY 대기 → Slack 서비스 채널 알림            │
+│ weekly-geo-audit                                               │
+│   audit ×3 (Claude 구독 OAuth, opus) → aggregate 평균/변동폭       │
+│   → geoScore.json + geo-audit-report.md + rollup 커밋·push      │
+│   → Vercel 재배포 READY 대기 → Slack 서비스 채널 알림                 │
 └────────────────────────────────────────────────────────────────┘
    git push ──► Vercel 자동 재배포 ──► 대시보드 갱신
 ```
