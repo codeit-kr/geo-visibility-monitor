@@ -12,7 +12,7 @@ permissions:
   contents: write # 스냅샷 커밋
 
 jobs:
-  # 격주 게이트 — 스케줄(매주 cron) 중 ISO 홀수주만 통과. 수동 dispatch 는 항상 통과.
+  # 격주 게이트 — 스케줄(매주 cron) 중 ISO 짝수주만 통과. 수동 dispatch 는 항상 통과.
   gate:
     runs-on: ubuntu-latest
     outputs:
