@@ -49,8 +49,8 @@ jobs:
         run: pnpm snapshot
         env:
           CAPTURED_AT: ${{ steps.ts.outputs.captured_at }} # 런타임 UTC(src의 argless new Date 금지와 무관)
-          # 점진적 활성화 — repo Variable 로 관리. PoC: OpenAI + SerpApi(free) → 이후 gemini 추가
-          ACTIVE_ENGINES: ${{ vars.ACTIVE_ENGINES || 'chatgpt,google-aio,naver-briefing' }}
+          # 점진적 활성화 — repo Variable 로 관리(미설정 시 아래 폴백). chatgpt+gemini(챗봇) + SerpApi(free) SERP
+          ACTIVE_ENGINES: ${{ vars.ACTIVE_ENGINES || 'chatgpt,gemini,google-aio,naver-briefing' }}
           ACTIVE_SERVICES: ${{ vars.ACTIVE_SERVICES }} # 미설정이면 전 서비스
           # 안전장치(Variable 로 제어). 첫 dispatch 는 DRY_RUN=1 또는 SAMPLE_N 권장.
           DRY_RUN: ${{ vars.DRY_RUN }} # '1' 이면 실호출 없이 계획만

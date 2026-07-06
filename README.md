@@ -147,7 +147,7 @@ cd dashboard && pnpm install && pnpm dev    # 대시보드 :4350
 
 **엔진 Secrets**: `OPENAI_API_KEY`(web_search 전용), `SERPAPI_API_KEY`, (확장 시 `GEMINI_API_KEY`·`ANTHROPIC_API_KEY`·`PERPLEXITY_API_KEY`), `CLAUDE_CODE_OAUTH_TOKEN`(geo-audit), `SLACK_BOT_TOKEN`(chat:write), `VERCEL_TOKEN`·`VERCEL_PROJECT_ID`·`VERCEL_TEAM_ID`(재배포 대기).
 **대시보드 env**: `GOOGLE_CLIENT_ID`·`GOOGLE_CLIENT_SECRET`·`NEXTAUTH_SECRET`·`NEXTAUTH_URL`.
-**Repo Variables**: `ACTIVE_ENGINES`(기본 `chatgpt,google-aio,naver-briefing`)·`ACTIVE_SERVICES`·`DRY_RUN`·`SAMPLE_N`·`MAX_USD`·`MIN_SUCCESS_RATE`·`CLASSIFIER_MODEL`·`DASHBOARD_URL`.
+**Repo Variables**: `ACTIVE_ENGINES`(기본 `chatgpt,gemini,google-aio,naver-briefing`)·`ACTIVE_SERVICES`·`DRY_RUN`·`SAMPLE_N`·`MAX_USD`·`MIN_SUCCESS_RATE`·`CLASSIFIER_MODEL`·`DASHBOARD_URL`.
 
 ## 비용
 
