@@ -4,7 +4,9 @@
 //   OpenAI gpt-5.5: $5/$30 per 1M + web_search 하이브리드 — 콜당 $10/1k($0.01) + 검색 콘텐츠는
 //     input 토큰으로 과금(usage.input_tokens 에 이미 포함). 그래서 perWebSearch 엔 콜비만 넣음(토큰 중복 X).
 //   OpenAI gpt-4.1-mini(분류기): $0.40/$1.60 per 1M  ※ 값 재확인 권장
-//   Gemini 3.5 Flash: $1.50/$9 per 1M, grounding 5k/월 무료 후 $14/1k 쿼리
+//   Gemini 3.5 Flash: $1.50/$9 per 1M. grounding 은 월 5,000건 무료(Gemini 3 패밀리 공유) 후 $14/1k 쿼리.
+//     우리 볼륨 ≪ 무료한도 → perWebSearch 0(SerpApi 무료플랜과 동일 처리). 초과 시 0.014 로 복원할 것.
+//     출력 토큰엔 thinking(thoughtsTokenCount)도 포함됨 — 어댑터가 candidates+thoughts 로 합산.
 //   Anthropic Sonnet 4.6: $3/$15 per 1M, web_search $10/1k
 //   Perplexity sonar: $1/$1 per 1M, 웹 컨텐츠 요청비 ~$8/1k(저~고 컨텍스트 $5–12 중앙값)
 
@@ -18,7 +20,7 @@ export interface ModelPricing {
 export const MODEL_PRICING: Record<string, ModelPricing> = {
   'gpt-5.5': { inputPerMTok: 5.0, outputPerMTok: 30.0, perWebSearch: 0.01 },
   'gpt-4.1-mini': { inputPerMTok: 0.4, outputPerMTok: 1.6 },
-  'gemini-3.5-flash': { inputPerMTok: 1.5, outputPerMTok: 9.0, perWebSearch: 0.014 },
+  'gemini-3.5-flash': { inputPerMTok: 1.5, outputPerMTok: 9.0, perWebSearch: 0 }, // grounding 무료한도 내 가정(초과 시 0.014)
   'claude-sonnet-4-6': { inputPerMTok: 3.0, outputPerMTok: 15.0, perWebSearch: 0.01 },
   sonar: { inputPerMTok: 1.0, outputPerMTok: 1.0, perWebSearch: 0.008 },
 }
