@@ -9,6 +9,7 @@ import { SNAPSHOTS_DIR } from '../store/writeSnapshot'
 
 const SLACK_API = 'https://slack.com/api/chat.postMessage'
 const DASHBOARD_URL = process.env.DASHBOARD_URL ?? 'https://codeit-geo-visibility-monitor.vercel.app'
+const REPORT_URL = process.env.REPORT_URL ?? 'https://zestgeo.co.kr/' // ZestCompany GEO 리포트(파트너 제공)
 
 const pct = (v: number | null | undefined) => (v == null ? '—' : (v * 100).toFixed(1))
 
@@ -33,6 +34,7 @@ const buildBlocks = (app: string, displayName: string, w: WeekSummary) => {
       type: 'actions',
       elements: [
         { type: 'button', text: { type: 'plain_text', text: '대시보드 보기' }, url: `${DASHBOARD_URL}/${app}/${w.isoWeek}` },
+        { type: 'button', text: { type: 'plain_text', text: '제스트 리포트' }, url: REPORT_URL },
       ],
     },
   ]
