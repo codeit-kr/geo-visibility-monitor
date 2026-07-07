@@ -39,8 +39,8 @@
       "costUsd": 50.388420200000034,
       "geoScore": 74,
       "geoScoreRange": [
-        69,
-        79
+        74,
+        74
       ]
     },
     {
@@ -82,8 +82,11 @@
       },
       "sampleSize": 177,
       "costUsd": 49.982646700000004,
-      "geoScore": null,
-      "geoScoreRange": null
+      "geoScore": 80,
+      "geoScoreRange": [
+        79,
+        80
+      ]
     }
   ]
 }

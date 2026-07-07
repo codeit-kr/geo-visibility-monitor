@@ -1,32 +1,12 @@
 [
   {
     "run": 1,
-    "composite": 69,
-    "citability": 84,
-    "brand": 21,
-    "eeat": 74,
-    "technical": 75,
-    "schema": 88,
-    "platform": 92
-  },
-  {
-    "run": 2,
-    "composite": 79,
-    "citability": 84,
-    "brand": 52,
-    "eeat": 75,
-    "technical": 96,
-    "schema": 87,
-    "platform": 90
-  },
-  {
-    "run": 3,
     "composite": 74,
-    "citability": 80,
-    "brand": 48,
-    "eeat": 73,
+    "citability": 83,
+    "brand": 40,
+    "eeat": 74,
     "technical": 85,
-    "schema": 90,
-    "platform": 80
+    "schema": 88,
+    "platform": 87
   }
 ]
