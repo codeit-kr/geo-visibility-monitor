@@ -108,16 +108,19 @@ jobs:
       # 루트 평면 파일로(app 인코딩) — upload-artifact 의 공통경로 스트립 회피.
       - name: run 결과 루트로 추출(georun-<app>-run${{ matrix.run }})
         run: |
-          for f in snapshots/*/*/geoScore.json; do
+          # 대상 주차 폴더만 수거 — 에이전트가 다른 주차 폴더에 쓴 파일은 무시(과거 주차 오염 방지)
+          WK=$(jq -r '.[0].isoWeek' audit-targets.json)
+          for f in snapshots/*/"$WK"/geoScore.json; do
             [ -e "$f" ] || continue
             app=$(echo "$f" | cut -d/ -f2)
             mv "$f" "georun-${app}-run${{ matrix.run }}.json"
           done
-          for f in snapshots/*/*/geo-audit-report.md; do
+          for f in snapshots/*/"$WK"/geo-audit-report.md; do
             [ -e "$f" ] || continue
             app=$(echo "$f" | cut -d/ -f2)
             mv "$f" "georeport-${app}-run${{ matrix.run }}.md"
           done
+          git status --porcelain snapshots/ | grep . && echo "경고: 대상 주차 외 산출물 존재(무시됨)" || true
 
       - uses: actions/upload-artifact@v4
         with:
@@ -152,6 +155,54 @@ jobs:
           ls georun-*-run*.json georeport-*-run*.md 2>/dev/null || echo "(수합된 run 파일 확인)"
           pnpm -s geo:aggregate
           pnpm rollup
+
+      # 다이제스트(팀별 액션 아이템 + 감사 이슈 변화) — geo-audit 과 동일하게 Claude 구독으로 생성.
+      # node 가 고정 입력(digest-targets.json)을 만들고, action 이 digest.json 을 쓰고, node 가 검증·폴백.
+      - name: 다이제스트 대상 산출(digest-targets.json)
+        run: |
+          CAPTURED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)" pnpm -s digest:targets > digest-targets.json
+          cat digest-targets.json
+        env:
+          ACTIVE_SERVICES: ${{ vars.ACTIVE_SERVICES }}
+
+      - name: 다이제스트 생성(Claude 구독)
+        continue-on-error: true # 실패해도 다음 스텝이 규칙 기반 폴백으로 digest.json 을 만든다
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          prompt: |
+            `digest-targets.json` 을 읽어라. 배열의 각 항목마다 GEO 주간 다이제스트 JSON 을 만들어 그 항목의 `outPath` 에 Write 한다.
+            항목 필드: app, displayName, isoWeek, prevWeek, capturedAt, outPath,
+            metrics(이번 회차 지표 + 전 회차 대비 delta — 비율 차), auditIssues(이번 회차 GEO 감사 리포트 발췌), prevAuditIssues(전 회차 발췌).
+
+            [산출물 — outPath 에 아래 JSON 객체 하나만]
+            {
+              "schemaVersion": 1, "capturedAt": "<capturedAt 그대로>", "isoWeek": "<isoWeek>", "app": "<app>",
+              "prevWeek": <prevWeek 그대로(없으면 null)>,
+              "actions": { "product": [1~3개 문자열], "marketing": [1~3개 문자열], "source": "llm" },
+              "geoAuditChanges": { "improved": [...], "regressed": [...], "stillOpen": [...] }
+            }
+            geoAuditChanges 는 auditIssues·prevAuditIssues 둘 다 비어있지 않을 때만 넣고, 리스트별 최대 5개.
+
+            [작성 규칙]
+            - product = 프로덕트 팀(웹사이트 콘텐츠·구조화 데이터·기술 GEO·팩트 정확성) 액션,
+              marketing = 마케팅 팀(브랜드 권위·외부 채널·경쟁 대응·평판) 액션.
+            - 각 액션은 한국어 한 문장, "근거 수치 — 할 일" 형태로 구체적으로. metrics 에 근거 없는 일반론(예: "SEO를 개선하세요") 금지.
+              좋아진 지표는 액션으로 만들지 말고 실제로 손 쓸 수 있는 항목만.
+            - geoAuditChanges 는 두 리포트 발췌 비교의 사실 서술만: improved = 해소·개선된 객관 신호,
+              regressed = 악화되거나 새로 생긴 이슈, stillOpen = 여전히 남은 이슈(우선순위 높은 순).
+              두 리포트의 표현이 달라도 같은 이슈면 하나로 취급. 리포트에 명시된 사실만 쓰고 추정 금지.
+            끝나면 기록한 파일 경로를 요약하라.
+          claude_args: |
+            --model claude-opus-4-8
+            --max-turns 30
+            --allowedTools "Read,Write"
+
+      - name: 다이제스트 검증·폴백(digest.json 정규화)
+        run: CAPTURED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)" pnpm -s digest
+        env:
+          ACTIVE_SERVICES: ${{ vars.ACTIVE_SERVICES }}
 
       - name: 커밋(동시 push 경합 대비 rebase 재시도)
         run: |

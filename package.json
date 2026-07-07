@@ -10,6 +10,8 @@
     "rollup": "tsx src/rollup.ts",
     "audit:targets": "tsx src/scripts/auditTargets.ts",
     "geo:aggregate": "tsx src/scripts/aggregateGeoAudit.ts",
+    "digest": "tsx src/scripts/buildDigest.ts",
+    "digest:targets": "tsx src/scripts/digestTargets.ts",
     "notify:slack": "tsx src/scripts/notifySlack.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",

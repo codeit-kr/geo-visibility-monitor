@@ -97,6 +97,33 @@ export interface GeoScoreSnapshot {
   compositeRange?: [number, number] // composite 의 [최소, 최대] — 변동폭
 }
 
+// geoScoreRuns.json 의 행 — geo-audit run 회차별 원시 카테고리 점수(aggregateGeoAudit 산출).
+//   대시보드가 카테고리 증감의 측정 변동폭(노이즈 범위) 판정에 사용.
+export type GeoScoreRunRow = { run: number } & Partial<
+  Record<'composite' | 'citability' | 'brand' | 'eeat' | 'technical' | 'schema' | 'platform', number | null>
+>
+
+// 주차 다이제스트 — 전 회차 대비 변화 기반 팀별 액션 아이템(snapshots/<app>/<isoWeek>/digest.json).
+//   엔진 파이프라인(geo-audit aggregate)이 생성·커밋(LLM 요약, 실패 시 규칙 기반) — 대시보드는 읽기만.
+export interface WeekDigest {
+  schemaVersion: number
+  capturedAt: string
+  isoWeek: string
+  app: App
+  prevWeek: string | null // 비교 기준 회차(격주 운영이라 직전 "주"가 아닐 수 있음)
+  actions: {
+    product: string[] // 프로덕트 팀(사이트 콘텐츠·구조화 데이터·기술 GEO·팩트 정확성)
+    marketing: string[] // 마케팅 팀(브랜드 권위·외부 채널·경쟁 대응·평판)
+    source: 'llm' | 'rules' // LLM 요약 vs 규칙 기반 폴백
+  }
+  // 감사 이슈 변화(전 회차 리포트 대비) — LLM 요약일 때만 존재(리포트가 자유 서술이라 기계 diff 불가).
+  geoAuditChanges?: {
+    improved: string[] // 해소·개선된 신호
+    regressed: string[] // 악화·신규 발생 이슈
+    stillOpen: string[] // 여전히 남은 이슈
+  }
+}
+
 // node 스냅샷 번들 = 그룹 A 산출물. geoScore(C)는 별도 GitHub Action 이 기록, B/D 는 드롭.
 export interface SnapshotBundle {
   visibility: VisibilitySnapshot[]

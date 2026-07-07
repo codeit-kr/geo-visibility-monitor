@@ -1,0 +1,123 @@
+.page {
+  --ground: #e7ebf2;
+  --surface: #fff;
+  --ink: #14181f;
+  --muted: #5b6675;
+  --faint: #97a0b0;
+  --line: #d6dbe6;
+  --accent: #2d43e0;
+  --up: #138a63;
+  --mid: #c08a1e;
+  --down: #c23a52;
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+
+  background: var(--ground);
+  color: var(--ink);
+  min-height: 100vh;
+  padding-bottom: 56px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.wrap { max-width: 1180px; margin: 22px auto 0; padding: 0 32px; display: flex; flex-direction: column; gap: 16px; }
+.fixture-note { font-size: 12px; color: var(--mid); }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 13px; padding: 18px 20px 20px; }
+.p-hd { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+.p-t { font-size: 15px; font-weight: 660; letter-spacing: -0.01em; }
+.p-s { font-size: 11.5px; color: var(--faint); font-family: var(--mono); }
+.p-sub { font-size: 12.5px; color: var(--muted); }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 900px) { .grid2 { grid-template-columns: 1fr; } }
+
+/* 헤드라인 전/후 */
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+@media (max-width: 900px) { .stats { grid-template-columns: 1fr; } }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 13px; padding: 16px 18px; }
+.stat-l { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--faint); }
+.stat-v { display: flex; align-items: baseline; gap: 8px; margin: 8px 0 4px; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.stat-f { min-height: 18px; }
+
+.val-prev { color: var(--faint); font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.val-cur { color: var(--ink); font-weight: 640; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.val-cur.big { font-size: 26px; letter-spacing: -0.02em; }
+.arrow { color: var(--faint); font-size: 12px; }
+
+.delta { font-family: var(--mono); font-size: 12px; font-weight: 620; font-variant-numeric: tabular-nums; }
+.delta.up { color: var(--up); }
+.delta.down { color: var(--down); }
+.delta.flat { color: var(--faint); }
+
+/* GEO 카테고리 전/후 */
+.cat { padding: 8px 0 10px; border-top: 1px solid var(--line); }
+.cat:first-of-type { border-top: 0; }
+.cat-h { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+.cat-name { font-size: 13px; font-weight: 580; }
+.cat-vals { display: flex; align-items: baseline; gap: 7px; font-size: 13px; }
+.dualbar { display: flex; flex-direction: column; gap: 3px; }
+.bar { height: 4px; border-radius: 3px; background: var(--ground); overflow: hidden; }
+.bar > i { display: block; height: 100%; border-radius: 3px; }
+.bar.prev > i { background: var(--faint); }
+.bar.cur > i { background: var(--accent); }
+.note { font-size: 11.5px; color: var(--muted); margin-top: 12px; }
+.inline-link { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+
+/* 엔진별 전/후 */
+.erow { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 9px 0; border-top: 1px solid var(--line); }
+.erow:first-of-type { border-top: 0; }
+.ename { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 560; }
+.sw { width: 9px; height: 9px; border-radius: 3px; flex: none; }
+.etag { font-size: 10.5px; color: var(--faint); border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px; }
+.evals { display: flex; align-items: baseline; gap: 7px; font-size: 13px; }
+
+/* 질의별 전이 */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.chip { font-size: 12px; border-radius: 7px; padding: 3px 9px; background: var(--ground); color: var(--muted); }
+.chip b { font-family: var(--mono); }
+.chip.lost { background: #fbe9ed; color: var(--down); }
+.chip.new { background: #e5f4ee; color: var(--up); }
+.chip.info { background: var(--ground); color: var(--faint); }
+
+.qrow {
+  display: flex; align-items: center; gap: 12px; padding: 9px 6px; border-top: 1px solid var(--line);
+  color: inherit; text-decoration: none; border-radius: 7px;
+}
+.qrow:hover { background: var(--ground); }
+.qrow.dim { color: var(--muted); }
+.badge { flex: none; width: 70px; text-align: center; font-size: 11px; font-weight: 640; border-radius: 6px; padding: 2px 0; }
+.badge.lost { background: #fbe9ed; color: var(--down); }
+.badge.new { background: #e5f4ee; color: var(--up); }
+.badge.kept { background: var(--ground); color: var(--muted); }
+.badge.none { background: var(--ground); color: var(--faint); }
+.q-engine { flex: none; width: 108px; display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+.q-text { flex: 1; min-width: 0; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.q-rates { flex: none; display: flex; align-items: baseline; gap: 6px; font-size: 12.5px; }
+
+.none-fold { margin-top: 10px; }
+.none-fold > summary { font-size: 12.5px; color: var(--muted); cursor: pointer; padding: 6px 0; }
+
+.range { font-size: 10.5px; color: var(--faint); font-family: var(--mono); }
+
+/* 감사 이슈 변화 */
+.audit-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+@media (max-width: 900px) { .audit-cols { grid-template-columns: 1fr; } }
+.audit-h { font-size: 12.5px; font-weight: 640; padding-bottom: 7px; border-bottom: 2px solid var(--line); margin-bottom: 9px; }
+.audit-h b { font-family: var(--mono); font-weight: 620; }
+.audit-h.improved { color: var(--up); border-bottom-color: var(--up); }
+.audit-h.regressed { color: var(--down); border-bottom-color: var(--down); }
+.audit-h.open { color: var(--mid); border-bottom-color: var(--mid); }
+.audit-list { margin: 0; padding-left: 16px; display: flex; flex-direction: column; gap: 7px; font-size: 12.5px; }
+.audit-list li::marker { color: var(--faint); }
+.audit-none { font-size: 12px; color: var(--faint); }
+
+/* 액션 아이템 */
+.actions { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 8px; font-size: 13.5px; }
+.actions li::marker { color: var(--accent); }
+
+.foot { font-size: 11.5px; color: var(--faint); }
+
+/* 빈 상태 */
+.empty { max-width: 1180px; margin: 80px auto 0; padding: 0 32px; text-align: center; }
+.empty-mark { font-size: 34px; color: var(--faint); }
+.empty-t { font-size: 16px; font-weight: 640; margin-top: 10px; }
+.empty-d { font-size: 13px; color: var(--muted); margin-top: 4px; }

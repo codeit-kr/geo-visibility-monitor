@@ -7,6 +7,8 @@ import type {
   VisibilitySnapshot,
   ResponseRecord,
   GeoScoreSnapshot,
+  GeoScoreRunRow,
+  WeekDigest,
 } from '../../types/snapshot'
 import { FIXTURE_ROLLUP, FIXTURE_SERVICES } from './fixture'
 
@@ -68,6 +70,14 @@ export const getGeoScore = async (app: App, isoWeek: string): Promise<GeoScoreSn
 
 export const getGeoReport = async (app: App, isoWeek: string): Promise<string | null> =>
   readText(join(app, isoWeek, 'geo-audit-report.md'))
+
+// geo-audit run 회차별 원시 점수 — 카테고리 증감의 측정 변동폭(노이즈) 판정용.
+export const getGeoScoreRuns = async (app: App, isoWeek: string): Promise<GeoScoreRunRow[] | null> =>
+  readJson<GeoScoreRunRow[]>(join(app, isoWeek, 'geoScoreRuns.json'))
+
+// 주차 다이제스트 — 팀별 액션 아이템(엔진 파이프라인이 생성·커밋). 없는 주차는 null.
+export const getDigest = async (app: App, isoWeek: string): Promise<WeekDigest | null> =>
+  readJson<WeekDigest>(join(app, isoWeek, 'digest.json'))
 
 // 실 스냅샷 존재 여부(없으면 fixture로 렌더 중임을 배지로 표시)
 export const snapshotsAvailable = async (): Promise<boolean> =>

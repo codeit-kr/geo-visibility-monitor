@@ -9,13 +9,14 @@ const cx = classnames.bind(styles)
 // 경로는 /<app>/... 형태. seg = 라우트 섹션('' = 대시보드). 주차 인지 섹션은 현재 주차를 슬러그로 이어 붙여 유지.
 const NAV = [
   { seg: '', label: '대시보드' },
+  { seg: 'compare', label: '전 회차 비교' },
   { seg: 'calls', label: 'AI 응답 상세' },
   { seg: 'geo', label: 'GEO 감사' },
   { seg: 'methodology', label: '측정 기준' },
 ]
-const WEEK_AWARE = new Set(['', 'calls', 'geo'])
+const WEEK_AWARE = new Set(['', 'compare', 'calls', 'geo'])
 const WEEK_RE = /(\d{4}-W\d{2})/
-const SECTIONS = new Set(['calls', 'geo', 'methodology'])
+const SECTIONS = new Set(['compare', 'calls', 'geo', 'methodology'])
 
 export const Sidebar = () => {
   const path = usePathname()

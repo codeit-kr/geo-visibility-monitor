@@ -40,7 +40,24 @@ const main = async (): Promise<void> => {
     groups.set(key, g)
   }
 
-  for (const g of groups.values()) {
+  // 주차 가드 — 같은 앱에 여러 isoWeek 그룹이 생기면(에이전트가 엉뚱한 주차 폴더에 쓴 경우 등)
+  // run 수가 가장 많은 주차(동수면 최신)만 채택. 리포트 복사가 앱 단위(파일명에 주차 없음)라,
+  // 소수 그룹을 살리면 다른 주차 폴더가 이번 회차 산출물로 덮인다(2026-W28 런이 W26 을 덮은 사고 재발 방지).
+  const byApp = new Map<App, Group[]>()
+  for (const g of groups.values()) byApp.set(g.app, [...(byApp.get(g.app) ?? []), g])
+  const accepted: Group[] = []
+  for (const appGroups of byApp.values()) {
+    const [expected, ...rest] = appGroups.sort(
+      (a, b) => b.runs.length - a.runs.length || b.isoWeek.localeCompare(a.isoWeek),
+    )
+    accepted.push(expected)
+    for (const g of rest)
+      console.warn(
+        `[geo:aggregate] ${g.app} ${g.isoWeek}: 예상 주차(${expected.isoWeek})와 불일치한 run ${g.runs.length}건 — 제외`,
+      )
+  }
+
+  for (const g of accepted) {
     const dir = join(SNAPSHOTS_DIR, g.app, g.isoWeek)
     await mkdir(dir, { recursive: true })
 
