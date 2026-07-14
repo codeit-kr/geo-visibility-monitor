@@ -69,6 +69,7 @@ export const getGeoScore = async (app: App, isoWeek: string): Promise<GeoScoreSn
   readJson<GeoScoreSnapshot>(join(app, isoWeek, 'geoScore.json'))
 
 export const getGeoReport = async (app: App, isoWeek: string): Promise<string | null> =>
+  (await readText(join(app, isoWeek, 'geo-audit-report-run1.md'))) ??
   readText(join(app, isoWeek, 'geo-audit-report.md'))
 
 // geo-audit run 회차별 원시 점수 — 카테고리 증감의 측정 변동폭(노이즈) 판정용.
