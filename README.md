@@ -67,7 +67,7 @@ dashboard/                 in-repo Next.js 대시보드 (아래 §대시보드)
    - **표면별 질의 형태**: **챗봇 = 문장**, **SERP(검색) = 키워드(`serpQuery`)**. 실제 사용자 행동에 맞춤.
 2. **엔진 호출** (`engines/`): 각 어댑터가 응답을 `EngineResult{answer, citedUrls, usage}` 로 정규화. 모든 콜은 서비스의 로케일/국가(`locale`/`userCountry`)를 강제.
 3. **분류** (`analyze/`): 브랜드/경쟁사 매칭(`matchEntities` → SoV), **LLM 판정기**(`classify`→`llmJudge`)로 감성·정확도 플래그(`checkAccuracy` 는 휴리스틱 폴백).
-4. **저장** (`store/`): `visibility.json`(콜당 메트릭) + `responses.json`(답변 전문, 조인키 `paraphraseId|engine|rep`) + `cost.json`(사용량 기반 비용). `buildRollupIndex` 가 `index.json`·`services.json` 집계.
+4. **저장** (`store/`): `visibility.json`(콜당 메트릭) + `responses.json`(답변 전문, 조인키 `paraphraseId|engine|rep`) + `cost.json`(사용량 기반 비용) + `pages.json`(auditUrls 고정 페이지의 head/JSON-LD 원본 — `jobs/collectPages`, LLM 미사용). `buildRollupIndex` 가 `index.json`·`services.json` 집계.
 5. **안전장치** (`util/runOpts`): `DRY_RUN`·`SAMPLE_N`·`MAX_USD`(소프트 캡)·`MIN_SUCCESS_RATE`(미달 시 non-zero exit → 손상 스냅샷 커밋 차단).
 
 > 챗봇 API는 소비자 앱의 proxy → **절대값보다 추이·SoV가 신뢰도 높음**. 단일 주 델타는 노이즈(이동평균으로 판단).
@@ -90,7 +90,9 @@ dashboard/                 in-repo Next.js 대시보드 (아래 §대시보드)
 |---|---|
 | `/[app]/[week]` | 대시보드 — 인용률·SoV·GEO·표본 KPI, 추이(최근 8주), 엔진별 언급률, 경쟁 점유(SoV), 정확도·감성 |
 | `/[app]/calls/[week]` | AI 응답 상세 — 질의→응답 원문, 브랜드/경쟁사 하이라이트, 인용 URL. 검색·엔진/감성/오정보 필터 |
+| `/[app]/compare/[week]` | 전 회차 비교 — 헤드라인·GEO 카테고리·엔진별 전/후, 질의 단위 언급 전이, 팀별 액션 아이템 |
 | `/[app]/geo/[week]` | GEO 감사 — composite + 6개 카테고리 점수 + 감사 리포트 |
+| `/[app]/pages/[week]` | 페이지 메타 — auditUrls 고정 페이지의 head/JSON-LD 현황. 전 회차 변경·이슈 피드, 상태 매트릭스, 페이지별 수집값·타임라인 |
 | `/[app]/methodology` | 측정 기준 — 질의셋·엔진·단가·경쟁사·감사 기준(코드 설정을 그대로 렌더) |
 
 - 상단 서비스 탭(서비스 전환) + 좌측 사이드바 내비 + 주차 선택 달력. `/` → 기본 서비스 최신 주차로 리다이렉트.
