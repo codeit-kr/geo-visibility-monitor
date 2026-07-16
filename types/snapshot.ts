@@ -124,11 +124,40 @@ export interface WeekDigest {
   }
 }
 
+// 페이지 메타 스냅샷(pages.json) — auditUrls 고정 페이지의 head/구조 신호 "원본".
+// 이슈 판정·전주 diff 는 저장하지 않고 대시보드가 렌더 시 규칙으로 계산한다
+// (규칙이 바뀌어도 재수집 없이 전 주차 재판정 가능).
+export interface PageMeta {
+  url: string
+  path: string // '/track/ai' — 표시·주차 간 조인 키
+  status: number // HTTP status(0 = fetch 실패)
+  kind: 'html' | 'text' // llms.txt 등 비HTML 표면은 'text'
+  title: string | null
+  description: string | null
+  canonical: string | null
+  robots: string | null // robots meta(null = 태그 없음 → 기본 index,follow)
+  htmlLang: string | null
+  og: Record<string, string> // 'og:title' 등 property → content
+  twitter: Record<string, string> // 'twitter:card' 등 name → content
+  h1: string[] // 문서 순서, 태그 제거 텍스트
+  jsonLd: { types: string[]; valid: boolean; raw: string }[] // <script ld+json> 블록 단위
+  contentHash: string // 본문 sha256 앞 16자 — 비HTML(kind:text) 변화 감지용
+}
+
+export interface PagesSnapshot {
+  schemaVersion: number
+  capturedAt: string
+  isoWeek: string
+  app: App
+  pages: PageMeta[]
+}
+
 // node 스냅샷 번들 = 그룹 A 산출물. geoScore(C)는 별도 GitHub Action 이 기록, B/D 는 드롭.
 export interface SnapshotBundle {
   visibility: VisibilitySnapshot[]
   responses: ResponseRecord[] // 풀 응답 원문(visibility 행과 조인 키로 1:1)
   cost: CostSnapshot // API 사용량 기반 비용 집계
+  pages: PagesSnapshot // 페이지 메타 원본(auditUrls 크롤)
 }
 
 // ── 롤업 인덱스 계약(대시보드 apps/geo-admin 이 GitHub API 로 읽는 단일 진입점) ──────────

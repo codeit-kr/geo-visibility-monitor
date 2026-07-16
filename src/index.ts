@@ -8,6 +8,7 @@
 import { appendFile } from 'node:fs/promises'
 import { buildContext } from './context'
 import { runCitationMonitor, type RunStats } from './jobs/citationMonitor'
+import { collectPages } from './jobs/collectPages'
 import { writeSnapshot } from './store/writeSnapshot'
 import { buildRollupIndex } from './store/buildRollupIndex'
 import { SERVICES, getActiveServices } from './config/services'
@@ -32,9 +33,10 @@ const main = async (): Promise<void> => {
     totals.succeeded += stats.succeeded
     totals.skipped += stats.skipped
 
-    // DRY_RUN 은 계획만 — 스냅샷 기록·롤업 생략(빈 산출물 커밋 방지).
+    // DRY_RUN 은 계획만 — 페이지 크롤·스냅샷 기록·롤업 생략(빈 산출물 커밋 방지).
     if (!DRY_RUN) {
-      const bundle: SnapshotBundle = { visibility, responses, cost }
+      const pages = await collectPages(ctx, service)
+      const bundle: SnapshotBundle = { visibility, responses, cost, pages }
       await writeSnapshot(ctx.app, ctx.isoWeek, bundle)
     }
 

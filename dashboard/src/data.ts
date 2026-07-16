@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import type {
   App,
+  PagesSnapshot,
   RollupIndex,
   ServicesManifest,
   VisibilitySnapshot,
@@ -75,6 +76,10 @@ export const getGeoReport = async (app: App, isoWeek: string): Promise<string | 
 // geo-audit run 회차별 원시 점수 — 카테고리 증감의 측정 변동폭(노이즈) 판정용.
 export const getGeoScoreRuns = async (app: App, isoWeek: string): Promise<GeoScoreRunRow[] | null> =>
   readJson<GeoScoreRunRow[]>(join(app, isoWeek, 'geoScoreRuns.json'))
+
+// 페이지 메타 원본(auditUrls 크롤) — 미수집 주차는 null.
+export const getPages = async (app: App, isoWeek: string): Promise<PagesSnapshot | null> =>
+  readJson<PagesSnapshot>(join(app, isoWeek, 'pages.json'))
 
 // 주차 다이제스트 — 팀별 액션 아이템(엔진 파이프라인이 생성·커밋). 없는 주차는 null.
 export const getDigest = async (app: App, isoWeek: string): Promise<WeekDigest | null> =>

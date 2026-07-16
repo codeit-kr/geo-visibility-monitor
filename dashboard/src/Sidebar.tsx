@@ -12,11 +12,12 @@ const NAV = [
   { seg: 'compare', label: '전 회차 비교' },
   { seg: 'calls', label: 'AI 응답 상세' },
   { seg: 'geo', label: 'GEO 감사' },
+  { seg: 'pages', label: '페이지 메타' },
   { seg: 'methodology', label: '측정 기준' },
 ]
-const WEEK_AWARE = new Set(['', 'compare', 'calls', 'geo'])
+const WEEK_AWARE = new Set(['', 'compare', 'calls', 'geo', 'pages'])
 const WEEK_RE = /(\d{4}-W\d{2})/
-const SECTIONS = new Set(['compare', 'calls', 'geo', 'methodology'])
+const SECTIONS = new Set(['compare', 'calls', 'geo', 'pages', 'methodology'])
 
 export const Sidebar = () => {
   const path = usePathname()
