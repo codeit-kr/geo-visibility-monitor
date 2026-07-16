@@ -10,7 +10,6 @@ export type CheckKey =
   | 'robots'
   | 'lang'
   | 'og'
-  | 'ogLocale'
   | 'twitter'
   | 'h1'
   | 'jsonLd'
@@ -22,7 +21,6 @@ export const CHECKS: { key: CheckKey; label: string }[] = [
   { key: 'robots', label: 'Robots' },
   { key: 'lang', label: 'lang' },
   { key: 'og', label: 'OG' },
-  { key: 'ogLocale', label: 'og:locale' },
   { key: 'twitter', label: 'Twitter' },
   { key: 'h1', label: 'H1' },
   { key: 'jsonLd', label: 'JSON-LD' },
@@ -48,11 +46,13 @@ export const checkIssues = (p: PageMeta, key: CheckKey): string[] => {
     case 'lang':
       return p.htmlLang ? [] : ['html lang 누락']
     case 'og': {
+      // og:locale 부재는 별도 이슈 텍스트 — 피드 집계·지속 판정에서 필수 og 누락과 구분.
+      const issues: string[] = []
       const missing = OG_REQUIRED.filter((k) => !p.og[k])
-      return missing.length ? [`${missing.join(' · ')} 누락`] : []
+      if (missing.length) issues.push(`${missing.join(' · ')} 누락`)
+      if (!p.og['og:locale']) issues.push('og:locale 부재')
+      return issues
     }
-    case 'ogLocale':
-      return p.og['og:locale'] ? [] : ['og:locale 부재']
     case 'twitter':
       return p.twitter['twitter:card'] ? [] : ['twitter:card 누락']
     case 'h1':
@@ -66,9 +66,8 @@ export const checkIssues = (p: PageMeta, key: CheckKey): string[] => {
 
 // 변경 감지용 정규화 값. null = 값 없음.
 const fieldValue = (p: PageMeta, key: CheckKey): string | null => {
-  const record = (r: Record<string, string>, exclude?: string) =>
+  const record = (r: Record<string, string>) =>
     Object.entries(r)
-      .filter(([k]) => k !== exclude)
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([k, v]) => `${k}=${v}`)
       .join('\n') || null
@@ -84,9 +83,7 @@ const fieldValue = (p: PageMeta, key: CheckKey): string | null => {
     case 'lang':
       return p.htmlLang
     case 'og':
-      return record(p.og, 'og:locale')
-    case 'ogLocale':
-      return p.og['og:locale'] ?? null
+      return record(p.og)
     case 'twitter':
       return record(p.twitter)
     case 'h1':

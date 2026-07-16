@@ -11,6 +11,7 @@ import {
 } from './pagesDiff'
 import { measureRange } from './isoWeek'
 import { DashboardHeader } from './DashboardHeader'
+import { JsonLdBlocks } from './jsonLdView'
 import styles from './PagesMonitor.module.scss'
 
 const cx = classnames.bind(styles)
@@ -211,7 +212,7 @@ const Cell = ({ cell }: { cell: CellReport }) => {
     return (
       <span className={cx('cellbox')}>
         <i className={cx('cell', 'warn')} title={cell.issues.join('\n')}>
-          !
+          {cell.issues.length > 1 ? cell.issues.length : '!'}
         </i>
       </span>
     )
@@ -244,14 +245,6 @@ const JsonLdChips = ({ page, cell }: { page: PageMeta; cell: CellReport }) => {
 
 // ── 상세 드로어 ────────────────────────────────────────────────────
 
-const prettyJson = (raw: string): string => {
-  try {
-    return JSON.stringify(JSON.parse(raw), null, 2)
-  } catch {
-    return raw
-  }
-}
-
 const Drawer = ({
   page,
   cells,
@@ -283,12 +276,12 @@ const Drawer = ({
               <Kv k="Robots" v={page.robots ?? '(없음 — 기본 index,follow)'} />
               <Kv k="lang" v={page.htmlLang} mono />
               {Object.entries(page.og).map(([k, v]) => (
-                <Kv key={k} k={k} v={v} mono />
+                <Kv key={k} k={k} v={v} mono image={k.endsWith(':image')} />
               ))}
               {Object.entries(page.twitter).map(([k, v]) => (
-                <Kv key={k} k={k} v={v} mono />
+                <Kv key={k} k={k} v={v} mono image={k.endsWith(':image')} />
               ))}
-              <dt>H1{page.h1.length > 1 ? ` ×${page.h1.length}` : ''}</dt>
+              <dt>H1</dt>
               <dd>{page.h1.length ? page.h1.join(' / ') : '(없음)'}</dd>
             </>
           ) : (
@@ -298,16 +291,7 @@ const Drawer = ({
             </>
           )}
         </dl>
-        {page.jsonLd.length > 0 && (
-          <div className={cx('ldblocks')}>
-            {page.jsonLd.map((b, i) => (
-              <details className={cx('ldblock')} key={i}>
-                <summary>{b.valid ? b.types.join(' · ') || '(타입 없음)' : '(파싱 실패)'}</summary>
-                <pre>{prettyJson(b.raw)}</pre>
-              </details>
-            ))}
-          </div>
-        )}
+        {page.jsonLd.length > 0 && <JsonLdBlocks blocks={page.jsonLd} />}
         <a className={cx('btn')} href={page.url} target="_blank" rel="noreferrer">
           페이지 열기 ↗
         </a>
@@ -327,12 +311,13 @@ const Drawer = ({
   )
 }
 
-const Kv = ({ k, v, mono, count }: { k: string; v: string | null; mono?: boolean; count?: boolean }) => (
+const Kv = ({ k, v, mono, count, image }: { k: string; v: string | null; mono?: boolean; count?: boolean; image?: boolean }) => (
   <>
     <dt>{k}</dt>
     <dd className={cx({ mono })}>
       {v ?? '(없음)'}
       {count && v && <span className={cx('count')}> ({v.length}자)</span>}
+      {image && v && <img className={cx('thumb')} src={v} alt="" loading="lazy" />}
     </dd>
   </>
 )
