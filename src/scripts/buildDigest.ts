@@ -19,6 +19,11 @@ const readJson = async <T>(path: string): Promise<T | null> => {
 
 const main = async () => {
   for (const svc of getActiveServices()) {
+    // passive 서비스는 다이제스트 없음 — digestTargets 와 동일 기준(가시성 지표 부재).
+    if (svc.passive) {
+      console.warn(`[digest] ${svc.app}: passive — 스킵`)
+      continue
+    }
     const rollup = await readJson<RollupIndex>(join(SNAPSHOTS_DIR, svc.app, 'index.json'))
     const cur = rollup?.weeks[rollup.weeks.length - 1]
     if (!rollup || !cur) {
