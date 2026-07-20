@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "app": "10x",
+  "displayName": "코드잇 10x",
+  "weeks": [
+    {
+      "isoWeek": "2026-W30",
+      "mentionRate": null,
+      "sov": null,
+      "competitorSov": {},
+      "sentiment": {
+        "positive": 0,
+        "neutral": 0,
+        "negative": 0
+      },
+      "accuracyFlags": {},
+      "byEngine": {},
+      "byEngineCostUsd": {},
+      "sampleSize": 0,
+      "costUsd": null,
+      "geoScore": null,
+      "geoScoreRange": null
+    }
+  ]
+}

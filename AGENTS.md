@@ -114,6 +114,8 @@ Config is **per-service** (multi-service ready). Shared types in `src/config/typ
 - Each `ServiceConfig` bundles its own `brand` (canonical/aliases/**domains** for owned-citation match), `competitors` (aliases + `strictContext` flags for ambiguous names 구름/항해/엘리스/그렙/내일배움캠프 — match by word-boundary + brand context, not bare substring), `jobRoles`, `intents`, `promptsVersion`, locale.
 - **Analyzers are brand-decoupled**: `matchEntities`/`llmJudge`/`classify` take `brand`/`competitors` as args (not module globals) so the same code serves every service.
 - **Add a new service** = (1) author `config/services/<app>.ts`, (2) register in `config/services/index.ts`, (3) add the `app` key to the `App` union in `types/snapshot.ts`. Gate which services run per-cycle with `ACTIVE_SERVICES` (repo Variable; unset = all).
+- **Passive service** (`passive: true` — codeit·10x): 챗봇/SERP 측정 없이 **passive check(geo-audit + 페이지 메타)만** 수행. 주간 런은 `pages.json` 만 기록, 다이제스트 스킵, Slack 은 passive 포맷(GEO Score + 페이지 메타 링크)으로 발송(`slackChannelId` 있을 때), 롤업은 visibility 없는 주차(pages/geoScore만)도 집계해 대시보드 라우팅을 만든다. `intents`/`competitors` 는 빈 배열 — 능동 측정 전환 시 마케팅 확정 리스트로 채우고 `passive` 제거.
+- **Dynamic audit set** (`auditUrlSource`): sitemap 을 읽어 **결정적 규칙**(exclude 정확/`/*` 와일드카드 + 섹션별 `pick: N | 'all'`, N = URL 오름차순 대표)으로 감사셋을 확장. 최종셋 = `auditUrls`(고정 코어) ∪ 선별분. resolve 는 `util/resolveAuditUrls` — pages 수집·`audit:targets` 공용, sitemap 장애 시 고정 `auditUrls` 폴백(런은 살리고 diff 로 드러남). 대형 템플릿 섹션(codeit `/tutorials` 647)은 대표 1개로 충분(메타 이슈는 템플릿 단위 발생).
 
 ## 9. Conventions
 

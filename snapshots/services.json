@@ -6,6 +6,18 @@
       "displayName": "코드잇 스프린트",
       "weeks": 3,
       "latestWeek": "2026-W30"
+    },
+    {
+      "app": "codeit",
+      "displayName": "코드잇",
+      "weeks": 1,
+      "latestWeek": "2026-W30"
+    },
+    {
+      "app": "10x",
+      "displayName": "코드잇 10x",
+      "weeks": 1,
+      "latestWeek": "2026-W30"
     }
   ]
 }

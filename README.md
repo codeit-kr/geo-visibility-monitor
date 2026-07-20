@@ -67,7 +67,7 @@ dashboard/                 in-repo Next.js 대시보드 (아래 §대시보드)
    - **표면별 질의 형태**: **챗봇 = 문장**, **SERP(검색) = 키워드(`serpQuery`)**. 실제 사용자 행동에 맞춤.
 2. **엔진 호출** (`engines/`): 각 어댑터가 응답을 `EngineResult{answer, citedUrls, usage}` 로 정규화. 모든 콜은 서비스의 로케일/국가(`locale`/`userCountry`)를 강제.
 3. **분류** (`analyze/`): 브랜드/경쟁사 매칭(`matchEntities` → SoV), **LLM 판정기**(`classify`→`llmJudge`)로 감성·정확도 플래그(`checkAccuracy` 는 휴리스틱 폴백).
-4. **저장** (`store/`): `visibility.json`(콜당 메트릭) + `responses.json`(답변 전문, 조인키 `paraphraseId|engine|rep`) + `cost.json`(사용량 기반 비용) + `pages.json`(auditUrls 고정 페이지의 head/JSON-LD 원본 — `jobs/collectPages`, LLM 미사용). `buildRollupIndex` 가 `index.json`·`services.json` 집계.
+4. **저장** (`store/`): `visibility.json`(콜당 메트릭) + `responses.json`(답변 전문, 조인키 `paraphraseId|engine|rep`) + `cost.json`(사용량 기반 비용) + `pages.json`(감사셋 — auditUrls 고정 + `auditUrlSource` sitemap resolve — 페이지의 head/JSON-LD 원본 — `jobs/collectPages`, LLM 미사용). `buildRollupIndex` 가 `index.json`·`services.json` 집계.
 5. **안전장치** (`util/runOpts`): `DRY_RUN`·`SAMPLE_N`·`MAX_USD`(소프트 캡)·`MIN_SUCCESS_RATE`(미달 시 non-zero exit → 손상 스냅샷 커밋 차단).
 
 > 챗봇 API는 소비자 앱의 proxy → **절대값보다 추이·SoV가 신뢰도 높음**. 단일 주 델타는 노이즈(이동평균으로 판단).
@@ -158,3 +158,6 @@ chatgpt(gpt-5.5 web_search)는 검색 콘텐츠를 input 토큰(~70k/콜)으로 
 ## 새 서비스 추가
 
 **`/add-service` 스킬**을 사용한다 — 필요한 브리핑(질의셋·브랜드·경쟁사·감사 페이지·Slack 채널·시장/로케일)과 손댈 코드(`config/services/<app>.ts`·레지스트리·App union·대시보드 배선)와 수동 작업·방법론 제약을 한 번에 안내한다. sprint(국비 부트캠프·KR)는 정답 템플릿이되 도메인/시장 특화 부분은 새 서비스 성격에 맞게 일반화한다.
+
+- **passive 서비스**(`passive: true` — codeit·10x): 질의셋 없이 **geo-audit + 페이지 메타만** 측정. 챗봇/SERP·다이제스트는 스킵, Slack 은 passive 포맷(GEO Score·페이지 메타 링크)으로 발송.
+- **동적 감사셋**(`auditUrlSource`): sitemap 에서 결정적 규칙(exclude + 섹션별 대표 N)으로 감사 URL 을 뽑는다. 고정 `auditUrls` 는 코어(llms.txt 등)로 유지, sitemap 장애 시 고정분으로 폴백.
