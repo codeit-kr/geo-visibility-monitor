@@ -27,9 +27,10 @@ type Props = {
   report: string | null
   weeks: string[] // 선택 가능한 전체 주차(헤더 주차 선택기)
   available?: string[] // 데이터 있는 서비스(탭 활성 여부)
+  latestWeekOf?: Record<string, string | null> // 서비스 탭 직링크용
 }
 
-export const GeoAudit = ({ app, displayName, isoWeek, score, report, weeks, available }: Props) => {
+export const GeoAudit = ({ app, displayName, isoWeek, score, report, weeks, available, latestWeekOf }: Props) => {
   const cats = score ? CATS.map((c) => ({ ...c, value: Number(score[c.key]) })) : []
   const weakest = cats.length ? cats.reduce((a, b) => (b.value < a.value ? b : a)) : null
   const range = score?.compositeRange
@@ -39,6 +40,7 @@ export const GeoAudit = ({ app, displayName, isoWeek, score, report, weeks, avai
       <DashboardHeader
         app={app}
         available={available}
+        latestWeekOf={latestWeekOf}
         kicker="GEO 감사 · 선행지표"
         title={`${displayName} — GEO Audit`}
         measured={isoWeek ? `측정 ${isoWeek}${measureRange(isoWeek) ? ` (${measureRange(isoWeek)})` : ''}` : '측정 전'}

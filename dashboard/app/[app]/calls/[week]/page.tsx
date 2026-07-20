@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import type { App } from '../../../../../types/snapshot'
-import { getApps, getAppWeeks, getRollup, getVisibility, getResponses } from '../../../../src/data'
+import { getApps, getAppWeeks, getLatestWeeks, getRollup, getVisibility, getResponses } from '../../../../src/data'
 import { CallsDetail } from '../../../../src/CallsDetail'
 
 // 서비스×주차별 정적 경로 — 빌드 시점에 보유 조합을 전부 prerender(런타임 파일 읽기 없음).
@@ -16,11 +16,12 @@ export const generateStaticParams = getAppWeeks
 const Page = async ({ params }: { params: Promise<{ app: string; week: string }> }) => {
   const { app: appParam, week } = await params
   const app = appParam as App
-  const [rollup, visibility, responses, available] = await Promise.all([
+  const [rollup, visibility, responses, available, latestWeeks] = await Promise.all([
     getRollup(app),
     getVisibility(app, week),
     getResponses(app, week),
     getApps(),
+    getLatestWeeks(),
   ])
 
   return (
@@ -34,6 +35,7 @@ const Page = async ({ params }: { params: Promise<{ app: string; week: string }>
         responses={responses}
         weeks={rollup.weeks.map((w) => w.isoWeek)}
         available={available}
+        latestWeekOf={latestWeeks}
       />
     </Suspense>
   )

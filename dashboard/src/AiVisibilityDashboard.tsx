@@ -230,23 +230,33 @@ export const AiVisibilityDashboard = ({ rollup, services, usingFixture, selected
         <section className={cx('panel')}>
           <PanelHead title="경쟁 점유 (SoV)" sub="무브랜드" />
           <p className={cx('p-sub')}>AI가 함께 호명한 비중.</p>
-          <div className={cx('sov-bar')}>
-            <i style={{ width: `${brandShare * 100}%`, background: BRAND_COLOR }}>
-              {brandShare >= 0.1 ? `${Math.round(brandShare * 100)}%` : ''}
-              <span className={cx('sov-tip')}>{rollup.displayName} {Math.round(brandShare * 100)}%</span>
-            </i>
-            {compEntries.map(([name, v], i) => (
-              <i key={name} style={{ width: `${v * 100}%`, background: compColor(name, i) }}>
-                <span className={cx('sov-tip')}>{name} {Math.round(v * 100)}%</span>
-              </i>
-            ))}
-          </div>
-          <div className={cx('sov-leg')}>
-            <div className={cx('me')}><span className={cx('sw')} style={{ background: BRAND_COLOR }} />{rollup.displayName}<b>{Math.round(brandShare * 100)}%</b></div>
-            {compEntries.map(([name, v], i) => (
-              <div key={name}><span className={cx('sw')} style={{ background: compColor(name, i) }} />{name}<b>{Math.round(v * 100)}%</b></div>
-            ))}
-          </div>
+          {latest.sampleSize === 0 ? (
+            <div className={cx('sov-empty')}>측정 없음 — 이 주차엔 visibility 질의 표본이 없습니다.</div>
+          ) : (
+            <>
+              <div className={cx('sov-bar')}>
+                {brandShare > 0 && (
+                  <i style={{ width: `${brandShare * 100}%`, background: BRAND_COLOR }}>
+                    {brandShare >= 0.1 ? `${Math.round(brandShare * 100)}%` : ''}
+                    <span className={cx('sov-tip')}>{rollup.displayName} {Math.round(brandShare * 100)}%</span>
+                  </i>
+                )}
+                {compEntries.map(([name, v], i) =>
+                  v > 0 ? (
+                    <i key={name} style={{ width: `${v * 100}%`, background: compColor(name, i) }}>
+                      <span className={cx('sov-tip')}>{name} {Math.round(v * 100)}%</span>
+                    </i>
+                  ) : null,
+                )}
+              </div>
+              <div className={cx('sov-leg')}>
+                <div className={cx('me')}><span className={cx('sw')} style={{ background: BRAND_COLOR }} />{rollup.displayName}<b>{Math.round(brandShare * 100)}%</b></div>
+                {compEntries.map(([name, v], i) => (
+                  <div key={name}><span className={cx('sw')} style={{ background: compColor(name, i) }} />{name}<b>{Math.round(v * 100)}%</b></div>
+                ))}
+              </div>
+            </>
+          )}
         </section>
 
         <section className={cx('panel')}>
@@ -313,7 +323,7 @@ const Kpi = ({ label, value, unit, meter, foot, delta, muted, good, deltaNeutral
   return (
     <div className={cx('kpi')}>
       <div className={cx('kpi-l')}><span className={cx('dot', tone)} />{label}</div>
-      <div className={cx('kpi-v')}>{value}{unit && <span className={cx('u')}>{unit}</span>}</div>
+      <div className={cx('kpi-v')}>{value}{unit && value !== '—' && <span className={cx('u')}>{unit}</span>}</div>
       <div className={cx('meter')}><i className={cx(tone)} style={{ width: `${Math.round((meter ?? 0) * 100)}%` }} /></div>
       <div className={cx('kpi-f')}>
         <span>{foot}</span>
@@ -341,6 +351,7 @@ const Header = ({
   <DashboardHeader
     app={rollup.app}
     available={services.services.map((s) => s.app)}
+    latestWeekOf={Object.fromEntries(services.services.map((s) => [s.app, s.latestWeek]))}
     kicker="GEO · AI Visibility Monitor"
     title={`${rollup.displayName} — AI 검색 인용 현황`}
     dot

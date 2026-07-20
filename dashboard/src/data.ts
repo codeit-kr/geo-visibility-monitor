@@ -41,6 +41,10 @@ export const getServicesManifest = async (): Promise<ServicesManifest> =>
 // 매니페스트 기반이라 새 서비스가 첫 스냅샷을 쌓으면 라우트가 자동 생성된다(대시보드 코드 수정 불필요).
 export const getApps = async (): Promise<App[]> => (await getServicesManifest()).services.map((s) => s.app)
 
+// 서비스별 최신 주차 — 서비스 탭이 /<app> 리다이렉트 hop 없이 최신 주차로 직링크하기 위한 맵.
+export const getLatestWeeks = async (): Promise<Record<string, string | null>> =>
+  Object.fromEntries((await getServicesManifest()).services.map((s) => [s.app, s.latestWeek]))
+
 export const getDefaultApp = async (): Promise<App> => (await getApps())[0] ?? 'sprint'
 
 // 앱×주차 조합 전체 — 주차 단위 정적 경로(/[app]/[week] 등)의 generateStaticParams.

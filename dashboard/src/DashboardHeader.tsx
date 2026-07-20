@@ -11,6 +11,7 @@ const cx = classnames.bind(styles)
 type Props = {
   app: string
   available?: string[]
+  latestWeekOf?: Record<string, string | null> // 서비스 탭 직링크용(리다이렉트 hop 제거)
   kicker: string
   title: string
   dot?: boolean // 타이틀 앞 라이브 도트(홈)
@@ -26,9 +27,9 @@ type Props = {
 }
 
 // 페이지 이동은 좌측 Sidebar 가 담당 — 헤더는 컨텍스트(서비스 탭·타이틀·측정 메타)만.
-export const DashboardHeader = ({ app, available, kicker, title, dot, measured, sub, weekNav }: Props) => (
+export const DashboardHeader = ({ app, available, latestWeekOf, kicker, title, dot, measured, sub, weekNav }: Props) => (
   <header className={cx('top')}>
-    <ServiceTabs current={app} available={available} />
+    <ServiceTabs current={app} available={available} latestWeekOf={latestWeekOf} />
     <div className={cx('top-row')}>
       <div>
         <div className={cx('kicker')}>{kicker}</div>

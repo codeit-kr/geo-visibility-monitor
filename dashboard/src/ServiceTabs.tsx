@@ -16,7 +16,15 @@ const TABS: { key: string; label: string }[] = [
   { key: 'ascent', label: '어센트' },
 ]
 
-export const ServiceTabs = ({ current, available = ['sprint'] }: { current: string; available?: string[] }) => (
+export const ServiceTabs = ({
+  current,
+  available = ['sprint'],
+  latestWeekOf,
+}: {
+  current: string
+  available?: string[]
+  latestWeekOf?: Record<string, string | null>
+}) => (
   <nav className={cx('tabs')} aria-label="서비스 선택">
     {TABS.map((t) => {
       const active = t.key === current
@@ -28,10 +36,12 @@ export const ServiceTabs = ({ current, available = ['sprint'] }: { current: stri
           </button>
         )
       }
+      // 최신 주차를 알면 직링크 — /<app> 서버 리다이렉트 hop(전환 시 깜빡임)을 건너뛴다.
+      const latest = latestWeekOf?.[t.key]
       return (
         <Link
           key={t.key}
-          href={`/${t.key}`}
+          href={latest ? `/${t.key}/${latest}` : `/${t.key}`}
           className={cx('tab', { active })}
           aria-current={active ? 'page' : undefined}
         >

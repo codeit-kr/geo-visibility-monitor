@@ -34,6 +34,7 @@ export const PagesMonitor = ({ app, rollup, services, week, cur, prev, history }
     <DashboardHeader
       app={app}
       available={services.services.map((s) => s.app)}
+      latestWeekOf={Object.fromEntries(services.services.map((s) => [s.app, s.latestWeek]))}
       kicker="페이지 메타 · Head / JSON-LD"
       title={`${rollup.displayName} — 페이지 메타`}
       measured={`측정 ${week}${measureRange(week) ? ` (${measureRange(week)})` : ''}`}

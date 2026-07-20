@@ -67,6 +67,8 @@ const FLAG_LABEL: Record<string, string> = {
 // 답변 원문에서 강조할 브랜드 표기(서비스별). 경쟁사명은 행 데이터에서 가져온다.
 const BRAND_ALIASES: Partial<Record<App, string[]>> = {
   sprint: ['코드잇 스프린트', '코드잇', 'Codeit', 'codeit'],
+  codeit: ['코드잇', 'Codeit', 'codeit'],
+  '10x': ['코드잇 10x', '코드잇 텐엑스', '텐엑스', 'Codeit 10x', '10x'],
 }
 
 const SENTI_META: Record<Sentiment, { label: string; cls: string }> = {
@@ -83,6 +85,7 @@ type Props = {
   responses: ResponseRecord[]
   weeks: string[] // 선택 가능한 전체 주차(헤더 주차 선택기)
   available?: string[] // 데이터 있는 서비스(탭 활성 여부)
+  latestWeekOf?: Record<string, string | null> // 서비스 탭 직링크용
 }
 
 type Term = { term: string; kind: 'brand' | 'comp' }
@@ -243,7 +246,7 @@ const Record = memo(({ row, resp, brandTerms }: RecordProps) => {
 })
 Record.displayName = 'Record'
 
-export const CallsDetail = ({ app, displayName, isoWeek, visibility, responses, weeks, available }: Props) => {
+export const CallsDetail = ({ app, displayName, isoWeek, visibility, responses, weeks, available, latestWeekOf }: Props) => {
   const responsesByKey = useMemo(() => {
     const m = new Map<string, ResponseRecord>()
     for (const r of responses) m.set(joinKey(r.paraphraseId, r.engine, r.rep), r)
@@ -430,6 +433,7 @@ export const CallsDetail = ({ app, displayName, isoWeek, visibility, responses, 
       <DashboardHeader
         app={app}
         available={available}
+        latestWeekOf={latestWeekOf}
         kicker="AI 응답 기록 · query → answer"
         title={`${displayName} — AI 응답 상세`}
         measured={isoWeek ? `측정 ${isoWeek}${measureRange(isoWeek) ? ` (${measureRange(isoWeek)})` : ''}` : '측정 전'}

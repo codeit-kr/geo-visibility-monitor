@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import { SERVICES, estimateParaphraseCount, visibilityIntents } from '../../../../src/config/services'
 import { MODEL_PRICING, SERPAPI_CREDIT_USD } from '../../../../src/config/pricing'
-import { getApps } from '../../../src/data'
+import { getApps, getLatestWeeks } from '../../../src/data'
 import { Methodology } from '../../../src/Methodology'
 
 export const dynamicParams = false
@@ -15,7 +15,7 @@ const Page = async ({ params }: { params: Promise<{ app: string }> }) => {
   const { app } = await params
   const service = SERVICES.find((s) => s.app === app)
   if (!service) notFound() // 데이터는 있으나 엔진 ServiceConfig 미등록 — sprint 설정을 잘못 노출하지 않도록 404
-  const available = await getApps()
+  const [available, latestWeeks] = await Promise.all([getApps(), getLatestWeeks()])
 
   return (
     <Methodology
@@ -25,6 +25,7 @@ const Page = async ({ params }: { params: Promise<{ app: string }> }) => {
       paraphraseCount={estimateParaphraseCount(service)}
       visibilityCount={visibilityIntents(service).length}
       available={available}
+      latestWeekOf={latestWeeks}
     />
   )
 }

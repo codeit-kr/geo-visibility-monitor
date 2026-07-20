@@ -88,6 +88,7 @@ export const WeekCompare = ({ app, rollup, services, cur, prev, geoCur, geoPrev,
     <DashboardHeader
       app={app}
       available={services.services.map((s) => s.app)}
+      latestWeekOf={Object.fromEntries(services.services.map((s) => [s.app, s.latestWeek]))}
       kicker="전 회차 비교 · Before / After"
       title={`${rollup.displayName} — 전 회차 대비 변화`}
       measured={`측정 ${cur.isoWeek}${measureRange(cur.isoWeek) ? ` (${measureRange(cur.isoWeek)})` : ''}`}

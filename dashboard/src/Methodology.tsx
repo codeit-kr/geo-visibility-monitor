@@ -47,9 +47,10 @@ type Props = {
   paraphraseCount: number
   visibilityCount: number
   available?: string[]
+  latestWeekOf?: Record<string, string | null> // 서비스 탭 직링크용
 }
 
-export const Methodology = ({ service, pricing, serpCredit, paraphraseCount, visibilityCount, available }: Props) => {
+export const Methodology = ({ service, pricing, serpCredit, paraphraseCount, visibilityCount, available, latestWeekOf }: Props) => {
   const byRole = ROLE_ORDER.map((role) => ({
     role,
     intents: service.intents.filter((i) => i.metricRole === role),
@@ -60,6 +61,7 @@ export const Methodology = ({ service, pricing, serpCredit, paraphraseCount, vis
       <DashboardHeader
         app={service.app}
         available={available}
+        latestWeekOf={latestWeekOf}
         kicker="측정 설정 · methodology"
         title={`${service.displayName} — 측정 기준`}
         measured={`프롬프트 v${service.promptsVersion} · 감사소스 v${service.brandSourcesVersion}`}
