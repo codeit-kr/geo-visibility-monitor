@@ -132,15 +132,19 @@ const highlightJson = (json: string): ReactNode[] => {
 
 // ── 블록 뷰 ────────────────────────────────────────────────────────
 
+const parseBlock = (block: PageMeta['jsonLd'][number]): unknown => {
+  if (!block.valid) return null
+  try {
+    return JSON.parse(block.raw)
+  } catch {
+    return null
+  }
+}
+
 export const JsonLdBlocks = ({ blocks }: { blocks: PageMeta['jsonLd'] }) => (
   <div className={cx('ldblocks')}>
     {blocks.map((block, i) => {
-      let parsed: unknown = null
-      try {
-        parsed = block.valid ? JSON.parse(block.raw) : null
-      } catch {
-        parsed = null
-      }
+      const parsed = parseBlock(block)
       const nodes = parsed != null ? nodesOf(parsed) : []
       return (
         <div className={cx('ldblock')} key={i}>
