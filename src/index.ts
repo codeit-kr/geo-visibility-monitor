@@ -9,7 +9,7 @@ import { appendFile } from 'node:fs/promises'
 import { buildContext } from './context'
 import { runCitationMonitor, type RunStats } from './jobs/citationMonitor'
 import { collectPages } from './jobs/collectPages'
-import { writeSnapshot } from './store/writeSnapshot'
+import { writeSnapshot, writePages } from './store/writeSnapshot'
 import { buildRollupIndex } from './store/buildRollupIndex'
 import { SERVICES, getActiveServices } from './config/services'
 import { DRY_RUN, MIN_SUCCESS_RATE } from './util/runOpts'
@@ -26,6 +26,17 @@ const main = async (): Promise<void> => {
   for (const service of services) {
     const ctx = buildContext(service.app)
     console.info(`[run] ${ctx.app} · ${ctx.isoWeek} · ${ctx.capturedAt}`)
+
+    // passive 서비스 — 챗봇/SERP 측정 없이 페이지 메타만 기록(geoScore 는 geo-audit Action 몫).
+    if (service.passive) {
+      if (!DRY_RUN) {
+        const pages = await collectPages(ctx, service)
+        await writePages(ctx.app, ctx.isoWeek, pages)
+      }
+      console.info(`[run] ${ctx.app} 완료 — passive(페이지 메타만)`)
+      summary.push(`| ${ctx.app} | passive | — | — |`)
+      continue
+    }
 
     const visibilityResult = await runCitationMonitor(ctx, service)
     const { snapshots: visibility, responses, cost, stats } = visibilityResult

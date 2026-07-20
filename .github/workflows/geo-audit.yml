@@ -102,7 +102,7 @@ jobs:
             끝나면 기록한 파일 경로를 요약하라.
           claude_args: |
             --model claude-opus-4-8
-            --max-turns 150
+            --max-turns 250
             --allowedTools "Read,Write,Bash,WebFetch,Task,Glob,Grep"
 
       # 루트 평면 파일로(app 인코딩) — upload-artifact 의 공통경로 스트립 회피.

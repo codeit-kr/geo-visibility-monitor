@@ -2,7 +2,7 @@
 //   snapshots/<app>/index.json   : 서비스별 주차 요약(헤드라인 = visibility)
 //   snapshots/services.json       : 서비스 매니페스트(어드민 서비스 스위처용)
 // 개별 주차 파일은 드릴다운 때만 읽도록. 타입은 types/snapshot.ts(공유 계약).
-import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
+import { access, mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import {
   SCHEMA_VERSION,
@@ -29,10 +29,13 @@ export const buildRollupIndex = async (services: ServiceConfig[]): Promise<void>
     const summaries: WeekSummary[] = []
     for (const isoWeek of weeks) {
       const vis = await loadJson<VisibilitySnapshot[]>(join(appDir, isoWeek, 'visibility.json'))
-      if (!vis) continue
       const cost = await loadJson<CostSnapshot>(join(appDir, isoWeek, 'cost.json'))
       const geo = await loadJson<GeoScoreSnapshot>(join(appDir, isoWeek, 'geoScore.json'))
-      summaries.push(summarizeWeek(isoWeek, vis, cost, geo))
+      // passive 서비스 주차는 visibility 없이 pages/geoScore 만 있다 — 대시보드 주차 라우팅(getAppWeeks)이
+      // index.json 기반이라 이 주차들도 집계에 넣는다(가시성 지표는 전부 null/0 으로 남음).
+      const hasPages = vis ? true : await exists(join(appDir, isoWeek, 'pages.json'))
+      if (!vis && !geo && !hasPages) continue
+      summaries.push(summarizeWeek(isoWeek, vis ?? [], cost, geo))
     }
 
     if (summaries.length) {
@@ -131,6 +134,12 @@ export const summarizeWeek = (
 }
 
 const rate = (n: number, d: number): number | null => (d === 0 ? null : n / d)
+
+const exists = (path: string): Promise<boolean> =>
+  access(path).then(
+    () => true,
+    () => false,
+  )
 
 const listWeekDirs = async (dir: string): Promise<string[]> => {
   try {

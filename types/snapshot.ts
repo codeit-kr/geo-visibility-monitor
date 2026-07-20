@@ -3,7 +3,7 @@
 
 export const SCHEMA_VERSION = 1
 
-export type App = 'sprint' | 'cayde' | 'ascent' | '10x'
+export type App = 'sprint' | 'codeit' | 'cayde' | 'ascent' | '10x'
 export type Engine =
   | 'chatgpt'
   | 'claude'

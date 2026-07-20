@@ -42,6 +42,19 @@ export interface IntentPreset {
   groundTruth?: Record<string, unknown>
 }
 
+// 동적 감사셋 소스 — sitemap 에서 "결정적 규칙"으로 감사 URL 을 뽑는다(랜덤샘플 금지 원칙 유지).
+// 대형 섹션(예: codeit /tutorials 647개)은 템플릿 페이지라 대표 N개면 실질 커버리지 동일 → sections 로 샘플.
+export interface AuditUrlSection {
+  prefix: string // pathname 접두사(예: '/tutorials') — 세그먼트 경계 기준 매칭
+  pick: number | 'all' // 'all' = 전체, N = URL 오름차순 앞에서 N개(결정적 대표)
+}
+export interface AuditUrlSource {
+  sitemaps: string[] // 읽을 sitemap URL 들(정적 + server-sitemap 등)
+  // 제외 규칙: '/signin' = 정확히 그 경로만, '/teams/blog/*' = 그 경로와 하위 전체.
+  exclude?: string[]
+  sections?: AuditUrlSection[] // 미매칭 URL 은 전체 포함(exclude 통과분)
+}
+
 // 한 서비스의 측정 설정 전부 — 브랜드·경쟁사·질의셋·직무축·로케일을 묶는다.
 // 새 서비스 추가 = 이 객체 하나를 만들어 레지스트리(config/services/index.ts)에 등록.
 export interface ServiceConfig {
@@ -50,8 +63,15 @@ export interface ServiceConfig {
   // 주간 측정 완료 후 알림 보낼 Slack 채널 ID(예: sprint → #bu-sprint). 봇(SLACK_BOT_TOKEN)을 채널에 초대해둘 것.
   slackChannelId?: string
   siteUrl: string // GEO 감사(geo-audit) 대상 사이트 루트
+  // passive 서비스 = 챗봇/SERP 측정 없이 passive check(geo-audit + 페이지 메타)만 수행.
+  //   주간 런은 pages.json 만 기록하고 visibility/responses/cost 를 만들지 않는다(다이제스트·Slack 도 스킵).
+  //   intents/competitors/jobRoles 는 빈 배열로 둔다.
+  passive?: boolean
   // geo-audit 재현성: 매 실행 동일 페이지만 감사(sitemap 랜덤샘플 금지).
   auditUrls: string[]
+  // 선택 — sitemap 동적 소싱. 최종 감사셋 = auditUrls(고정 코어, 순서 유지) ∪ 규칙 적용된 sitemap URL(오름차순).
+  //   sitemap fetch 실패 시 auditUrls 만으로 폴백(런 전체를 죽이지 않음 — 로그로 표시).
+  auditUrlSource?: AuditUrlSource
   // 점수 대상 엔티티-그라운딩 체크리스트(KR 현지화). 갱신 시 brandSourcesVersion 올림 → 점수 이동 추적.
   // (이 목록 외 발견 소스는 리포트 디스커버리로만, composite 점수 제외)
   brandSources: string[]

@@ -1,4 +1,5 @@
-// 페이지 메타 수집 — 서비스 auditUrls(고정 페이지)를 fetch 해 head/구조 신호를 pages.json 원본으로 만든다.
+// 페이지 메타 수집 — 서비스 감사셋(auditUrls 고정 + auditUrlSource sitemap resolve)을 fetch 해
+// head/구조 신호를 pages.json 원본으로 만든다.
 // LLM 미사용·무의존(정규식 파서). geo-audit 이 점수화하는 같은 신호의 결정적(deterministic) 원본 역할.
 import { createHash } from 'node:crypto'
 import type { PageMeta, PagesSnapshot } from '../../types/snapshot'
@@ -6,6 +7,7 @@ import type { ServiceConfig } from '../config/types'
 import type { SnapshotContext } from '../context'
 import { fetchWithRetry } from '../util/fetchWithRetry'
 import { mapLimit } from '../util/concurrency'
+import { resolveAuditUrls } from '../util/resolveAuditUrls'
 import { SCHEMA_VERSION } from '../../types/snapshot'
 
 const USER_AGENT = 'codeit-geo-monitor/1.0 (weekly page-meta snapshot)'
@@ -126,7 +128,9 @@ const fetchPage = async (url: string): Promise<PageMeta> => {
 }
 
 export const collectPages = async (ctx: SnapshotContext, service: ServiceConfig): Promise<PagesSnapshot> => {
-  const pages = await mapLimit(service.auditUrls, CONCURRENCY, fetchPage)
+  // auditUrlSource(sitemap 동적 소싱)가 있으면 resolve — 결과 URL 이 pages.json 에 그대로 남아 감사셋 diff 추적 가능.
+  const urls = await resolveAuditUrls(service)
+  const pages = await mapLimit(urls, CONCURRENCY, fetchPage)
   const failed = pages.filter((p) => p.status !== 200)
   console.info(`[pages] ${ctx.app} — ${pages.length}개 수집${failed.length ? ` / 실패 ${failed.length}(${failed.map((p) => p.path).join(', ')})` : ''}`)
   return {

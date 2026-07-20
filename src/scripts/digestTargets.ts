@@ -17,6 +17,11 @@ const readAuditIssues = (app: string, isoWeek: string): Promise<string> =>
 const main = async () => {
   const targets = []
   for (const svc of getActiveServices()) {
+    // passive 서비스는 가시성 지표가 없어 다이제스트(팀별 액션) 대상이 아님 — geo 리포트는 대시보드에서 확인.
+    if (svc.passive) {
+      console.warn(`[digest:targets] ${svc.app}: passive — 스킵`)
+      continue
+    }
     let rollup: RollupIndex
     try {
       rollup = JSON.parse(await readFile(join(SNAPSHOTS_DIR, svc.app, 'index.json'), 'utf8')) as RollupIndex

@@ -4,8 +4,10 @@
 //   3) types/snapshot.ts 의 App union 에 app 키 추가
 import type { ServiceConfig } from '../types'
 import { sprint } from './sprint'
+import { codeit } from './codeit'
+import { tenx } from './tenx'
 
-export const SERVICES: ServiceConfig[] = [sprint]
+export const SERVICES: ServiceConfig[] = [sprint, codeit, tenx]
 
 // 점진 활성화 — ACTIVE_SERVICES(쉼표구분, app 키) 미설정이면 전부.
 //   예: ACTIVE_SERVICES=sprint → 스프린트만 / =sprint,cayde → 둘만.

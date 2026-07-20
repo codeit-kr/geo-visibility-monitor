@@ -4,16 +4,29 @@
 import { getActiveServices } from '../config/services'
 import { isoWeekOf } from '../util/time'
 import { requireEnv } from '../util/env'
+import { resolveAuditUrls } from '../util/resolveAuditUrls'
 
-const capturedAt = requireEnv('CAPTURED_AT')
-const isoWeek = isoWeekOf(capturedAt)
-const targets = getActiveServices().map((s) => ({
-  app: s.app,
-  url: s.siteUrl,
-  isoWeek,
-  capturedAt,
-  auditUrls: s.auditUrls,
-  brandSources: s.brandSources,
-  brandSourcesVersion: s.brandSourcesVersion,
-}))
-console.log(JSON.stringify(targets, null, 2))
+const main = async (): Promise<void> => {
+  const capturedAt = requireEnv('CAPTURED_AT')
+  const isoWeek = isoWeekOf(capturedAt)
+  const targets = []
+  for (const s of getActiveServices()) {
+    targets.push({
+      app: s.app,
+      url: s.siteUrl,
+      isoWeek,
+      capturedAt,
+      // auditUrlSource(sitemap 동적 소싱)는 여기서 resolve — 3-run 이 같은 audit-targets.json 을 읽으므로
+      // 한 주의 감사 3회는 항상 동일 감사셋을 쓴다(재현성).
+      auditUrls: await resolveAuditUrls(s),
+      brandSources: s.brandSources,
+      brandSourcesVersion: s.brandSourcesVersion,
+    })
+  }
+  console.log(JSON.stringify(targets, null, 2))
+}
+
+main().catch((error) => {
+  console.error('[audit:targets] 실패:', error)
+  process.exit(1)
+})

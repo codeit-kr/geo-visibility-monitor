@@ -13,6 +13,25 @@ const REPORT_URL = process.env.REPORT_URL ?? 'https://zestgeo.co.kr/' // ZestCom
 
 const pct = (v: number | null | undefined) => (v == null ? '—' : (v * 100).toFixed(1))
 
+// passive 서비스용 — 가시성 지표(인용률·SoV)가 없으므로 GEO Score + 페이지 메타 링크만.
+const buildPassiveBlocks = (app: string, displayName: string, w: WeekSummary) => {
+  const geo =
+    w.geoScore == null
+      ? '측정 중'
+      : `${w.geoScore}${w.geoScoreRange ? ` (3회 ${w.geoScoreRange[0]}–${w.geoScoreRange[1]})` : ''}`
+  return [
+    { type: 'section', text: { type: 'mrkdwn', text: `:mag: *${displayName}* — GEO passive check \`${w.isoWeek}\`` } },
+    { type: 'section', fields: [{ type: 'mrkdwn', text: `*GEO Score*\n${geo}` }] },
+    {
+      type: 'actions',
+      elements: [
+        { type: 'button', text: { type: 'plain_text', text: 'GEO 감사 보기' }, url: `${DASHBOARD_URL}/${app}/geo/${w.isoWeek}` },
+        { type: 'button', text: { type: 'plain_text', text: '페이지 메타' }, url: `${DASHBOARD_URL}/${app}/pages/${w.isoWeek}` },
+      ],
+    },
+  ]
+}
+
 const buildBlocks = (app: string, displayName: string, w: WeekSummary) => {
   const geo =
     w.geoScore == null
@@ -78,7 +97,10 @@ const main = async () => {
       continue
     }
     try {
-      await postSlack(token, channel, `${svc.displayName} — AI 가시성 주간 (${w.isoWeek})`, buildBlocks(svc.app, svc.displayName, w))
+      const [text, blocks] = svc.passive
+        ? [`${svc.displayName} — GEO passive check (${w.isoWeek})`, buildPassiveBlocks(svc.app, svc.displayName, w)]
+        : [`${svc.displayName} — AI 가시성 주간 (${w.isoWeek})`, buildBlocks(svc.app, svc.displayName, w)]
+      await postSlack(token, channel, text, blocks)
       console.info(`[notify] ${svc.app} → ${channel}${override ? ' (override)' : ''} ✓ (${w.isoWeek})`)
     } catch (error) {
       console.error(`[notify] ${svc.app} 전송 실패:`, error instanceof Error ? error.message : error)
