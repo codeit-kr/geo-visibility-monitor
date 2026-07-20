@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-07-20T19:52:04Z",
+  "isoWeek": "2026-W30",
+  "app": "codeit",
+  "composite": 79,
+  "citability": 79,
+  "brand": 60,
+  "eeat": 82,
+  "technical": 91,
+  "schema": 90,
+  "platform": 80,
+  "runs": 3,
+  "compositeRange": [
+    78,
+    80
+  ]
+}
