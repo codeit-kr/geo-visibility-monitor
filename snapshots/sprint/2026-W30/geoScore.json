@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-07-20T03:44:00Z",
+  "isoWeek": "2026-W30",
+  "app": "sprint",
+  "composite": 80,
+  "citability": 84,
+  "brand": 52,
+  "eeat": 83,
+  "technical": 92,
+  "schema": 90,
+  "platform": 92,
+  "runs": 3,
+  "compositeRange": [
+    79,
+    81
+  ]
+}

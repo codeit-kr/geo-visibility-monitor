@@ -121,8 +121,11 @@
       },
       "sampleSize": 180,
       "costUsd": 49.526563900000006,
-      "geoScore": null,
-      "geoScoreRange": null
+      "geoScore": 80,
+      "geoScoreRange": [
+        79,
+        81
+      ]
     }
   ]
 }
