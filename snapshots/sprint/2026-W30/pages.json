@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "capturedAt": "2026-07-20T02:56:41Z",
+  "capturedAt": "2026-07-20T06:01:55Z",
   "isoWeek": "2026-W30",
   "app": "sprint",
   "pages": [
@@ -8,7 +8,7 @@
       "url": "https://sprint.codeit.kr/",
       "path": "/",
       "status": 200,
-      "contentHash": "7cc12f68166635ff",
+      "contentHash": "8d337e499209641f",
       "title": "압도적 만족도 부트캠프, 코드잇 스프린트",
       "description": "압도적인 결과로 증명하는 IT 취업 부트캠프! 코드잇 스프린트가 취업까지 무조건 책임집니다.",
       "canonical": "https://sprint.codeit.kr",
@@ -59,7 +59,7 @@
       "url": "https://sprint.codeit.kr/career",
       "path": "/career",
       "status": 200,
-      "contentHash": "8d28bea78fa12e04",
+      "contentHash": "055537970172fc3d",
       "title": "코드잇 스프린트 취업 지원 | 1:1 취업 지원 프로그램",
       "description": "커리어 코칭부터 인턴십까지, 코드잇 스프린트의 1:1 취업 지원 프로그램으로 취업 성공까지 함께합니다.",
       "canonical": "https://sprint.codeit.kr/career",
@@ -93,10 +93,54 @@
       "kind": "html"
     },
     {
+      "url": "https://sprint.codeit.kr/contents",
+      "path": "/contents",
+      "status": 200,
+      "contentHash": "51ec3743f7e14a1d",
+      "title": "무료 취업 자료 | 코드잇 스프린트",
+      "description": "대기업 채용팀 출신 컨설턴트가 검수한 합격 이력서와 실전 취업 자료집을 무료로 확인해 보세요.",
+      "canonical": "https://sprint.codeit.kr/contents",
+      "robots": null,
+      "htmlLang": "ko",
+      "og": {
+        "og:title": "무료 취업 자료 | 코드잇 스프린트",
+        "og:description": "대기업 채용팀 출신 컨설턴트가 검수한 합격 이력서와 실전 취업 자료집을 무료로 확인해 보세요.",
+        "og:locale": "ko_KR",
+        "og:image": "https://codeit-assets.codeit.com/admin/production/65e80af5ea17f569453d32a9/image/1715158863335/sp-main-image.png"
+      },
+      "twitter": {
+        "twitter:card": "summary",
+        "twitter:title": "무료 취업 자료 | 코드잇 스프린트",
+        "twitter:description": "대기업 채용팀 출신 컨설턴트가 검수한 합격 이력서와 실전 취업 자료집을 무료로 확인해 보세요.",
+        "twitter:image": "https://codeit-assets.codeit.com/admin/production/65e80af5ea17f569453d32a9/image/1715158863335/sp-main-image.png"
+      },
+      "h1": [
+        "취업 준비 쉬워지는 무료 자료"
+      ],
+      "jsonLd": [
+        {
+          "types": [
+            "EducationalOrganization",
+            "WebSite"
+          ],
+          "valid": true,
+          "raw": "{\"@context\":\"https://schema.org\",\"@graph\":[{\"@type\":\"EducationalOrganization\",\"@id\":\"https://sprint.codeit.kr/#organization\",\"name\":\"코드잇 스프린트\",\"url\":\"https://sprint.codeit.kr\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"https://codeit-images.codeit.com/logo/sprint-logo.png\"},\"description\":\"코드잇 스프린트는 실무 중심의 IT 부트캠프로, 웹 개발과 데이터 분석 등의 역량을 집중적으로 키울 수 있는 교육 프로그램입니다.\",\"sameAs\":[\"https://www.youtube.com/@codeit\",\"https://www.instagram.com/codeit_kr\",\"https://www.facebook.com/codeit.kr\",\"https://blog.naver.com/codeitofficial\",\"https://www.linkedin.com/company/codeit-official\"],\"parentOrganization\":{\"@type\":\"EducationalOrganization\",\"@id\":\"https://www.codeit.kr/#organization\",\"name\":\"코드잇\",\"url\":\"https://www.codeit.kr\"}},{\"@type\":\"WebSite\",\"@id\":\"https://sprint.codeit.kr/#website\",\"name\":\"코드잇 스프린트\",\"url\":\"https://sprint.codeit.kr\",\"description\":\"코드잇 스프린트는 실무 중심의 IT 부트캠프로, 웹 개발과 데이터 분석 등의 역량을 집중적으로 키울 수 있는 교육 프로그램입니다.\",\"publisher\":{\"@id\":\"https://sprint.codeit.kr/#organization\"}}]}"
+        },
+        {
+          "types": [
+            "ItemList"
+          ],
+          "valid": true,
+          "raw": "{\"@context\":\"https://schema.org\",\"@type\":\"ItemList\",\"name\":\"코드잇 스프린트 무료 취업 자료\",\"itemListElement\":[{\"@type\":\"ListItem\",\"position\":1,\"name\":\"2026 최신 채용 트렌드   당신의 서류 합격률이 낮은 이유\",\"url\":\"https://sprint.codeit.kr/contents/2\"},{\"@type\":\"ListItem\",\"position\":2,\"name\":\"지금 당장 자소서에서   지워야 할 표현들\",\"url\":\"https://sprint.codeit.kr/contents/9\"},{\"@type\":\"ListItem\",\"position\":3,\"name\":\"백엔드 개발자가 알려주는   현실 취업 꿀팁\",\"url\":\"https://sprint.codeit.kr/contents/4\"},{\"@type\":\"ListItem\",\"position\":4,\"name\":\"오늘의집 데이터 분석가 합격 이력서\",\"url\":\"https://sprint.codeit.kr/contents/16\"},{\"@type\":\"ListItem\",\"position\":5,\"name\":\"CJ 그룹 데이터 분석가 합격 이력서\",\"url\":\"https://sprint.codeit.kr/contents/15\"},{\"@type\":\"ListItem\",\"position\":6,\"name\":\"카카오스타일 프로덕트 디자이너 합격 이력서\",\"url\":\"https://sprint.codeit.kr/contents/14\"},{\"@type\":\"ListItem\",\"position\":7,\"name\":\"카카오 VX AI 엔지니어 합격 이력서\",\"url\":\"https://sprint.codeit.kr/contents/13\"},{\"@type\":\"ListItem\",\"position\":8,\"name\":\"카카오 헬스케어 프론트엔드 합격 이력서\",\"url\":\"https://sprint.codeit.kr/contents/12\"},{\"@type\":\"ListItem\",\"position\":9,\"name\":\"프론트엔드 개발자의 현실 꿀팁\",\"url\":\"https://sprint.codeit.kr/contents/3\"},{\"@type\":\"ListItem\",\"position\":10,\"name\":\"네이버 현직 개발자 멘토의 이력서 첨삭\",\"url\":\"https://sprint.codeit.kr/contents/7\"},{\"@type\":\"ListItem\",\"position\":11,\"name\":\"합격을 부르는   이력서 템플릿 & 체크리스트\",\"url\":\"https://sprint.codeit.kr/contents/6\"},{\"@type\":\"ListItem\",\"position\":12,\"name\":\"자소서 빈출 문항 모아보기\",\"url\":\"https://sprint.codeit.kr/contents/10\"},{\"@type\":\"ListItem\",\"position\":13,\"name\":\"눈길을 사로잡는 자율 형식 자소서 문항 3가지\",\"url\":\"https://sprint.codeit.kr/contents/8\"},{\"@type\":\"ListItem\",\"position\":14,\"name\":\"합격 확률 높여줄 만능 자소서 만들기\",\"url\":\"https://sprint.codeit.kr/contents/11\"},{\"@type\":\"ListItem\",\"position\":15,\"name\":\"개발자 취준생은 꼭 봐야 할 현실 인터뷰\",\"url\":\"https://sprint.codeit.kr/contents/5\"}]}"
+        }
+      ],
+      "kind": "html"
+    },
+    {
       "url": "https://sprint.codeit.kr/track/frontend-advanced",
       "path": "/track/frontend-advanced",
       "status": 200,
-      "contentHash": "f24eba529f467bd2",
+      "contentHash": "31dfa9f93e171424",
       "title": "프론트엔드 단기심화 부트캠프 | 코드잇 스프린트",
       "description": "압도적인 결과로 증명하는 프론트엔드 단기심화 취업 부트캠프! 코드잇 스프린트가 취업까지 무조건 책임집니다.",
       "canonical": "https://sprint.codeit.kr/track/frontend-advanced",
@@ -143,7 +187,7 @@
       "url": "https://sprint.codeit.kr/track/backend-spring",
       "path": "/track/backend-spring",
       "status": 200,
-      "contentHash": "c333a24e3e25c768",
+      "contentHash": "ed573a5d6209d140",
       "title": "Spring 백엔드 부트캠프 | 코드잇 스프린트",
       "description": "압도적인 결과로 증명하는 Spring 백엔드 취업 부트캠프! 코드잇 스프린트가 취업까지 무조건 책임집니다.",
       "canonical": "https://sprint.codeit.kr/track/backend-spring",
@@ -190,7 +234,7 @@
       "url": "https://sprint.codeit.kr/track/fullstack",
       "path": "/track/fullstack",
       "status": 200,
-      "contentHash": "e13f767ce6f24520",
+      "contentHash": "5aa70b8356ca6b5e",
       "title": "풀스택 부트캠프 | 코드잇 스프린트",
       "description": "압도적인 결과로 증명하는 풀스택 엔지니어 취업 부트캠프! 코드잇 스프린트가 취업까지 무조건 책임집니다.",
       "canonical": "https://sprint.codeit.kr/track/fullstack",
@@ -237,7 +281,7 @@
       "url": "https://sprint.codeit.kr/track/ai",
       "path": "/track/ai",
       "status": 200,
-      "contentHash": "bb7d605e8db473a0",
+      "contentHash": "43c45ed1fc719aeb",
       "title": "AI 엔지니어 부트캠프 | 코드잇 스프린트",
       "description": "압도적인 결과로 증명하는 AI 엔지니어 취업 부트캠프! 코드잇 스프린트가 취업까지 무조건 책임집니다.",
       "canonical": "https://sprint.codeit.kr/track/ai",
@@ -284,7 +328,7 @@
       "url": "https://sprint.codeit.kr/track/data",
       "path": "/track/data",
       "status": 200,
-      "contentHash": "1e870c5e6b0e2b2c",
+      "contentHash": "c13150e8f1c97e8b",
       "title": "데이터 부트캠프 | 코드잇 스프린트",
       "description": "압도적인 결과로 증명하는 데이터 분석가 취업 부트캠프! 코드잇 스프린트가 취업까지 무조건 책임집니다.",
       "canonical": "https://sprint.codeit.kr/track/data",
@@ -331,7 +375,7 @@
       "url": "https://sprint.codeit.kr/track/product-design",
       "path": "/track/product-design",
       "status": 200,
-      "contentHash": "70b43096a43bf9ac",
+      "contentHash": "fada61afb6cc6326",
       "title": "프로덕트 디자인 부트캠프 | 코드잇 스프린트",
       "description": "압도적인 결과로 증명하는 프로덕트 디자이너 취업 부트캠프! 코드잇 스프린트가 취업까지 무조건 책임집니다.",
       "canonical": "https://sprint.codeit.kr/track/product-design",
@@ -378,7 +422,7 @@
       "url": "https://sprint.codeit.kr/track/it-founder",
       "path": "/track/it-founder",
       "status": 200,
-      "contentHash": "cacacef5d4ca8988",
+      "contentHash": "4438701a4ecf2338",
       "title": "IT 서비스 창업 부트캠프 | 코드잇 스프린트",
       "description": "압도적인 결과로 증명하는 IT 서비스 창업 부트캠프!\n코드잇 스프린트가 당신의 창업 성공까지 끝까지 책임집니다.",
       "canonical": "https://sprint.codeit.kr/track/it-founder",

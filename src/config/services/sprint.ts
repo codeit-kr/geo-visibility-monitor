@@ -275,10 +275,11 @@ export const sprint: ServiceConfig = {
   locale: 'ko-KR',
   userCountry: 'KR',
 
-  // 고정 감사 페이지(server-sitemap.xml 기준 트랙 8 + 홈·취업·llms.txt). 매 실행 동일.
+  // 고정 감사 페이지(server-sitemap.xml 기준 트랙 8 + 홈·취업·콘텐츠·llms.txt). 매 실행 동일.
   auditUrls: [
     'https://sprint.codeit.kr/',
     'https://sprint.codeit.kr/career',
+    'https://sprint.codeit.kr/contents',
     'https://sprint.codeit.kr/track/frontend-advanced',
     'https://sprint.codeit.kr/track/backend-spring',
     'https://sprint.codeit.kr/track/fullstack',
