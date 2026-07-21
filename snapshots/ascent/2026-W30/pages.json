@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "capturedAt": "2026-07-21T06:20:25Z",
+  "capturedAt": "2026-07-21T06:38:42Z",
   "isoWeek": "2026-W30",
   "app": "ascent",
   "pages": [
@@ -19,100 +19,6 @@
       "h1": [],
       "jsonLd": [],
       "kind": "text"
-    },
-    {
-      "url": "https://ascent.me/blog",
-      "path": "/blog",
-      "status": 200,
-      "contentHash": "e5156cfe8c98470b",
-      "title": "어센트",
-      "description": "Welcome to the 어센트 blog!",
-      "canonical": "https://ascent.me/blog",
-      "robots": "max-image-preview:large",
-      "htmlLang": "en",
-      "og": {
-        "og:title": "어센트",
-        "og:description": "Welcome to the 어센트 blog!",
-        "og:url": "https://ascent.me/blog",
-        "og:site_name": "어센트",
-        "og:image": "https://image.inblog.dev/?url=https%3A%2F%2Finblog.ai%2Fapi%2Fog-logo%3FlogoUrl%3Dhttps%253A%252F%252Fsource.inblog.dev%252Flogo%252F2026-07-08T01%253A53%253A49.052Z-cb410ce2-7ff8-48bf-9e07-5e149276d937%26title%3D%26description%3DWelcome%2520to%2520the%2520%25EC%2596%25B4%25EC%2584%25BC%25ED%258A%25B8%2520blog%21&w=1200&q=85&format=jpg",
-        "og:image:type": "image/jpeg",
-        "og:type": "website"
-      },
-      "twitter": {
-        "twitter:card": "summary_large_image",
-        "twitter:title": "어센트",
-        "twitter:description": "Welcome to the 어센트 blog!",
-        "twitter:image": "https://image.inblog.dev/?url=https%3A%2F%2Finblog.ai%2Fapi%2Fog-logo%3FlogoUrl%3Dhttps%253A%252F%252Fsource.inblog.dev%252Flogo%252F2026-07-08T01%253A53%253A49.052Z-cb410ce2-7ff8-48bf-9e07-5e149276d937%26title%3D%26description%3DWelcome%2520to%2520the%2520%25EC%2596%25B4%25EC%2584%25BC%25ED%258A%25B8%2520blog%21&w=1200&q=85&format=jpg",
-        "twitter:image:type": "image/jpeg"
-      },
-      "h1": [
-        "어센트 블로그"
-      ],
-      "jsonLd": [],
-      "kind": "html"
-    },
-    {
-      "url": "https://ascent.me/blog/ask-interview-prep-guide",
-      "path": "/blog/ask-interview-prep-guide",
-      "status": 200,
-      "contentHash": "1629a27fa6edfee5",
-      "title": "A!SK 면접이란? SK하이닉스 AI 면접 준비 총정리 - 어센트",
-      "description": "A!SK, 무엇부터 준비할까? A!SK(에스크) 전형 구성부터 평가 요소, 합격을 가르는 준비법까지 한 글에 정리했어요. A!SK 준비 시작은 여기서. | 면접, 기업별로 준비하기",
-      "canonical": "https://ascent.me/blog/ask-interview-prep-guide",
-      "robots": "max-image-preview:large",
-      "htmlLang": "en",
-      "og": {
-        "og:title": "A!SK 면접이란? SK하이닉스 AI 면접 준비 총정리 - 어센트",
-        "og:description": "A!SK, 무엇부터 준비할까? A!SK(에스크) 전형 구성부터 평가 요소, 합격을 가르는 준비법까지 한 글에 정리했어요. A!SK 준비 시작은 여기서. | 면접, 기업별로 준비하기",
-        "og:url": "https://ascent.me/blog/ask-interview-prep-guide",
-        "og:image": "https://image.inblog.dev/?url=https%3A%2F%2Fsource.inblog.dev%2Ffeatured_image%2F2026-07-06T04%3A21%3A47.073Z-eec97659-7c81-4c09-974d-ab06daecf94c&w=1200&q=85&format=jpg&v=2026-07-06T04%3A21%3A49.815Z",
-        "og:image:type": "image/jpeg",
-        "og:type": "article"
-      },
-      "twitter": {
-        "twitter:card": "summary_large_image",
-        "twitter:title": "A!SK 면접이란? SK하이닉스 AI 면접 준비 총정리 - 어센트",
-        "twitter:description": "A!SK, 무엇부터 준비할까? A!SK(에스크) 전형 구성부터 평가 요소, 합격을 가르는 준비법까지 한 글에 정리했어요. A!SK 준비 시작은 여기서. | 면접, 기업별로 준비하기",
-        "twitter:image": "https://image.inblog.dev/?url=https%3A%2F%2Fsource.inblog.dev%2Ffeatured_image%2F2026-07-06T04%3A21%3A47.073Z-eec97659-7c81-4c09-974d-ab06daecf94c&w=1200&q=85&format=jpg&v=2026-07-06T04%3A21%3A49.815Z",
-        "twitter:image:type": "image/jpeg"
-      },
-      "h1": [
-        "A!SK 면접이란? SK하이닉스 AI 면접 준비 총정리"
-      ],
-      "jsonLd": [],
-      "kind": "html"
-    },
-    {
-      "url": "https://ascent.me/blog/ask-job-role-interview-answers",
-      "path": "/blog/ask-job-role-interview-answers",
-      "status": 200,
-      "contentHash": "f5207fb18ef62903",
-      "title": "A!SK 직무별 질문, 출제 의도대로 답변 준비하기 - 어센트",
-      "description": "A!SK 직무별 질문, 설계·소자·R&D공정·Product Engineering·IT(AMHS) 각 직무가 요구하는 역량과 감점 요인, 핵심 트레이드오프로 답변 연습하는 법을 정리했어요. | 면접, 기업별로 준비하기",
-      "canonical": "https://ascent.me/blog/ask-job-role-interview-answers",
-      "robots": "max-image-preview:large",
-      "htmlLang": "en",
-      "og": {
-        "og:title": "A!SK 직무별 질문, 출제 의도대로 답변 준비하기 - 어센트",
-        "og:description": "A!SK 직무별 질문, 설계·소자·R&D공정·Product Engineering·IT(AMHS) 각 직무가 요구하는 역량과 감점 요인, 핵심 트레이드오프로 답변 연습하는 법을 정리했어요. | 면접, 기업별로 준비하기",
-        "og:url": "https://ascent.me/blog/ask-job-role-interview-answers",
-        "og:image": "https://image.inblog.dev/?url=https%3A%2F%2Fsource.inblog.dev%2Ffeatured_image%2F2026-07-03T08%3A10%3A10.216Z-ea296461-668d-48b4-8f01-12970ad94d1b&w=1200&q=85&format=jpg&v=2026-07-03T08%3A10%3A12.709Z",
-        "og:image:type": "image/jpeg",
-        "og:type": "article"
-      },
-      "twitter": {
-        "twitter:card": "summary_large_image",
-        "twitter:title": "A!SK 직무별 질문, 출제 의도대로 답변 준비하기 - 어센트",
-        "twitter:description": "A!SK 직무별 질문, 설계·소자·R&D공정·Product Engineering·IT(AMHS) 각 직무가 요구하는 역량과 감점 요인, 핵심 트레이드오프로 답변 연습하는 법을 정리했어요. | 면접, 기업별로 준비하기",
-        "twitter:image": "https://image.inblog.dev/?url=https%3A%2F%2Fsource.inblog.dev%2Ffeatured_image%2F2026-07-03T08%3A10%3A10.216Z-ea296461-668d-48b4-8f01-12970ad94d1b&w=1200&q=85&format=jpg&v=2026-07-03T08%3A10%3A12.709Z",
-        "twitter:image:type": "image/jpeg"
-      },
-      "h1": [
-        "A!SK 직무별 질문, 출제 의도대로 답변 준비하기"
-      ],
-      "jsonLd": [],
-      "kind": "html"
     },
     {
       "url": "https://www.ascent.me",
@@ -164,7 +70,7 @@
       "url": "https://www.ascent.me/interviews",
       "path": "/interviews",
       "status": 200,
-      "contentHash": "177ab086ce80a0b7",
+      "contentHash": "e3d3d10baedb02da",
       "title": "AI 모의면접 찾기 | 어센트",
       "description": "원하는 기업·직무의 AI 모의면접을 골라 실전처럼 연습해 보세요. 상세한 분석 리포트로 합격 확률을 높일 수 있어요.",
       "canonical": "https://www.ascent.me/interviews",

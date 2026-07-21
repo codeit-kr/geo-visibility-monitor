@@ -6,6 +6,7 @@ import type { ServiceConfig } from '../types'
 export const ascent: ServiceConfig = {
   app: 'ascent',
   displayName: '어센트',
+  slackChannelId: 'C0ADQ568H70',
   siteUrl: 'https://www.ascent.me',
   passive: true, // 챗봇/SERP 측정 없음 — pages.json + geoScore.json 만 쌓임
   promptsVersion: 1,
@@ -16,15 +17,13 @@ export const ascent: ServiceConfig = {
   // 고정 코어 — llms.txt 는 sitemap 에 없어 고정으로 포함.
   auditUrls: ['https://www.ascent.me/llms.txt'],
 
-  // 메인 sitemap(홈 + /interviews 79) + blog sitemap(15). interviews·blog 포스트는 템플릿 페이지라
-  // 대표만: pick 은 URL 오름차순이라 /interviews(목록)·/blog(목록)가 각 섹션의 첫 슬롯을 차지하고
+  // 메인 sitemap(홈 + /interviews 79)만 — blog 는 측정 스코프 외(담당자 확정 2026-07-21).
+  // interviews 는 템플릿 페이지라 대표만: pick 은 URL 오름차순이라 /interviews(목록)가 첫 슬롯,
   // 나머지가 상세 대표가 된다(목록 + 상세 커버).
   auditUrlSource: {
-    sitemaps: ['https://www.ascent.me/sitemap.xml', 'https://www.ascent.me/blog/sitemap.xml'],
-    exclude: ['/blog/category/*'], // 카테고리 목록 페이지 — 콘텐츠 아님
+    sitemaps: ['https://www.ascent.me/sitemap.xml'],
     sections: [
       { prefix: '/interviews', pick: 3 }, // 목록 + 상세 대표 2
-      { prefix: '/blog', pick: 3 }, // 블로그 홈 + 포스트 대표 2
     ],
   },
 
