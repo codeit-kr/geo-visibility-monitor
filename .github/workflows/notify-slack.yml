@@ -1,0 +1,32 @@
+name: notify-slack
+
+# Slack 알림 단독 재발송 — 감사 없이 각 서비스 최신 주차 요약을 다시 보낸다.
+# 용도: 봇 채널 초대 누락 등으로 정기 알림이 실패했을 때(geo-audit 재실행은 재감사·점수 덮어쓰기라 금지).
+on:
+  workflow_dispatch:
+    inputs:
+      services:
+        description: '알림 보낼 서비스(쉼표구분 app 키, 예: ascent). 비우면 repo Variable/전체.'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Slack 알림 발송
+        run: pnpm -s notify:slack
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          ACTIVE_SERVICES: ${{ inputs.services || vars.ACTIVE_SERVICES }}
+          DASHBOARD_URL: ${{ vars.DASHBOARD_URL || 'https://codeit-geo-visibility-monitor.vercel.app' }}
