@@ -69,6 +69,7 @@ const BRAND_ALIASES: Partial<Record<App, string[]>> = {
   sprint: ['코드잇 스프린트', '코드잇', 'Codeit', 'codeit'],
   codeit: ['코드잇', 'Codeit', 'codeit'],
   '10x': ['코드잇 10x', '코드잇 텐엑스', '텐엑스', 'Codeit 10x', '10x'],
+  ascent: ['어센트', 'Ascent', 'ascent'],
 }
 
 const SENTI_META: Record<Sentiment, { label: string; cls: string }> = {
