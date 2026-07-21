@@ -18,6 +18,12 @@
       "displayName": "코드잇 10x",
       "weeks": 1,
       "latestWeek": "2026-W30"
+    },
+    {
+      "app": "ascent",
+      "displayName": "어센트",
+      "weeks": 1,
+      "latestWeek": "2026-W30"
     }
   ]
 }
