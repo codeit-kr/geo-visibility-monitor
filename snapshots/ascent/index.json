@@ -18,8 +18,11 @@
       "byEngineCostUsd": {},
       "sampleSize": 0,
       "costUsd": null,
-      "geoScore": null,
-      "geoScoreRange": null
+      "geoScore": 68,
+      "geoScoreRange": [
+        66,
+        70
+      ]
     }
   ]
 }
