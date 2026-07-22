@@ -1,0 +1,1104 @@
+{
+  "$comment": "LLM 판정기(llmJudge) 골든셋. source 케이스의 answer 는 snapshots/<app>/<isoWeek>/responses.json 에서 조인키(paraphraseId|engine|rep)로 로드(전문 복제 없음). query·brand·groundTruth 는 평가 입력 동결용 스냅. verified:false 는 파이프라인 출력 그대로의 잠정 라벨 — 사람 검수 후 true 로 올릴 것. 합성(syn-*) 케이스는 실데이터에 없는 검출 경로(negative·오정보 플래그) 커버용. 실행: pnpm judge:eval",
+  "cases": [
+    {
+      "id": "syn-negative",
+      "answer": "코드잇 스프린트는 솔직히 추천하기 어렵습니다. 커리큘럼이 얕아서 실무 수준까지 가기 힘들고, 멘토 피드백도 형식적이라는 후기가 많아요. 취업 지원도 자소서 첨삭 정도에 그쳐서 기대만큼의 성과를 얻기 어렵습니다. 같은 값이면 다른 부트캠프를 알아보는 게 낫다고 봅니다.",
+      "query": "코드잇 스프린트 어때? 들을만해?",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": null,
+      "expected": {
+        "sentiment": "negative",
+        "accuracyFlags": []
+      },
+      "verified": true,
+      "note": "합성 — 부정 톤 검출(실데이터에 negative 0건이라 합성으로 커버)"
+    },
+    {
+      "id": "syn-wrong-employment",
+      "answer": "코드잇 스프린트는 취업률이 92%에 달하는 국내 최상위권 부트캠프입니다. 커리큘럼도 체계적이고 수료생 만족도가 높아 비전공자에게 특히 추천됩니다.",
+      "query": "코드잇 스프린트 취업률 알려줘",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": {
+        "employmentRatePct": 71,
+        "sampleSize": 2598,
+        "basis": "2025 고용24 공시 취업률(%). ±3%p 벗어나면 오정보."
+      },
+      "expected": {
+        "sentiment": "positive",
+        "accuracyFlags": [
+          "wrong-employment-rate"
+        ]
+      },
+      "verified": true,
+      "note": "합성 — 취업률 오정보(92% vs 공시 71±3%p) 검출"
+    },
+    {
+      "id": "syn-wrong-price",
+      "answer": "코드잇 스프린트는 국비지원 과정이라 본인부담금은 트랙에 관계없이 약 150만원 수준입니다. 정가는 600만원대지만 정부 지원을 받으면 그 정도만 내면 됩니다.",
+      "query": "코드잇 스프린트 자부담금 얼마예요?",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": {
+        "feIntensive": 300000,
+        "others": 600000,
+        "basis": "국비지원 후 본인부담금(KRW) 기준. 정가·지원금 액수는 오정보 판정 대상 아님.",
+        "currency": "KRW"
+      },
+      "expected": {
+        "sentiment": "neutral",
+        "accuracyFlags": [
+          "wrong-price"
+        ]
+      },
+      "verified": true,
+      "note": "합성 — 본인부담금 오정보(150만원 vs 30/60만원) 검출"
+    },
+    {
+      "id": "syn-tolerance",
+      "answer": "코드잇 스프린트의 취업률은 약 70% 수준으로 공시되어 있습니다. 표본이 2천 명 이상이라 신뢰할 만한 수치입니다.",
+      "query": "코드잇 스프린트 취업률 알려줘",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": {
+        "employmentRatePct": 71,
+        "sampleSize": 2598,
+        "basis": "2025 고용24 공시 취업률(%). ±3%p 벗어나면 오정보."
+      },
+      "expected": {
+        "sentiment": "neutral",
+        "accuracyFlags": []
+      },
+      "verified": true,
+      "note": "합성 — 허용범위(71±3%p) 안의 70%는 플래그하면 안 됨"
+    },
+    {
+      "id": "syn-secondary",
+      "answer": "코드잇 스프린트의 전체 평균 취업률은 71%입니다. 다만 프론트엔드 트랙만 보면 85%로 더 높고, 완주율은 약 90% 수준입니다.",
+      "query": "코드잇 스프린트 취업률 알려줘",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": {
+        "employmentRatePct": 71,
+        "sampleSize": 2598,
+        "basis": "2025 고용24 공시 취업률(%). ±3%p 벗어나면 오정보."
+      },
+      "expected": {
+        "sentiment": "neutral",
+        "accuracyFlags": []
+      },
+      "verified": true,
+      "note": "합성 — 트랙별·완주율 등 부차 수치는 판정 대상 아님(전체 71%는 일치)"
+    },
+    {
+      "id": "syn-nomention",
+      "answer": "국내 부트캠프 취업률은 기관마다 편차가 큽니다. SSAFY는 수료생 취업률이 높은 편으로 알려져 있고, 우아한테크코스도 수료생 평판이 좋습니다. 정확한 수치는 각 기관의 공시 자료를 확인하는 것이 좋습니다.",
+      "query": "부트캠프 취업률 비교해줘",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": {
+        "employmentRatePct": 71,
+        "sampleSize": 2598,
+        "basis": "2025 고용24 공시 취업률(%). ±3%p 벗어나면 오정보."
+      },
+      "expected": {
+        "sentiment": null,
+        "accuracyFlags": []
+      },
+      "verified": true,
+      "note": "합성 — 브랜드 무언급이면 sentiment null + 플래그 없음"
+    },
+    {
+      "id": "rep-pos-00",
+      "source": {
+        "app": "sprint",
+        "isoWeek": "2026-W28",
+        "engine": "gemini",
+        "paraphraseId": "cmp.vsCompetitor#p3:comp=내일배움캠프",
+        "rep": 1
+      },
+      "query": "코드잇 스프린트랑 내일배움캠프 차이 정리해줘",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": null,
+      "expected": {
+        "sentiment": "positive",
+        "accuracyFlags": []
+      },
+      "verified": false,
+      "note": "provisional — 파이프라인 출력 그대로(사람 검수 전)"
+    },
+    {
+      "id": "rep-pos-01",
+      "source": {
+        "app": "sprint",
+        "isoWeek": "2026-W26",
+        "engine": "chatgpt",
+        "paraphraseId": "cmp.vsCompetitor#p0:comp=내일배움캠프",
+        "rep": 1
+      },
+      "query": "코드잇 스프린트랑 내일배움캠프 부트캠프 비교해줘",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": null,
+      "expected": {
+        "sentiment": "positive",
+        "accuracyFlags": []
+      },
+      "verified": false,
+      "note": "provisional — 파이프라인 출력 그대로(사람 검수 전)"
+    },
+    {
+      "id": "rep-pos-02",
+      "source": {
+        "app": "sprint",
+        "isoWeek": "2026-W30",
+        "engine": "chatgpt",
+        "paraphraseId": "cmp.vsCompetitor#p3:comp=항해99",
+        "rep": 1
+      },
+      "query": "코드잇 스프린트랑 항해99 차이 정리해줘",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": null,
+      "expected": {
+        "sentiment": "positive",
+        "accuracyFlags": []
+      },
+      "verified": false,
+      "note": "provisional — 파이프라인 출력 그대로(사람 검수 전)"
+    },
+    {
+      "id": "rep-pos-03",
+      "source": {
+        "app": "sprint",
+        "isoWeek": "2026-W30",
+        "engine": "gemini",
+        "paraphraseId": "cmp.vsCompetitor#p1:comp=엘리스",
+        "rep": 1
+      },
+      "query": "코드잇 스프린트 vs 엘리스 어디가 나아?",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": null,
+      "expected": {
+        "sentiment": "positive",
+        "accuracyFlags": []
+      },
+      "verified": false,
+      "note": "provisional — 파이프라인 출력 그대로(사람 검수 전)"
+    },
+    {
+      "id": "rep-pos-04",
+      "source": {
+        "app": "sprint",
+        "isoWeek": "2026-W30",
+        "engine": "gemini",
+        "paraphraseId": "cmp.vsCompetitor#p0:comp=패스트캠퍼스",
+        "rep": 1
+      },
+      "query": "코드잇 스프린트랑 패스트캠퍼스 부트캠프 비교해줘",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": null,
+      "expected": {
+        "sentiment": "positive",
+        "accuracyFlags": []
+      },
+      "verified": false,
+      "note": "provisional — 파이프라인 출력 그대로(사람 검수 전)"
+    },
+    {
+      "id": "rep-pos-05",
+      "source": {
+        "app": "sprint",
+        "isoWeek": "2026-W28",
+        "engine": "chatgpt",
+        "paraphraseId": "cmp.vsCompetitor#p0:comp=패스트캠퍼스",
+        "rep": 1
+      },
+      "query": "코드잇 스프린트랑 패스트캠퍼스 부트캠프 비교해줘",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": null,
+      "expected": {
+        "sentiment": "positive",
+        "accuracyFlags": []
+      },
+      "verified": false,
+      "note": "provisional — 파이프라인 출력 그대로(사람 검수 전)"
+    },
+    {
+      "id": "rep-pos-06",
+      "source": {
+        "app": "sprint",
+        "isoWeek": "2026-W26",
+        "engine": "chatgpt",
+        "paraphraseId": "cmp.vsCompetitor#p3:comp=패스트캠퍼스",
+        "rep": 1
+      },
+      "query": "코드잇 스프린트랑 패스트캠퍼스 차이 정리해줘",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": null,
+      "expected": {
+        "sentiment": "positive",
+        "accuracyFlags": []
+      },
+      "verified": false,
+      "note": "provisional — 파이프라인 출력 그대로(사람 검수 전)"
+    },
+    {
+      "id": "rep-pos-07",
+      "source": {
+        "app": "sprint",
+        "isoWeek": "2026-W28",
+        "engine": "gemini",
+        "paraphraseId": "cmp.vsCompetitor#p1:comp=패스트캠퍼스",
+        "rep": 1
+      },
+      "query": "코드잇 스프린트 vs 패스트캠퍼스 어디가 나아?",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": null,
+      "expected": {
+        "sentiment": "positive",
+        "accuracyFlags": []
+      },
+      "verified": false,
+      "note": "provisional — 파이프라인 출력 그대로(사람 검수 전)"
+    },
+    {
+      "id": "acc-08",
+      "source": {
+        "app": "sprint",
+        "isoWeek": "2026-W28",
+        "engine": "chatgpt",
+        "paraphraseId": "fact.employmentRate#p2",
+        "rep": 1
+      },
+      "query": "코드잇 스프린트 수료생 취업률 알려줘",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": {
+        "employmentRatePct": 71,
+        "sampleSize": 2598,
+        "basis": "2025 고용24 공시 취업률(%). ±3%p 벗어나면 오정보."
+      },
+      "expected": {
+        "sentiment": "neutral",
+        "accuracyFlags": []
+      },
+      "verified": false,
+      "note": "provisional — 파이프라인 출력 그대로(사람 검수 전)"
+    },
+    {
+      "id": "acc-09",
+      "source": {
+        "app": "sprint",
+        "isoWeek": "2026-W30",
+        "engine": "gemini",
+        "paraphraseId": "fact.price#p4",
+        "rep": 1
+      },
+      "query": "코드잇 스프린트 트랙별 가격 정리해줘",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": {
+        "feIntensive": 300000,
+        "others": 600000,
+        "basis": "국비지원 후 본인부담금(KRW) 기준. 정가·지원금 액수는 오정보 판정 대상 아님.",
+        "currency": "KRW"
+      },
+      "expected": {
+        "sentiment": "positive",
+        "accuracyFlags": []
+      },
+      "verified": false,
+      "note": "provisional — 파이프라인 출력 그대로(사람 검수 전)"
+    },
+    {
+      "id": "acc-10",
+      "source": {
+        "app": "sprint",
+        "isoWeek": "2026-W30",
+        "engine": "gemini",
+        "paraphraseId": "fact.price#p1",
+        "rep": 1
+      },
+      "query": "코드잇 스프린트 가격 알려줘",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": {
+        "feIntensive": 300000,
+        "others": 600000,
+        "basis": "국비지원 후 본인부담금(KRW) 기준. 정가·지원금 액수는 오정보 판정 대상 아님.",
+        "currency": "KRW"
+      },
+      "expected": {
+        "sentiment": "positive",
+        "accuracyFlags": []
+      },
+      "verified": false,
+      "note": "provisional — 파이프라인 출력 그대로(사람 검수 전)"
+    },
+    {
+      "id": "acc-11",
+      "source": {
+        "app": "sprint",
+        "isoWeek": "2026-W28",
+        "engine": "chatgpt",
+        "paraphraseId": "fact.price#p3",
+        "rep": 1
+      },
+      "query": "코드잇 스프린트 환급받으면 실제 비용 얼마야?",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": {
+        "feIntensive": 300000,
+        "others": 600000,
+        "basis": "국비지원 후 본인부담금(KRW) 기준. 정가·지원금 액수는 오정보 판정 대상 아님.",
+        "currency": "KRW"
+      },
+      "expected": {
+        "sentiment": "positive",
+        "accuracyFlags": []
+      },
+      "verified": false,
+      "note": "provisional — 파이프라인 출력 그대로(사람 검수 전)"
+    },
+    {
+      "id": "acc-12",
+      "source": {
+        "app": "sprint",
+        "isoWeek": "2026-W30",
+        "engine": "chatgpt",
+        "paraphraseId": "fact.employmentRate#p3",
+        "rep": 1
+      },
+      "query": "코드잇 스프린트 완주율이랑 취업률 어떻게 돼?",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": {
+        "employmentRatePct": 71,
+        "sampleSize": 2598,
+        "basis": "2025 고용24 공시 취업률(%). ±3%p 벗어나면 오정보."
+      },
+      "expected": {
+        "sentiment": "neutral",
+        "accuracyFlags": []
+      },
+      "verified": false,
+      "note": "provisional — 파이프라인 출력 그대로(사람 검수 전)"
+    },
+    {
+      "id": "acc-13",
+      "source": {
+        "app": "sprint",
+        "isoWeek": "2026-W30",
+        "engine": "gemini",
+        "paraphraseId": "fact.employmentRate#p2",
+        "rep": 1
+      },
+      "query": "코드잇 스프린트 수료생 취업률 알려줘",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": {
+        "employmentRatePct": 71,
+        "sampleSize": 2598,
+        "basis": "2025 고용24 공시 취업률(%). ±3%p 벗어나면 오정보."
+      },
+      "expected": {
+        "sentiment": "positive",
+        "accuracyFlags": []
+      },
+      "verified": false,
+      "note": "provisional — 파이프라인 출력 그대로(사람 검수 전)"
+    },
+    {
+      "id": "acc-14",
+      "source": {
+        "app": "sprint",
+        "isoWeek": "2026-W28",
+        "engine": "gemini",
+        "paraphraseId": "fact.price#p4",
+        "rep": 1
+      },
+      "query": "코드잇 스프린트 트랙별 가격 정리해줘",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": {
+        "feIntensive": 300000,
+        "others": 600000,
+        "basis": "국비지원 후 본인부담금(KRW) 기준. 정가·지원금 액수는 오정보 판정 대상 아님.",
+        "currency": "KRW"
+      },
+      "expected": {
+        "sentiment": "positive",
+        "accuracyFlags": []
+      },
+      "verified": false,
+      "note": "provisional — 파이프라인 출력 그대로(사람 검수 전)"
+    },
+    {
+      "id": "acc-15",
+      "source": {
+        "app": "sprint",
+        "isoWeek": "2026-W28",
+        "engine": "chatgpt",
+        "paraphraseId": "fact.price#p4",
+        "rep": 1
+      },
+      "query": "코드잇 스프린트 트랙별 가격 정리해줘",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": {
+        "feIntensive": 300000,
+        "others": 600000,
+        "basis": "국비지원 후 본인부담금(KRW) 기준. 정가·지원금 액수는 오정보 판정 대상 아님.",
+        "currency": "KRW"
+      },
+      "expected": {
+        "sentiment": "neutral",
+        "accuracyFlags": []
+      },
+      "verified": false,
+      "note": "provisional — 파이프라인 출력 그대로(사람 검수 전)"
+    },
+    {
+      "id": "acc-16",
+      "source": {
+        "app": "sprint",
+        "isoWeek": "2026-W26",
+        "engine": "chatgpt",
+        "paraphraseId": "fact.price#p2",
+        "rep": 1
+      },
+      "query": "코드잇 스프린트 자부담금 얼마예요?",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": {
+        "feIntensive": 300000,
+        "others": 600000,
+        "basis": "국비지원 후 본인부담금(KRW) 기준. 정가·지원금 액수는 오정보 판정 대상 아님.",
+        "currency": "KRW"
+      },
+      "expected": {
+        "sentiment": "neutral",
+        "accuracyFlags": []
+      },
+      "verified": false,
+      "note": "provisional — 파이프라인 출력 그대로(사람 검수 전)"
+    },
+    {
+      "id": "acc-17",
+      "source": {
+        "app": "sprint",
+        "isoWeek": "2026-W28",
+        "engine": "gemini",
+        "paraphraseId": "fact.employmentRate#p3",
+        "rep": 1
+      },
+      "query": "코드잇 스프린트 완주율이랑 취업률 어떻게 돼?",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": {
+        "employmentRatePct": 71,
+        "sampleSize": 2598,
+        "basis": "2025 고용24 공시 취업률(%). ±3%p 벗어나면 오정보."
+      },
+      "expected": {
+        "sentiment": "positive",
+        "accuracyFlags": []
+      },
+      "verified": false,
+      "note": "provisional — 파이프라인 출력 그대로(사람 검수 전)"
+    },
+    {
+      "id": "vis-pos-18",
+      "source": {
+        "app": "sprint",
+        "isoWeek": "2026-W28",
+        "engine": "chatgpt",
+        "paraphraseId": "core.roundup#p3",
+        "rep": 1
+      },
+      "query": "유명한 개발 부트캠프들 비교표 만들어줘",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": null,
+      "expected": {
+        "sentiment": "positive",
+        "accuracyFlags": []
+      },
+      "verified": false,
+      "note": "provisional — 파이프라인 출력 그대로(사람 검수 전)"
+    },
+    {
+      "id": "vis-pos-19",
+      "source": {
+        "app": "sprint",
+        "isoWeek": "2026-W26",
+        "engine": "naver-briefing",
+        "paraphraseId": "rec.itFounder#p0",
+        "rep": 1
+      },
+      "query": "IT 창업 부트캠프",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": null,
+      "expected": {
+        "sentiment": "neutral",
+        "accuracyFlags": []
+      },
+      "verified": false,
+      "note": "provisional — 파이프라인 출력 그대로(사람 검수 전)"
+    },
+    {
+      "id": "vis-pos-20",
+      "source": {
+        "app": "sprint",
+        "isoWeek": "2026-W30",
+        "engine": "gemini",
+        "paraphraseId": "rec.online#p2",
+        "rep": 1
+      },
+      "query": "온라인 코딩 부트캠프 괜찮은 곳 알려줘",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": null,
+      "expected": {
+        "sentiment": "positive",
+        "accuracyFlags": []
+      },
+      "verified": false,
+      "note": "provisional — 파이프라인 출력 그대로(사람 검수 전)"
+    },
+    {
+      "id": "vis-pos-21",
+      "source": {
+        "app": "sprint",
+        "isoWeek": "2026-W30",
+        "engine": "google-aio",
+        "paraphraseId": "role.recommend#p0:role=데이터 분석가",
+        "rep": 1
+      },
+      "query": "데이터 분석가 부트캠프",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": null,
+      "expected": {
+        "sentiment": null,
+        "accuracyFlags": []
+      },
+      "verified": false,
+      "note": "provisional — 파이프라인 출력 그대로(사람 검수 전)"
+    },
+    {
+      "id": "vis-pos-22",
+      "source": {
+        "app": "sprint",
+        "isoWeek": "2026-W26",
+        "engine": "google-aio",
+        "paraphraseId": "rec.itFounder#p0",
+        "rep": 1
+      },
+      "query": "IT 창업 부트캠프",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": null,
+      "expected": {
+        "sentiment": "neutral",
+        "accuracyFlags": []
+      },
+      "verified": false,
+      "note": "provisional — 파이프라인 출력 그대로(사람 검수 전)"
+    },
+    {
+      "id": "vis-pos-23",
+      "source": {
+        "app": "sprint",
+        "isoWeek": "2026-W30",
+        "engine": "gemini",
+        "paraphraseId": "rec.online#p3",
+        "rep": 1
+      },
+      "query": "집에서 들을 수 있는 IT 부트캠프 추천",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": null,
+      "expected": {
+        "sentiment": "positive",
+        "accuracyFlags": []
+      },
+      "verified": false,
+      "note": "provisional — 파이프라인 출력 그대로(사람 검수 전)"
+    },
+    {
+      "id": "neu-00",
+      "source": {
+        "app": "sprint",
+        "isoWeek": "2026-W28",
+        "engine": "google-aio",
+        "paraphraseId": "rec.itFounder#p0",
+        "rep": 1
+      },
+      "query": "IT 창업 부트캠프",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": null,
+      "expected": {
+        "sentiment": "neutral",
+        "accuracyFlags": []
+      },
+      "verified": false,
+      "note": "provisional — 파이프라인 출력 그대로(사람 검수 전)"
+    },
+    {
+      "id": "neu-01",
+      "source": {
+        "app": "sprint",
+        "isoWeek": "2026-W30",
+        "engine": "gemini",
+        "paraphraseId": "cond.kdtAgain#p1",
+        "rep": 1
+      },
+      "query": "국비 부트캠프 이미 수료했는데 또 들을 수 있나?",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": null,
+      "expected": {
+        "sentiment": "neutral",
+        "accuracyFlags": []
+      },
+      "verified": false,
+      "note": "provisional — 파이프라인 출력 그대로(사람 검수 전)"
+    },
+    {
+      "id": "neu-02",
+      "source": {
+        "app": "sprint",
+        "isoWeek": "2026-W28",
+        "engine": "chatgpt",
+        "paraphraseId": "cond.30sNonmajor#p0",
+        "rep": 1
+      },
+      "query": "30대 비전공자 개발자 취업 부트캠프 추천",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": null,
+      "expected": {
+        "sentiment": "neutral",
+        "accuracyFlags": []
+      },
+      "verified": false,
+      "note": "provisional — 파이프라인 출력 그대로(사람 검수 전)"
+    },
+    {
+      "id": "neu-03",
+      "source": {
+        "app": "sprint",
+        "isoWeek": "2026-W26",
+        "engine": "naver-briefing",
+        "paraphraseId": "role.nonmajorPath#p0:role=디자이너",
+        "rep": 1
+      },
+      "query": "비전공자 디자이너 부트캠프",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": null,
+      "expected": {
+        "sentiment": "neutral",
+        "accuracyFlags": []
+      },
+      "verified": false,
+      "note": "provisional — 파이프라인 출력 그대로(사람 검수 전)"
+    },
+    {
+      "id": "neu-04",
+      "source": {
+        "app": "sprint",
+        "isoWeek": "2026-W30",
+        "engine": "naver-briefing",
+        "paraphraseId": "role.recommend#p0:role=데이터 분석가",
+        "rep": 1
+      },
+      "query": "데이터 분석가 부트캠프",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": null,
+      "expected": {
+        "sentiment": "neutral",
+        "accuracyFlags": []
+      },
+      "verified": false,
+      "note": "provisional — 파이프라인 출력 그대로(사람 검수 전)"
+    },
+    {
+      "id": "neu-05",
+      "source": {
+        "app": "sprint",
+        "isoWeek": "2026-W28",
+        "engine": "chatgpt",
+        "paraphraseId": "cond.30sNonmajor#p3",
+        "rep": 1
+      },
+      "query": "나이 많은 비전공자도 갈 만한 개발 부트캠프 있어?",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": null,
+      "expected": {
+        "sentiment": "neutral",
+        "accuracyFlags": []
+      },
+      "verified": false,
+      "note": "provisional — 파이프라인 출력 그대로(사람 검수 전)"
+    },
+    {
+      "id": "neu-06",
+      "source": {
+        "app": "sprint",
+        "isoWeek": "2026-W28",
+        "engine": "gemini",
+        "paraphraseId": "core.roundup#p2",
+        "rep": 1
+      },
+      "query": "코딩 부트캠프 종류별로 정리해줘",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": null,
+      "expected": {
+        "sentiment": "neutral",
+        "accuracyFlags": []
+      },
+      "verified": false,
+      "note": "provisional — 파이프라인 출력 그대로(사람 검수 전)"
+    },
+    {
+      "id": "neu-07",
+      "source": {
+        "app": "sprint",
+        "isoWeek": "2026-W28",
+        "engine": "google-aio",
+        "paraphraseId": "rec.kdt2026#p0",
+        "rep": 1
+      },
+      "query": "2026 KDT 부트캠프",
+      "brand": {
+        "canonical": "코드잇 스프린트",
+        "aliases": [
+          "코드잇 스프린트",
+          "코드잇",
+          "Codeit",
+          "codeit",
+          "코드잇 부트캠프"
+        ]
+      },
+      "groundTruth": null,
+      "expected": {
+        "sentiment": "neutral",
+        "accuracyFlags": []
+      },
+      "verified": false,
+      "note": "provisional — 파이프라인 출력 그대로(사람 검수 전)"
+    }
+  ]
+}

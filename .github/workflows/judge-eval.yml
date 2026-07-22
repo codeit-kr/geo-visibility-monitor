@@ -1,0 +1,35 @@
+name: judge-eval
+
+# LLM 판정기 골든셋 회귀 검증(pnpm judge:eval) — 실 OpenAI API 콜(저가 모델 ~40콜)이라 상시 CI 에서 분리,
+# 판정 로직·골든셋이 변경될 때만 실행. verified 케이스 불일치 시 실패(exit 1).
+# ⚠️ CLASSIFIER_MODEL 은 repo Variable 이라 변경이 git 에 안 잡힌다 — 모델 교체 시엔 workflow_dispatch 로 직접 실행할 것.
+on:
+  pull_request:
+    paths:
+      - 'src/analyze/llmJudge.ts'
+      - 'src/scripts/evalJudge.ts'
+      - 'tests/fixtures/judgeGolden.json'
+  push:
+    branches: [main]
+    paths:
+      - 'src/analyze/llmJudge.ts'
+      - 'src/scripts/evalJudge.ts'
+      - 'tests/fixtures/judgeGolden.json'
+  workflow_dispatch: {}
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: 골든셋 평가(판정기 회귀 검증)
+        run: pnpm -s judge:eval
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          CLASSIFIER_MODEL: ${{ vars.CLASSIFIER_MODEL }} # 파이프라인과 동일 모델로 평가(미설정 시 기본 gpt-4.1-mini)

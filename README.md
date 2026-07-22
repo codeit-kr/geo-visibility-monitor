@@ -47,14 +47,14 @@ src/
   jobs/citationMonitor.ts  콜 실행·분류·비용 집계
   store/                   writeSnapshot · buildRollupIndex
   util/                    runOpts(안전장치 env) · fetchWithRetry(429 백오프) · concurrency · time
-  scripts/                 auditTargets(geo-audit 대상 산출) · aggregateGeoAudit(3회 집계) · notifySlack
+  scripts/                 auditTargets(geo-audit 대상 산출) · aggregateGeoAudit(3회 집계) · notifySlack · evalJudge(판정기 골든셋 평가)
   index.ts                 오케스트레이션(서비스 루프 + 성공률 abort + 런 요약)
   rollup.ts                롤업 단독 재생성(geo-audit 가 geoScore 기록 후 호출)
 snapshots/
   <app>/<isoWeek>/         visibility·responses·cost.json (+ geoScore·geoScoreRuns.json·geo-audit-report.md)
   <app>/index.json         서비스별 주차 롤업(대시보드 헤드라인)
   services.json            서비스 매니페스트
-.github/workflows/         weekly-snapshot.yml · geo-audit.yml · notify-slack.yml · ci.yml
+.github/workflows/         weekly-snapshot.yml · geo-audit.yml · notify-slack.yml · judge-eval.yml · ci.yml
 dashboard/                 in-repo Next.js 대시보드 (아래 §대시보드)
 ```
 
@@ -66,7 +66,7 @@ dashboard/                 in-repo Next.js 대시보드 (아래 §대시보드)
    - **metricRole**: `visibility`(무브랜드 — **헤드라인 인용률·SoV는 이것만**), `reputation`(브랜드 평판·감성), `accuracy`(팩트 vs groundTruth).
    - **표면별 질의 형태**: **챗봇 = 문장**, **SERP(검색) = 키워드(`serpQuery`)**. 실제 사용자 행동에 맞춤.
 2. **엔진 호출** (`engines/`): 각 어댑터가 응답을 `EngineResult{answer, citedUrls, usage}` 로 정규화. 모든 콜은 서비스의 로케일/국가(`locale`/`userCountry`)를 강제.
-3. **분류** (`analyze/`): 브랜드/경쟁사 매칭(`matchEntities` → SoV), **LLM 판정기**(`classify`→`llmJudge`)로 감성·정확도 플래그(`checkAccuracy` 는 휴리스틱 폴백).
+3. **분류** (`analyze/`): 브랜드/경쟁사 매칭(`matchEntities` → SoV), **LLM 판정기**(`classify`→`llmJudge`)로 감성·정확도 플래그(`checkAccuracy` 는 휴리스틱 폴백). 판정기 자체의 회귀 검증은 **골든셋**(`tests/fixtures/judgeGolden.json`, 합성 6 + 실데이터 32) → `pnpm judge:eval`(실 API 콜) — 판정 로직·골든셋 변경 시 `judge-eval` 워크플로가 자동 실행(paths 필터). `CLASSIFIER_MODEL`(Variable) 교체는 git 에 안 잡히므로 dispatch 로 직접 실행.
 4. **저장** (`store/`): `visibility.json`(콜당 메트릭) + `responses.json`(답변 전문, 조인키 `paraphraseId|engine|rep`) + `cost.json`(사용량 기반 비용) + `pages.json`(감사셋 — auditUrls 고정 + `auditUrlSource` sitemap resolve — 페이지의 head/JSON-LD 원본 — `jobs/collectPages`, LLM 미사용). `buildRollupIndex` 가 `index.json`·`services.json` 집계.
 5. **안전장치** (`util/runOpts`): `DRY_RUN`·`SAMPLE_N`·`MAX_USD`(소프트 캡)·`MIN_SUCCESS_RATE`(미달 시 non-zero exit → 손상 스냅샷 커밋 차단).
 
