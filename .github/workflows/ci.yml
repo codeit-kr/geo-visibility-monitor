@@ -20,6 +20,10 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm lint
       - run: pnpm test
+      # 파이프라인 스모크 — DRY_RUN 은 실호출·크롤·기록 전부 생략(Secret 불필요, 비용 0).
+      # "머지는 됐는데 다음 격주 런에서 터지는" 부류(질의셋 전개·서비스 설정·오케스트레이션 회귀)를 머지 전에 잡는다.
+      - name: snapshot DRY_RUN 스모크
+        run: DRY_RUN=1 CAPTURED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)" pnpm -s snapshot
 
   dashboard:
     runs-on: ubuntu-latest
