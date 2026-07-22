@@ -35,6 +35,9 @@
         "google-aio": 0,
         "naver-briefing": 0
       },
+      "engineModels": {
+        "chatgpt": "gpt-5.5"
+      },
       "sampleSize": 105,
       "costUsd": 50.388420200000034,
       "geoScore": 74,
@@ -77,6 +80,10 @@
         "google-aio": 0,
         "naver-briefing": 0
       },
+      "engineModels": {
+        "chatgpt": "gpt-5.5",
+        "gemini": "gemini-3.5-flash"
+      },
       "sampleSize": 177,
       "costUsd": 49.982646700000004,
       "geoScore": 80,
@@ -118,6 +125,10 @@
         "gemini": 4.7265465,
         "google-aio": 0,
         "naver-briefing": 0
+      },
+      "engineModels": {
+        "chatgpt": "gpt-5.5",
+        "gemini": "gemini-3.5-flash"
       },
       "sampleSize": 180,
       "costUsd": 49.526563900000006,

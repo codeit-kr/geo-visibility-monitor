@@ -173,6 +173,9 @@ export interface WeekSummary {
   accuracyFlags: Record<string, number> // 'wrong-price' → 횟수
   byEngine: Partial<Record<Engine, number | null>> // 엔진별 언급률(visibility)
   byEngineCostUsd: Partial<Record<Engine, number>> // 엔진별 비용(cost.json byEngine)
+  // 엔진별 사용 모델(주차 최빈값 — responses.json 의 usage.model). 모델 교체 주차를 추이에서
+  // 식별하기 위함 — 인용률 급변이 실제 변화인지 모델 변경 탓인지 구분. model 미보고 표면(SERP)은 제외.
+  engineModels?: Partial<Record<Engine, string>>
   sampleSize: number // visibility 표본 수
   costUsd: number | null // 주 측정 총비용(cost.json total)
   geoScore?: number | null // 그룹 C composite N회 평균(geoScore.json). 감사 미실행 주차는 null

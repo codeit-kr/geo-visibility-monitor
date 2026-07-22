@@ -91,8 +91,20 @@ export const AiVisibilityDashboard = ({ rollup, services, usingFixture, selected
 
   // 추이 라인(SVG) — 선택 주차 기준 최근 N주만(무한 누적 방지)
   const MAX_TREND_WEEKS = 8
-  const trendWeeks = weeks.slice(Math.max(0, selIdx - (MAX_TREND_WEEKS - 1)), selIdx + 1)
+  const trendStart = Math.max(0, selIdx - (MAX_TREND_WEEKS - 1))
+  const trendWeeks = weeks.slice(trendStart, selIdx + 1)
   const n = trendWeeks.length
+
+  // 모델 변경 주차 — 같은 엔진의 사용 모델이 직전 주차와 달라진 지점(급변이 모델 탓인지 구분용).
+  // 양쪽 주차 모두에서 측정된 엔진만 비교(엔진 추가/제거는 변경으로 안 침).
+  const modelChangesAt: string[][] = trendWeeks.map((w, i) => {
+    const prevModels = weeks[trendStart + i - 1]?.engineModels
+    if (!prevModels || !w.engineModels) return []
+    return (Object.entries(w.engineModels) as [Engine, string][])
+      .filter(([e, m]) => prevModels[e] && prevModels[e] !== m)
+      .map(([e, m]) => `${ENGINE_META[e]?.label ?? e}: ${prevModels[e]} → ${m}`)
+  })
+  const anyModelChange = modelChangesAt.some((c) => c.length > 0)
   const W = 640
   const H = 150
   const point = (i: number, v: number | null) => `${(i / Math.max(1, n - 1)) * W},${(H - (v ?? 0) * H).toFixed(1)}`
@@ -150,9 +162,35 @@ export const AiVisibilityDashboard = ({ rollup, services, usingFixture, selected
                   {[0, 0.25, 0.5, 0.75, 1].map((g) => (
                     <line key={g} x1="0" y1={H * g} x2={W} y2={H * g} stroke="#e7ebf2" strokeWidth="1" />
                   ))}
+                  {/* 모델 변경 주차 — 세로 점선(이 지점 전후 비교는 주의) */}
+                  {modelChangesAt.map((chg, i) =>
+                    chg.length ? (
+                      <line
+                        key={`mc-${trendWeeks[i].isoWeek}`}
+                        x1={(i / Math.max(1, n - 1)) * W} y1="0"
+                        x2={(i / Math.max(1, n - 1)) * W} y2={H}
+                        stroke="#e0902b" strokeWidth="1.5" strokeDasharray="4 3"
+                      />
+                    ) : null,
+                  )}
                   <polyline fill="none" stroke="#2d43e0" strokeWidth="2.5" strokeLinejoin="round" points={mentionLine} />
                   <polyline fill="none" stroke="#119da4" strokeWidth="2.5" strokeLinejoin="round" points={sovLine} />
                 </svg>
+                {/* 모델 변경 마커(HTML 오버레이) — hover 로 변경 내역 */}
+                {modelChangesAt.map((chg, i) =>
+                  chg.length ? (
+                    <span
+                      key={`mc-pt-${trendWeeks[i].isoWeek}`}
+                      className={cx('model-change')}
+                      style={{ left: `${n === 1 ? 50 : (i / (n - 1)) * 100}%` }}
+                    >
+                      ⚙
+                      <span className={cx('pt-tip')}>
+                        {trendWeeks[i].isoWeek.slice(5)} 모델 변경 · {chg.join(' · ')}
+                      </span>
+                    </span>
+                  ) : null,
+                )}
                 {/* 데이터 포인트(HTML 오버레이 — stretched SVG 왜곡 회피) + hover 정확값 */}
                 {(['mention', 'sov'] as const).map((series) =>
                   trendWeeks.map((w, i) => {
@@ -199,6 +237,7 @@ export const AiVisibilityDashboard = ({ rollup, services, usingFixture, selected
           <div className={cx('legend')}>
             <span><i style={{ background: '#2d43e0' }} /> Mention Rate</span>
             <span><i style={{ background: '#119da4' }} /> Share of Voice</span>
+            {anyModelChange && <span><i className={cx('legend-dashed')} /> 모델 변경(전후 비교 주의)</span>}
           </div>
         </section>
 

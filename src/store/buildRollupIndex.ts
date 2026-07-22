@@ -9,6 +9,7 @@ import {
   type VisibilitySnapshot,
   type CostSnapshot,
   type GeoScoreSnapshot,
+  type ResponseRecord,
   type Engine,
   type WeekSummary,
   type RollupIndex,
@@ -31,11 +32,12 @@ export const buildRollupIndex = async (services: ServiceConfig[]): Promise<void>
       const vis = await loadJson<VisibilitySnapshot[]>(join(appDir, isoWeek, 'visibility.json'))
       const cost = await loadJson<CostSnapshot>(join(appDir, isoWeek, 'cost.json'))
       const geo = await loadJson<GeoScoreSnapshot>(join(appDir, isoWeek, 'geoScore.json'))
+      const responses = await loadJson<ResponseRecord[]>(join(appDir, isoWeek, 'responses.json'))
       // passive 서비스 주차는 visibility 없이 pages/geoScore 만 있다 — 대시보드 주차 라우팅(getAppWeeks)이
       // index.json 기반이라 이 주차들도 집계에 넣는다(가시성 지표는 전부 null/0 으로 남음).
       const hasPages = vis ? true : await exists(join(appDir, isoWeek, 'pages.json'))
       if (!vis && !geo && !hasPages) continue
-      summaries.push(summarizeWeek(isoWeek, vis ?? [], cost, geo))
+      summaries.push(summarizeWeek(isoWeek, vis ?? [], cost, geo, responses ?? []))
     }
 
     if (summaries.length) {
@@ -71,6 +73,7 @@ export const summarizeWeek = (
   all: VisibilitySnapshot[],
   cost: CostSnapshot | null,
   geo: GeoScoreSnapshot | null = null,
+  responses: Pick<ResponseRecord, 'engine' | 'model'>[] = [],
 ): WeekSummary => {
   const vis = all.filter((s) => s.metricRole === 'visibility')
   const mentionRate = rate(vis.filter((s) => s.mentioned).length, vis.length)
@@ -109,6 +112,20 @@ export const summarizeWeek = (
     for (const f of s.accuracyFlags ?? []) accuracyFlags[f] = (accuracyFlags[f] ?? 0) + 1
   }
 
+  // 엔진별 사용 모델(최빈값 — responses.json). 모델 교체 주차를 대시보드 추이에서 식별하기 위함.
+  // model 미보고 표면(SERP)은 제외. 한 주에 모델이 섞이면(런 중 교체 등) 최빈값으로 대표.
+  const modelCounts = new Map<Engine, Map<string, number>>()
+  for (const r of responses) {
+    if (!r.model) continue
+    const counts = modelCounts.get(r.engine) ?? new Map<string, number>()
+    counts.set(r.model, (counts.get(r.model) ?? 0) + 1)
+    modelCounts.set(r.engine, counts)
+  }
+  const engineModels: Partial<Record<Engine, string>> = {}
+  for (const [engine, counts] of modelCounts) {
+    engineModels[engine] = [...counts.entries()].sort((a, b) => b[1] - a[1])[0][0]
+  }
+
   // 엔진별 비용(cost.json byEngine). classifier 버킷은 엔진이 아니므로 제외.
   const byEngineCostUsd: Partial<Record<Engine, number>> = {}
   if (cost) {
@@ -126,6 +143,7 @@ export const summarizeWeek = (
     accuracyFlags,
     byEngine,
     byEngineCostUsd,
+    ...(Object.keys(engineModels).length ? { engineModels } : {}),
     sampleSize: vis.length,
     costUsd: cost?.total.costUsd ?? null,
     geoScore: geo?.composite ?? null, // 그룹 C composite N회 평균(geo-audit Action)

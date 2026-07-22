@@ -47,4 +47,19 @@ describe('summarizeWeek', () => {
     expect(w.sentiment.positive).toBe(1)
     expect(w.accuracyFlags['wrong-price']).toBe(1)
   })
+
+  it('engineModels — 엔진별 최빈 모델, model 미보고(SERP)는 제외, responses 없으면 필드 생략', () => {
+    const responses = [
+      { engine: 'chatgpt' as const, model: 'gpt-5.5' },
+      { engine: 'chatgpt' as const, model: 'gpt-5.5' },
+      { engine: 'chatgpt' as const, model: 'gpt-6' }, // 소수파 — 최빈값에 밀림
+      { engine: 'gemini' as const, model: 'gemini-3.5-flash' },
+      { engine: 'google-aio' as const, model: undefined }, // SERP — 모델 없음
+    ]
+    const w = summarizeWeek('2026-W26', [], null, null, responses)
+    expect(w.engineModels).toEqual({ chatgpt: 'gpt-5.5', gemini: 'gemini-3.5-flash' })
+
+    const empty = summarizeWeek('2026-W26', [], null)
+    expect(empty.engineModels).toBeUndefined()
+  })
 })

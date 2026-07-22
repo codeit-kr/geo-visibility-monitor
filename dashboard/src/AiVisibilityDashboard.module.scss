@@ -310,6 +310,33 @@
   display: inline-block;
 }
 
+// 모델 변경 범례 — 차트의 세로 점선과 동일한 시각 언어
+.legend-dashed {
+  height: 0 !important;
+  border-top: 2px dashed #e0902b;
+  border-radius: 0 !important;
+}
+
+// 모델 변경 마커(⚙) — 추이 차트 상단, hover 로 변경 내역 툴팁
+.model-change {
+  position: absolute;
+  top: 0;
+  transform: translate(-50%, -45%);
+  font-size: 12px;
+  line-height: 1;
+  color: #e0902b;
+  cursor: default;
+  z-index: 2;
+
+  &:hover {
+    z-index: 3;
+
+    .pt-tip {
+      opacity: 1;
+    }
+  }
+}
+
 /* 엔진 바 */
 .erow {
   display: flex;
