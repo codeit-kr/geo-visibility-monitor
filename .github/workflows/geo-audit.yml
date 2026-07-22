@@ -58,9 +58,18 @@ jobs:
         env:
           ACTIVE_SERVICES: ${{ vars.ACTIVE_SERVICES }}
 
+      # 커밋 고정 — 상류가 채점 기준을 바꾸면 GEO 점수 시계열이 이유 없이 흔들리고, 3-run 평균으로도
+      # 못 잡는다(3회가 같은 방향으로 오염). 갱신은 의도적으로만: 새 SHA 확인(git ls-remote <repo> HEAD)
+      # → 아래 GEO_SKILL_SHA 교체 → dispatch 로 점수 변동 확인 후 머지.
       - name: geo-audit 스킬 설치(~/.claude/skills)
+        env:
+          GEO_SKILL_REPO: https://github.com/zubair-trabzada/geo-seo-claude
+          GEO_SKILL_SHA: 9eec32f5f700a1e6c3cb1cb735a56ee5ec49a964 # 2026-07-22 HEAD
         run: |
-          git clone --depth 1 https://github.com/zubair-trabzada/geo-seo-claude /tmp/geo-skill
+          git init -q /tmp/geo-skill
+          git -C /tmp/geo-skill remote add origin "$GEO_SKILL_REPO"
+          git -C /tmp/geo-skill fetch -q --depth 1 origin "$GEO_SKILL_SHA"
+          git -C /tmp/geo-skill checkout -q FETCH_HEAD
           bash /tmp/geo-skill/install.sh
 
       - name: GEO 감사 (run ${{ matrix.run }}/3)
@@ -249,9 +258,35 @@ jobs:
           done
           echo "대기 타임아웃(~6분) — 알림 진행"; exit 0
 
-      - name: Slack 알림(서비스별 채널 — visibility+GEO 요약)
-        run: pnpm -s notify:slack
+      - name: Slack 알림(서비스별 채널 — visibility+GEO 요약. OAuth 만료 D-45 이내면 스레드 경고 댓글)
+        run: CAPTURED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)" pnpm -s notify:slack
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }} # 봇 토큰(chat:write). 미설정이면 스크립트가 스킵.
           ACTIVE_SERVICES: ${{ vars.ACTIVE_SERVICES }} # 측정 대상과 동일 게이트
           DASHBOARD_URL: ${{ vars.DASHBOARD_URL || 'https://codeit-geo-visibility-monitor.vercel.app' }}
+          CLAUDE_OAUTH_EXPIRES: ${{ vars.CLAUDE_OAUTH_EXPIRES }} # OAuth 만료일(YYYY-MM-DD). 미설정 시 스크립트 폴백(2027-06-23)
+
+  # 실패 알림 — weekly-snapshot 과 동일 원칙. audit(matrix 일부 포함)·aggregate 어느 쪽 실패든 잡는다.
+  # SLACK_ALERT_CHANNEL(Variable) 미설정이면 스킵.
+  alert-failure:
+    needs: [audit, aggregate]
+    if: ${{ always() && contains(needs.*.result, 'failure') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Slack 실패 알림
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_ALERT_CHANNEL: ${{ vars.SLACK_ALERT_CHANNEL }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          AUDIT_RESULT: ${{ needs.audit.result }}
+          AGGREGATE_RESULT: ${{ needs.aggregate.result }}
+        run: |
+          if [ -z "$SLACK_BOT_TOKEN" ] || [ -z "$SLACK_ALERT_CHANNEL" ]; then
+            echo "SLACK_BOT_TOKEN/SLACK_ALERT_CHANNEL 미설정 — 알림 스킵"; exit 0
+          fi
+          TEXT="$(printf ':rotating_light: *weekly-geo-audit 실패* — audit: %s / aggregate: %s. 이번 회차 GEO 점수·다이제스트·Slack 리포트가 누락됩니다.\n<%s|실패한 런 보기> → 원인 해결 후 workflow_dispatch 로 재실행' "$AUDIT_RESULT" "$AGGREGATE_RESULT" "$RUN_URL")"
+          curl -s -X POST https://slack.com/api/chat.postMessage \
+            -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
+            -H 'Content-Type: application/json; charset=utf-8' \
+            -d "$(jq -n --arg ch "$SLACK_ALERT_CHANNEL" --arg t "$TEXT" '{channel:$ch, text:$t}')" \
+            | jq -e '.ok' || { echo "Slack 발송 실패(응답 ok=false)"; exit 1; }

@@ -76,3 +76,26 @@ jobs:
             echo "push 경합, 재시도 $i/5"; sleep 5
           done
           echo "push 실패(재시도 소진)"; exit 1
+
+  # 실패 알림 — 성공 시에만 Slack 이 울리는 구조라, 격주 cron 이 조용히 죽으면 다음 주기까지 결측을 모른다.
+  # SLACK_ALERT_CHANNEL(Variable) 미설정이면 스킵(기존 notify:slack 과 동일한 무설정-무해 원칙).
+  alert-failure:
+    needs: [snapshot]
+    if: ${{ always() && contains(needs.*.result, 'failure') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Slack 실패 알림
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_ALERT_CHANNEL: ${{ vars.SLACK_ALERT_CHANNEL }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [ -z "$SLACK_BOT_TOKEN" ] || [ -z "$SLACK_ALERT_CHANNEL" ]; then
+            echo "SLACK_BOT_TOKEN/SLACK_ALERT_CHANNEL 미설정 — 알림 스킵"; exit 0
+          fi
+          TEXT="$(printf ':rotating_light: *weekly-visibility-snapshot 실패* — 이번 회차 스냅샷이 기록되지 않았습니다. 방치하면 시계열에 한 주기(2주) 결측이 생깁니다.\n<%s|실패한 런 보기> → 원인 해결 후 workflow_dispatch 로 재실행' "$RUN_URL")"
+          curl -s -X POST https://slack.com/api/chat.postMessage \
+            -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
+            -H 'Content-Type: application/json; charset=utf-8' \
+            -d "$(jq -n --arg ch "$SLACK_ALERT_CHANNEL" --arg t "$TEXT" '{channel:$ch, text:$t}')" \
+            | jq -e '.ok' || { echo "Slack 발송 실패(응답 ok=false)"; exit 1; }

@@ -54,7 +54,7 @@ snapshots/
   <app>/<isoWeek>/         visibility·responses·cost.json (+ geoScore·geoScoreRuns.json·geo-audit-report.md)
   <app>/index.json         서비스별 주차 롤업(대시보드 헤드라인)
   services.json            서비스 매니페스트
-.github/workflows/         weekly-snapshot.yml · geo-audit.yml · ci.yml
+.github/workflows/         weekly-snapshot.yml · geo-audit.yml · notify-slack.yml · ci.yml
 dashboard/                 in-repo Next.js 대시보드 (아래 §대시보드)
 ```
 
@@ -75,7 +75,8 @@ dashboard/                 in-repo Next.js 대시보드 (아래 §대시보드)
 ## GEO 점수 (`weekly-geo-audit`)
 
 선행지표. `/geo-audit` 에이전트 스킬을 GitHub Action이 헤드리스 실행해 서비스별 `geoScore.json`(+리포트) 산출.
-- **인증**: Claude 구독 OAuth 토큰(`claude setup-token` → Secret `CLAUDE_CODE_OAUTH_TOKEN`, 별도 종량제 키 불필요). ⏰ **1년 만료 — 최종 2026-06-23, ~2027-06-23 갱신.**
+- **인증**: Claude 구독 OAuth 토큰(`claude setup-token` → Secret `CLAUDE_CODE_OAUTH_TOKEN`, 별도 종량제 키 불필요). ⏰ **1년 만료 — 최종 2026-06-23, ~2027-06-23 갱신.** D-45 부터 격주 Slack 리포트의 **스레드 댓글**로 만료 경고(`notifySlack.ts` — 갱신 절차 포함). 만료일은 Variable `CLAUDE_OAUTH_EXPIRES`, 토큰 갱신 시 함께 업데이트.
+- **스킬 버전 고정**: geo-audit 스킬(`geo-seo-claude`)은 워크플로의 `GEO_SKILL_SHA` 커밋으로 고정 — 상류 변경으로 인한 점수 시계열 오염 방지. 갱신은 SHA 교체 + dispatch 검증으로만.
 - **재현성**: 동일 감사를 **3회 실행 → 평균(`geoScore.json`) + 변동폭(`compositeRange`)**, 원시 3회는 `geoScoreRuns.json`. 입력 고정(`auditUrls` 우리 페이지만 · `brandSources` 체크리스트 + `brandSourcesVersion`) + 타깃 시장 현지화 + `--model claude-opus-4-8`.
 
 (B=Amplitude 리퍼럴, D=Search Console 은 현재 드롭.)
@@ -149,7 +150,7 @@ cd dashboard && pnpm install && pnpm dev    # 대시보드 :4350
 
 **엔진 Secrets**: `OPENAI_API_KEY`(web_search 전용), `SERPAPI_API_KEY`, (확장 시 `GEMINI_API_KEY`·`ANTHROPIC_API_KEY`·`PERPLEXITY_API_KEY`), `CLAUDE_CODE_OAUTH_TOKEN`(geo-audit), `SLACK_BOT_TOKEN`(chat:write), `VERCEL_TOKEN`·`VERCEL_PROJECT_ID`·`VERCEL_TEAM_ID`(재배포 대기).
 **대시보드 env**: `GOOGLE_CLIENT_ID`·`GOOGLE_CLIENT_SECRET`·`NEXTAUTH_SECRET`·`NEXTAUTH_URL`.
-**Repo Variables**: `ACTIVE_ENGINES`(기본 `chatgpt,gemini,google-aio,naver-briefing`)·`ACTIVE_SERVICES`·`DRY_RUN`·`SAMPLE_N`·`MAX_USD`·`MIN_SUCCESS_RATE`·`CLASSIFIER_MODEL`·`DASHBOARD_URL`.
+**Repo Variables**: `ACTIVE_ENGINES`(기본 `chatgpt,gemini,google-aio,naver-briefing`)·`ACTIVE_SERVICES`·`DRY_RUN`·`SAMPLE_N`·`MAX_USD`·`MIN_SUCCESS_RATE`·`CLASSIFIER_MODEL`·`DASHBOARD_URL`·`SLACK_ALERT_CHANNEL`(운영 알림 채널 — 파이프라인 실패 경고. 미설정이면 스킵)·`CLAUDE_OAUTH_EXPIRES`(OAuth 만료일 YYYY-MM-DD, 미설정 시 2027-06-23 폴백).
 
 ## 비용
 

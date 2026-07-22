@@ -25,8 +25,9 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - name: Slack 알림 발송
-        run: pnpm -s notify:slack
+        run: CAPTURED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)" pnpm -s notify:slack
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           ACTIVE_SERVICES: ${{ inputs.services || vars.ACTIVE_SERVICES }}
           DASHBOARD_URL: ${{ vars.DASHBOARD_URL || 'https://codeit-geo-visibility-monitor.vercel.app' }}
+          CLAUDE_OAUTH_EXPIRES: ${{ vars.CLAUDE_OAUTH_EXPIRES }} # OAuth 만료일(YYYY-MM-DD). 미설정 시 스크립트 폴백(2027-06-23)
